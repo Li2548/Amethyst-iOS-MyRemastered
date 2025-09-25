@@ -552,39 +552,24 @@
     [self presentViewController:self.imagePickerController animated:YES completion:nil];
 }
 
-@end
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+    UIImage *selectedImage = info[UIImagePickerControllerEditedImage];
+    if (!selectedImage) {
+        selectedImage = info[UIImagePickerControllerOriginalImage];
     }
     
-    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    [self presentViewController:self.imagePickerController animated:YES completion:nil];
+    if (selectedImage) {
+        // 保存自定义图标
+        [self saveCustomIcon:selectedImage];
+    }
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)saveCustomIcon:(UIImage *)image {
-    // 调整图片大小为128x128
-    UIImage *resizedImage = [self resizeImage:image size:CGSizeMake(128, 128)];
-    
-    // 保存图片到Documents目录
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"custom_icon.png"];
-    NSData *imageData = UIImagePNGRepresentation(resizedImage);
-    [imageData writeToFile:filePath atomically:YES];
-    
-    // 显示成功消息
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:localize(@"Success", nil) 
-                                                                   message:localize(@"preference.message.icon_saved", nil) 
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:localize(@"OK", nil) style:UIAlertActionStyleDefault handler:nil];
-    [alert addAction:okAction];
-    [self presentViewController:alert animated:YES completion:nil];
-}
-
-- (UIImage *)resizeImage:(UIImage *)image size:(CGSize)size {
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
-    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return resizedImage;
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
