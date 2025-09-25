@@ -517,11 +517,6 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
-@end
-#pragma mark - UIImagePickerControllerDelegate
-
-}
-
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
@@ -536,8 +531,11 @@
     }
     
     [picker dismissViewControllerAnimated:YES completion:nil];
+}
 
-
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
 
 - (void)showCustomIconPicker {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -548,6 +546,13 @@
         [alert addAction:okAction];
         [self presentViewController:alert animated:YES completion:nil];
         return;
+    }
+    
+    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self presentViewController:self.imagePickerController animated:YES completion:nil];
+}
+
+@end
     }
     
     self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
