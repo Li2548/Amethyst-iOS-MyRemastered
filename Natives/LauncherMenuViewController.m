@@ -1,3 +1,4 @@
+#import "UIUtils.h"
 #import "authenticator/BaseAuthenticator.h"
 #import "AccountListViewController.h"
 #import "AFNetworking.h"
@@ -59,6 +60,9 @@
     self.navigationItem.titleView = titleView;
     [titleView sizeToFit];
     
+    // Apply rounded corners to title view
+    [UIUtils applyRoundedCorners:titleView];
+    
     self.options = @[
         [LauncherMenuCustomItem vcClass:LauncherNewsViewController.class],
         [LauncherMenuCustomItem vcClass:LauncherProfilesViewController.class],
@@ -114,6 +118,9 @@
     }
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
     
     self.navigationController.toolbarHidden = NO;
     UIActivityIndicatorViewStyle indicatorStyle = UIActivityIndicatorViewStyleMedium;
@@ -194,6 +201,8 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
 
     cell.textLabel.text = [self.options[indexPath.row] title];
@@ -216,11 +225,15 @@
             performSelector:@selector(imageName)]];
         cell.imageView.image = [cell.imageView.image _imageWithSize:CGSizeMake(40, 40)];
     }
-    return cell;
+    // Apply non-linear animation to cell
+    [UIUtils applyNonLinearAnimation:cell];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     LauncherMenuCustomItem *selected = self.options[indexPath.row];
     
     if (selected.action != nil) {

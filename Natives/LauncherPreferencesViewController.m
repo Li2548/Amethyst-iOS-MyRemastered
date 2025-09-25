@@ -1,4 +1,6 @@
+#import "UIUtils.h"
 #import <Foundation/Foundation.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import "DBNumberedSlider.h"
 #import "HostManagerBridge.h"
@@ -16,7 +18,71 @@
 
 @interface LauncherPreferencesViewController()
 @property(nonatomic) NSArray<NSString*> *rendererKeys, *rendererList;
+@property(nonatomic) UIImagePickerController *imagePickerController;
 @end
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+    UIImage *selectedImage = info[UIImagePickerControllerEditedImage];
+    if (!selectedImage) {
+        selectedImage = info[UIImagePickerControllerOriginalImage];
+    }
+    
+    if (selectedImage) {
+        // 保存自定义图标
+        [self saveCustomIcon:selectedImage];
+    }
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showCustomIconPicker {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:localize(@"Error", nil) 
+                                                                       message:localize(@"preference.error.no_camera", nil) 
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:localize(@"OK", nil) style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okAction];
+        [self presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
+    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self presentViewController:self.imagePickerController animated:YES completion:nil];
+}
+
+- (void)saveCustomIcon:(UIImage *)image {
+    // 调整图片大小为128x128
+    UIImage *resizedImage = [self resizeImage:image size:CGSizeMake(128, 128)];
+    
+    // 保存图片到Documents目录
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"custom_icon.png"];
+    NSData *imageData = UIImagePNGRepresentation(resizedImage);
+    [imageData writeToFile:filePath atomically:YES];
+    
+    // 显示成功消息
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:localize(@"Success", nil) 
+                                                                   message:localize(@"preference.message.icon_saved", nil) 
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:localize(@"OK", nil) style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:okAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (UIImage *)resizeImage:(UIImage *)image size:(CGSize)size {
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resizedImage;
+}
 
 @implementation LauncherPreferencesViewController
 
@@ -49,6 +115,11 @@
     self.rendererKeys = getRendererKeys(NO);
     self.rendererList = getRendererNames(NO);
     
+    // 初始化图片选择器
+    self.imagePickerController = [[UIImagePickerController alloc] init];
+    self.imagePickerController.delegate = self;
+    self.imagePickerController.allowsEditing = YES;
+    
     BOOL(^whenNotInGame)() = ^BOOL(){
         return self.navigationController != nil;
     };
@@ -67,6 +138,16 @@
               @"icon": @"eyeglasses",
               @"type": self.typeSwitch,
               @"enableCondition": whenNotInGame
+            },
+            @{@"key": @"animation_speed",
+              @"hasDetail": @YES,
+              @"icon": @"speedometer",
+              @"type": self.typeSlider,
+              @"min": @(10),
+              @"max": @(200),
+              @"action": ^void(NSNumber *value) {
+                  [UIUtils setAnimationSpeed:value.floatValue / 100.0];
+              }
             },
             @{@"key": @"debug_logging",
               @"hasDetail": @YES,
@@ -96,10 +177,26 @@
               },
               @"pickKeys": @[
                   @"AppIcon-Light",
+                  @"AppIcon-Dark",
+                  @"AppIcon-Development"
               ],
               @"pickList": @[
-                  localize(@"preference.title.appicon-default", nil)
+                  localize(@"preference.title.appicon-default", nil),
+                  localize(@"preference.title.appicon-dark", nil),
+                  localize(@"preference.title.appicon-development", nil)
               ]
+            },
+            @{@"key": @"custom_appicon",
+              @"hasDetail": @YES,
+              @"icon": @"camera",
+              @"type": self.typeButton,
+              @"enableCondition": ^BOOL(){
+                  return UIApplication.sharedApplication.supportsAlternateIcons;
+              },
+              @"action": ^void(){
+                  // 实现自定义图标上传功能
+                  [self showCustomIconPicker];
+              }
             },
             @{@"key": @"hidden_sidebar",
               @"hasDetail": @YES,
