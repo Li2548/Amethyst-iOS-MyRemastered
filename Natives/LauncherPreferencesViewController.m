@@ -22,6 +22,14 @@
 @end
 
 @implementation LauncherPreferencesViewController
+
+- (void)showCustomIconPicker {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:localize(@"Error", nil) 
+                                                                       message:localize(@"preference.error.no_camera", nil) 
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:localize(@"OK", nil) style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okAction];
         [self presentViewController:alert animated:YES completion:nil];
         return;
     }
@@ -57,8 +65,6 @@
     UIGraphicsEndImageContext();
     return resizedImage;
 }
-
-@implementation LauncherPreferencesViewController
 
 - (id)init {
     self = [super init];
@@ -507,7 +513,15 @@
     return footer;
 }
 
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end
+#pragma mark - UIImagePickerControllerDelegate
+
+}
+
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
@@ -522,11 +536,8 @@
     }
     
     [picker dismissViewControllerAnimated:YES completion:nil];
-}
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    [picker dismissViewControllerAnimated:YES completion:nil];
-}
+
 
 - (void)showCustomIconPicker {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
