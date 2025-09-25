@@ -533,19 +533,4 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)showCustomIconPicker {
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:localize(@"Error", nil) 
-                                                                       message:localize(@"preference.error.no_camera", nil) 
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:localize(@"OK", nil) style:UIAlertActionStyleDefault handler:nil];
-        [alert addAction:okAction];
-        [self presentViewController:alert animated:YES completion:nil];
-        return;
-    }
-    
-    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    [self presentViewController:self.imagePickerController animated:YES completion:nil];
-}
-
 @end
