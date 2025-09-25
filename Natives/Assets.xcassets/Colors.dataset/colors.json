@@ -1,0 +1,28 @@
+{
+  "colors": {
+    "primary": {
+      "light": "#9C27B0",
+      "dark": "#CE93D8"
+    },
+    "secondary": {
+      "light": "#6A1B9A",
+      "dark": "#BA68C8"
+    },
+    "background": {
+      "light": "#F3E5F5",
+      "dark": "#121212"
+    },
+    "surface": {
+      "light": "#FFFFFF",
+      "dark": "#1E1E1E"
+    },
+    "text": {
+      "light": "#212121",
+      "dark": "#FFFFFF"
+    },
+    "textSecondary": {
+      "light": "#757575",
+      "dark": "#B0B0B0"
+    }
+  }
+}
