@@ -15,6 +15,7 @@ extern NSMutableDictionary *prefDict;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"[Debug] LauncherSplitViewController viewDidLoad started");
     self.view.backgroundColor = UIColor.systemBackgroundColor;
     if ([getPrefObject(@"control.control_safe_area") length] == 0) {
         setPrefObject(@"control.control_safe_area", NSStringFromUIEdgeInsets(getDefaultSafeArea()));
@@ -22,14 +23,18 @@ extern NSMutableDictionary *prefDict;
 
     self.delegate = self;
 
+    NSLog(@"[Debug] Creating master view controller");
     UINavigationController *masterVc = [[UINavigationController alloc] initWithRootViewController:[[LauncherMenuViewController alloc] init]];
+    NSLog(@"[Debug] Creating detail view controller");
     LauncherNavigationController *detailVc = [[LauncherNavigationController alloc] initWithRootViewController:[[LauncherNewsViewController alloc] init]];
     detailVc.toolbarHidden = NO;
 
+    NSLog(@"[Debug] Setting view controllers");
     self.viewControllers = @[masterVc, detailVc];
     [self changeDisplayModeForSize:self.view.frame.size];
     
     self.maximumPrimaryColumnWidth = self.view.bounds.size.width * 0.95;
+    NSLog(@"[Debug] LauncherSplitViewController viewDidLoad completed");
 }
 
 - (void)splitViewController:(UISplitViewController *)svc willChangeToDisplayMode:(UISplitViewControllerDisplayMode)displayMode {

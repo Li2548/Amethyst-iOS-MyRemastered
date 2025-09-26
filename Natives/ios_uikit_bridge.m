@@ -154,7 +154,9 @@ void UIKit_returnToSplitView() {
 }
 
 void launchInitialViewController(UIWindow *window) {
+    NSLog(@"[Debug] Launching initial view controller");
     window.rootViewController = [[LauncherSplitViewController alloc] initWithStyle:UISplitViewControllerStyleDoubleColumn];
+    NSLog(@"[Debug] Initial view controller set successfully");
 #if 0
     if (getPrefBool(@"internal.internal_launch_on_boot")) {
         window.rootViewController = [[SurfaceViewController alloc] init];

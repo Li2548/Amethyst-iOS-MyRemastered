@@ -52,6 +52,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"[Debug] LauncherMenuViewController viewDidLoad started");
     
     self.isInitialVc = YES;
     
@@ -68,6 +69,7 @@
         [LauncherMenuCustomItem vcClass:LauncherProfilesViewController.class],
         [LauncherMenuCustomItem vcClass:LauncherPreferencesViewController.class],
     ].mutableCopy;
+    NSLog(@"[Debug] LauncherMenuViewController viewDidLoad completed");
     if (realUIIdiom != UIUserInterfaceIdiomTV) {
         [self.options addObject:(id)[LauncherMenuCustomItem
                                      title:localize(@"launcher.menu.custom_controls", nil)
