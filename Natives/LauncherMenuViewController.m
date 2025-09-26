@@ -237,15 +237,20 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"[Debug] didSelectRowAtIndex started for row %ld", (long)indexPath.row);
     // Apply non-linear animation when selecting a row
     [UIUtils applyNonLinearAnimation:self.view];
+    NSLog(@"[Debug] Animation applied successfully");
     
     LauncherMenuCustomItem *selected = self.options[indexPath.row];
+    NSLog(@"[Debug] Selected item at index %ld", (long)indexPath.row);
     
     if (selected.action != nil) {
+        NSLog(@"[Debug] Item has action, executing");
         [self restoreHighlightedSelection];
         ((LauncherMenuCustomItem *)selected).action();
     } else {
+        NSLog(@"[Debug] Item has no action, handling as view controller");
         if(self.isInitialVc) {
             self.isInitialVc = NO;
         } else {
@@ -257,6 +262,7 @@
         selected.vcArray[0].navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         selected.vcArray[0].navigationItem.leftItemsSupplementBackButton = true;
     }
+    NSLog(@"[Debug] didSelectRowAtIndex completed for row %ld", (long)indexPath.row);
 }
 
 - (void)selectAccount:(UIButton *)sender {
