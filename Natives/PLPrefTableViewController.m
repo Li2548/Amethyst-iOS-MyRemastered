@@ -30,7 +30,7 @@
 {
     [super viewDidLoad];
 
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     if (self.prefSections) {
         self.prefSectionsVisibility = [[NSMutableArray<NSNumber *> alloc] initWithCapacity:self.prefSections.count];
@@ -44,6 +44,10 @@
     
     // Apply rounded corners to table view
     [UIUtils applyRoundedCorners:self.tableView];
+    
+    // 减少内容边距以避免白边
+    self.tableView.contentInset = UIEdgeInsetsZero;
+    self.tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
 - (UIBarButtonItem *)drawHelpButton {
@@ -320,8 +324,11 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    // Apply non-linear animation when selecting a row
-    [UIUtils applyNonLinearAnimation:self.view duration:0.5];
+    // Apply non-linear animation only to the selected cell
+    UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
+    if (selectedCell) {
+        [UIUtils applyNonLinearAnimation:selectedCell duration:0.3];
+    }
     
     if (indexPath.row == 0 && self.prefSections) {
         self.prefSectionsVisibility[indexPath.section] = @(![self.prefSectionsVisibility[indexPath.section] boolValue]);
