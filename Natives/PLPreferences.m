@@ -16,6 +16,7 @@
             @"check_sha": @YES,
             @"cosmetica": @YES,
             @"debug_logging": @(!CONFIG_RELEASE),
+            @"animation_speed": @(100),
         }.mutableCopy,
         @"video": @{ // Video & Audio
             @"renderer": @"auto",
