@@ -11,3 +11,6 @@
 [submodule "Natives/external/ZeroTierFramework"]
 	path = Natives/external/ZeroTierFramework
 	url = https://github.com/zerotier/zerotier-sockets-apple-framework
+[submodule "Natives/external/MobileGlues"]
+	path = Natives/external/MobileGlues
+	url = https://github.com/MobileGL-Dev/MobileGlues
