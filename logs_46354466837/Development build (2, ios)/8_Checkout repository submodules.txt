@@ -1,0 +1,31 @@
+﻿2025-09-26T11:25:30.9117030Z ##[group]Run git submodule update --init --recursive
+2025-09-26T11:25:30.9117360Z [36;1mgit submodule update --init --recursive[0m
+2025-09-26T11:25:30.9180540Z shell: /bin/bash -e {0}
+2025-09-26T11:25:30.9180750Z ##[endgroup]
+2025-09-26T11:25:31.0214070Z Submodule 'Natives/external/AFNetworking' (https://github.com/AFNetworking/AFNetworking) registered for path 'Natives/external/AFNetworking'
+2025-09-26T11:25:31.0255070Z Submodule 'Natives/external/DBNumberedSlider' (https://github.com/khanhduytran0/DBNumberedSlider) registered for path 'Natives/external/DBNumberedSlider'
+2025-09-26T11:25:31.0259920Z Submodule 'Natives/external/MobileGlues' (https://github.com/MobileGL-Dev/MobileGlues) registered for path 'Natives/external/MobileGlues'
+2025-09-26T11:25:31.0265220Z Submodule 'Natives/external/ZeroTierFramework' (https://github.com/zerotier/zerotier-sockets-apple-framework) registered for path 'Natives/external/ZeroTierFramework'
+2025-09-26T11:25:31.0277920Z Submodule 'Natives/external/fishhook' (https://github.com/khanhduytran0/fishhook) registered for path 'Natives/external/fishhook'
+2025-09-26T11:25:31.0370850Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking'...
+2025-09-26T11:25:32.4761590Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/DBNumberedSlider'...
+2025-09-26T11:25:33.2034730Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues'...
+2025-09-26T11:25:36.9267480Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/ZeroTierFramework'...
+2025-09-26T11:25:38.1818240Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/fishhook'...
+2025-09-26T11:25:38.9715260Z Submodule path 'Natives/external/AFNetworking': checked out '4eaec5b586ddd897ebeda896e332a62a9fdab818'
+2025-09-26T11:25:39.0222080Z Submodule path 'Natives/external/DBNumberedSlider': checked out '4eddc68b5f92247f8afc0f6114d1b92b338749f4'
+2025-09-26T11:25:39.7899260Z Submodule path 'Natives/external/MobileGlues': checked out '039171ee672595da95b5138cffad576c48e327c9'
+2025-09-26T11:25:39.8026470Z Submodule 'src/main/cpp/3rdparty/glm' (https://github.com/g-truc/glm.git) registered for path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/glm'
+2025-09-26T11:25:39.8029210Z Submodule 'src/main/cpp/3rdparty/perfetto' (https://android.googlesource.com/platform/external/perfetto) registered for path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto'
+2025-09-26T11:25:39.8066770Z Submodule 'src/main/cpp/3rdparty/xxhash' (https://github.com/stbrumme/xxhash.git) registered for path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash'
+2025-09-26T11:25:39.8070240Z Submodule 'src/main/cpp/include/FastSTL' (https://github.com/MobileGL-Dev/FastSTL.git) registered for path 'Natives/external/MobileGlues/src/main/cpp/include/FastSTL'
+2025-09-26T11:25:39.8172680Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/3rdparty/glm'...
+2025-09-26T11:25:43.5711010Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto'...
+2025-09-26T11:26:01.8912330Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash'...
+2025-09-26T11:26:02.5861750Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/include/FastSTL'...
+2025-09-26T11:26:03.5521910Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/glm': checked out '2d4c4b4dd31fde06cfffad7915c2b3006402322f'
+2025-09-26T11:26:05.6580440Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto': checked out '33a4fd07897a9a648664926ea27769278a19ff13'
+2025-09-26T11:26:05.7016920Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash': checked out 'c2866db364b6ea3a11933e62235ddc166ba18565'
+2025-09-26T11:26:05.7320160Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/include/FastSTL': checked out '644b3b01e6e7dcb6a67818289d2fb9bbe85232f2'
+2025-09-26T11:26:05.8269670Z Submodule path 'Natives/external/ZeroTierFramework': checked out 'b8e672f54286be8500bc875e153826af7b01d6e6'
+2025-09-26T11:26:05.8586150Z Submodule path 'Natives/external/fishhook': checked out '27bedb2ab670cc51d7be06d538b249564b47cfbf'

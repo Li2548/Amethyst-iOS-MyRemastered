@@ -1,0 +1,70 @@
+﻿2025-09-26T11:25:26.6857600Z ##[group]Run actions/checkout@v4
+2025-09-26T11:25:26.6858030Z with:
+2025-09-26T11:25:26.6859420Z   repository: herbrine8403/Amethyst-iOS-MyRemastered
+2025-09-26T11:25:26.6859910Z   token: ***
+2025-09-26T11:25:26.6860030Z   ssh-strict: true
+2025-09-26T11:25:26.6860260Z   ssh-user: git
+2025-09-26T11:25:26.6860820Z   persist-credentials: true
+2025-09-26T11:25:26.6861070Z   clean: true
+2025-09-26T11:25:26.6861310Z   sparse-checkout-cone-mode: true
+2025-09-26T11:25:26.6861480Z   fetch-depth: 1
+2025-09-26T11:25:26.6861650Z   fetch-tags: false
+2025-09-26T11:25:26.6862130Z   show-progress: true
+2025-09-26T11:25:26.6863680Z   lfs: false
+2025-09-26T11:25:26.6863870Z   submodules: false
+2025-09-26T11:25:26.6864070Z   set-safe-directory: true
+2025-09-26T11:25:26.6864310Z ##[endgroup]
+2025-09-26T11:25:27.0344140Z Syncing repository: herbrine8403/Amethyst-iOS-MyRemastered
+2025-09-26T11:25:27.0345530Z ##[group]Getting Git version info
+2025-09-26T11:25:27.0345950Z Working directory is '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered'
+2025-09-26T11:25:27.0380420Z [command]/opt/homebrew/bin/git version
+2025-09-26T11:25:27.0455800Z git version 2.50.1
+2025-09-26T11:25:27.0484800Z ##[endgroup]
+2025-09-26T11:25:27.0499520Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/69aec227-cdf4-4252-9d5d-9b179ecb60d3/.gitconfig'
+2025-09-26T11:25:27.0506320Z Temporarily overriding HOME='/Users/runner/work/_temp/69aec227-cdf4-4252-9d5d-9b179ecb60d3' before making global git config changes
+2025-09-26T11:25:27.0506910Z Adding repository directory to the temporary git global config as a safe directory
+2025-09-26T11:25:27.0510390Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered
+2025-09-26T11:25:27.0576730Z Deleting the contents of '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered'
+2025-09-26T11:25:27.0579020Z ##[group]Initializing the repository
+2025-09-26T11:25:27.0583030Z [command]/opt/homebrew/bin/git init /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered
+2025-09-26T11:25:27.0716710Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-09-26T11:25:27.0718400Z hint: is subject to change. To configure the initial branch name to use in all
+2025-09-26T11:25:27.0718820Z hint: of your new repositories, which will suppress this warning, call:
+2025-09-26T11:25:27.0719080Z hint:
+2025-09-26T11:25:27.0719290Z hint: 	git config --global init.defaultBranch <name>
+2025-09-26T11:25:27.0719540Z hint:
+2025-09-26T11:25:27.0719740Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-09-26T11:25:27.0720140Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-09-26T11:25:27.0720410Z hint:
+2025-09-26T11:25:27.0720570Z hint: 	git branch -m <name>
+2025-09-26T11:25:27.0720730Z hint:
+2025-09-26T11:25:27.0720980Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-09-26T11:25:27.0721470Z Initialized empty Git repository in /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/.git/
+2025-09-26T11:25:27.0725870Z [command]/opt/homebrew/bin/git remote add origin https://github.com/herbrine8403/Amethyst-iOS-MyRemastered
+2025-09-26T11:25:27.0786580Z ##[endgroup]
+2025-09-26T11:25:27.0786890Z ##[group]Disabling automatic garbage collection
+2025-09-26T11:25:27.0788620Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2025-09-26T11:25:27.0837120Z ##[endgroup]
+2025-09-26T11:25:27.0837410Z ##[group]Setting up auth
+2025-09-26T11:25:27.0842020Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-09-26T11:25:27.0885740Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-09-26T11:25:27.1949000Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-09-26T11:25:27.1967270Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-09-26T11:25:27.3340640Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-09-26T11:25:27.3702020Z ##[endgroup]
+2025-09-26T11:25:27.3803490Z ##[group]Fetching the repository
+2025-09-26T11:25:27.3924270Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +88106dc69eec2dee73a4056bea75ea494d1826fb:refs/remotes/origin/feature/multiplayer
+2025-09-26T11:25:30.5238960Z From https://github.com/herbrine8403/Amethyst-iOS-MyRemastered
+2025-09-26T11:25:30.5241630Z  * [new ref]         88106dc69eec2dee73a4056bea75ea494d1826fb -> origin/feature/multiplayer
+2025-09-26T11:25:30.5312840Z ##[endgroup]
+2025-09-26T11:25:30.5313400Z ##[group]Determining the checkout info
+2025-09-26T11:25:30.5314540Z ##[endgroup]
+2025-09-26T11:25:30.5318430Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2025-09-26T11:25:30.5405870Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2025-09-26T11:25:30.5492200Z ##[group]Checking out the ref
+2025-09-26T11:25:30.5495310Z [command]/opt/homebrew/bin/git checkout --progress --force -B feature/multiplayer refs/remotes/origin/feature/multiplayer
+2025-09-26T11:25:30.8748730Z Switched to a new branch 'feature/multiplayer'
+2025-09-26T11:25:30.8763420Z branch 'feature/multiplayer' set up to track 'origin/feature/multiplayer'.
+2025-09-26T11:25:30.8787060Z ##[endgroup]
+2025-09-26T11:25:30.8907040Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2025-09-26T11:25:30.9006570Z 88106dc69eec2dee73a4056bea75ea494d1826fb

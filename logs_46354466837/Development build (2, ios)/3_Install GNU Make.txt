@@ -1,0 +1,93 @@
+﻿2025-09-26T11:24:10.0559390Z ##[group]Run brew update
+2025-09-26T11:24:10.0559930Z [36;1mbrew update[0m
+2025-09-26T11:24:10.0560310Z [36;1mbrew install make[0m
+2025-09-26T11:24:10.0695880Z shell: /bin/bash -e {0}
+2025-09-26T11:24:10.0696180Z ##[endgroup]
+2025-09-26T11:24:13.2978180Z [34m==>[0m [1mUpdating Homebrew...[0m
+2025-09-26T11:24:34.6952280Z To restore the stashed changes to /opt/homebrew/Library/Taps/homebrew/homebrew-core, run:
+2025-09-26T11:24:34.7007410Z   cd /opt/homebrew/Library/Taps/homebrew/homebrew-core && git stash pop
+2025-09-26T11:24:37.3267240Z [34m==>[0m [1mHomebrew's analytics have entirely moved to our InfluxDB instance in the EU.[0m
+2025-09-26T11:24:37.3268570Z We gather less data than before and have destroyed all Google Analytics data:
+2025-09-26T11:24:37.3270070Z   [4mhttps://docs.brew.sh/Analytics[24m[0m
+2025-09-26T11:24:37.3270920Z Please reconsider re-enabling analytics to help our volunteer maintainers with:
+2025-09-26T11:24:37.3276450Z   brew analytics on
+2025-09-26T11:24:37.3432090Z [34m==>[0m [1mHomebrew is run entirely by unpaid volunteers. Please consider donating:[0m
+2025-09-26T11:24:37.3433460Z   [4mhttps://github.com/Homebrew/brew#donations[24m
+2025-09-26T11:24:37.3433950Z 
+2025-09-26T11:24:38.7851080Z Updated 4 taps (hashicorp/tap, aws/tap, homebrew/core and homebrew/cask).
+2025-09-26T11:24:38.7904050Z [34m==>[0m [1mNew Formulae[0m
+2025-09-26T11:24:39.2444090Z atomic_queue: C++14 lock-free queues
+2025-09-26T11:24:39.2445570Z attempt-cli: CLI for retrying fallible commands
+2025-09-26T11:24:39.2446060Z bedtk: Simple toolset for BED files
+2025-09-26T11:24:39.2446580Z claude-cmd: Claude Code Commands Manager
+2025-09-26T11:24:39.2449010Z claude-hooks: Hook system for Claude Code
+2025-09-26T11:24:39.2449620Z dash-mpd-cli: Download media content from a DASH-MPEG or DASH-WebM MPD manifest
+2025-09-26T11:24:39.2470860Z doge: Command-line DNS client
+2025-09-26T11:24:39.2471410Z fastmcp: Fast, Pythonic way to build MCP servers and clients
+2025-09-26T11:24:39.2471910Z fjira: Fuzzy-find cli jira interface
+2025-09-26T11:24:39.2472390Z jqp: TUI playground to experiment and play with jq
+2025-09-26T11:24:39.2472920Z komac: Community Manifest Creator for Windows Package Manager (WinGet)
+2025-09-26T11:24:39.2474670Z lazyssh: Terminal-based SSH manager
+2025-09-26T11:24:39.2475810Z libcpucycles: Microlibrary for counting CPU cycles
+2025-09-26T11:24:39.2487250Z libpq@17: Postgres C API library
+2025-09-26T11:24:39.2527640Z lue-reader: Terminal eBook reader with text-to-speech and multi-format support
+2025-09-26T11:24:39.2561650Z mcp-server-chart: MCP with 25+ @antvis charts for visualization, generation, and analysis
+2025-09-26T11:24:39.2583890Z nanobot: Build MCP Agents
+2025-09-26T11:24:39.2584500Z ni: Selects the right Node package manager based on lockfiles
+2025-09-26T11:24:39.2600500Z oatpp: Light and powerful C++ web framework
+2025-09-26T11:24:39.2612660Z pgstream: PostgreSQL replication with DDL changes
+2025-09-26T11:24:39.2614020Z postgresql@18: Object-relational database system
+2025-09-26T11:24:39.2614540Z privatebin-cli: CLI for creating and managing PrivateBin pastes
+2025-09-26T11:24:39.2615100Z wal-g: Archival restoration tool for databases
+2025-09-26T11:24:39.2615610Z zuban: Python language server and type checker, written in Rust
+2025-09-26T11:24:39.2687020Z [34m==>[0m [1mNew Casks[0m
+2025-09-26T11:24:39.5140270Z alfred@prerelease: Application launcher and productivity software
+2025-09-26T11:24:39.5141190Z cmd: AI assistant for development in Xcode
+2025-09-26T11:24:39.5141880Z coderabbit: AI code review CLI
+2025-09-26T11:24:39.5142480Z corretto@25: OpenJDK distribution from Amazon
+2025-09-26T11:24:39.5146100Z dayflow: Generate a timeline of your day, automatically
+2025-09-26T11:24:39.5146790Z defguard-client: WireGuard VPN client which supports multi-factor authentication
+2025-09-26T11:24:39.5147460Z devknife: Collection of handy developer tools
+2025-09-26T11:24:39.5147930Z drawpen: Screen annotation tool
+2025-09-26T11:24:39.5148680Z folder-preview-pro: Quick Look extension for folders
+2025-09-26T11:24:39.5150390Z frame0: Wireframing tool
+2025-09-26T11:24:39.5171630Z itermbrowserplugin: Enables an integrated web browser in iTerm2
+2025-09-26T11:24:39.5172650Z osaurus: LLM server built on MLX
+2025-09-26T11:24:39.5188410Z pimosa: Photo, video, music and pdf editing tools
+2025-09-26T11:24:39.5188930Z rclone-ui: GUI for Rclone
+2025-09-26T11:24:40.2056130Z [34m==>[0m [1mOutdated Formulae[0m
+2025-09-26T11:24:40.2061770Z cryptography
+2025-09-26T11:24:40.2062080Z expat
+2025-09-26T11:24:40.2062270Z freetype
+2025-09-26T11:24:40.2062540Z gh
+2025-09-26T11:24:40.2062710Z git
+2025-09-26T11:24:40.2062990Z gradle
+2025-09-26T11:24:40.2063160Z harfbuzz
+2025-09-26T11:24:40.2063330Z libnghttp2
+2025-09-26T11:24:40.2063500Z libnghttp3
+2025-09-26T11:24:40.2063880Z libngtcp2
+2025-09-26T11:24:40.2064230Z libpq
+2025-09-26T11:24:40.2064400Z libtiff
+2025-09-26T11:24:40.2064620Z openjdk
+2025-09-26T11:24:40.2064910Z p11-kit
+2025-09-26T11:24:40.2065080Z python@3.12
+2025-09-26T11:24:40.2065300Z swiftformat
+2025-09-26T11:24:40.2065540Z unbound
+2025-09-26T11:24:40.2065610Z 
+2025-09-26T11:24:40.2065900Z You have [1m17[0m outdated formulae installed.
+2025-09-26T11:24:40.2066230Z You can upgrade them with [1mbrew upgrade[0m
+2025-09-26T11:24:40.2066530Z or list them with [1mbrew outdated[0m.
+2025-09-26T11:24:42.8282270Z [32m==>[0m [1mFetching downloads for: [32mmake[39m[0m
+2025-09-26T11:24:42.8299300Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/make/manifests/4.4.1-1[0m
+2025-09-26T11:24:43.4026090Z [32m==>[0m [1mFetching [32mmake[39m[0m
+2025-09-26T11:24:43.4048620Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/make/blobs/sha256:94377dc5a364da305c75fd7aa923a42897993de9edd1eb074428e13c3f2aaf93[0m
+2025-09-26T11:24:43.8007180Z [34m==>[0m [1mPouring make--4.4.1.arm64_sonoma.bottle.1.tar.gz[0m
+2025-09-26T11:24:43.9848300Z [34m==>[0m [1mCaveats[0m
+2025-09-26T11:24:43.9949800Z GNU "make" has been installed as "gmake".
+2025-09-26T11:24:44.0051380Z If you need to use it as "make", you can add a "gnubin" directory
+2025-09-26T11:24:44.0167090Z to your PATH from your bashrc like:
+2025-09-26T11:24:44.0206870Z 
+2025-09-26T11:24:44.0209620Z     PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+2025-09-26T11:24:44.0210250Z [34m==>[0m [1mSummary[0m
+2025-09-26T11:24:44.0210990Z 🍺  /opt/homebrew/Cellar/make/4.4.1: 17 files, 1.3MB
+2025-09-26T11:24:44.0228310Z [34m==>[0m [1mNo outdated dependents to upgrade![0m
