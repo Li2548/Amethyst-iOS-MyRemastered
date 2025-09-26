@@ -1,5 +1,5 @@
 #import "ZeroTierBridge.h"
-#import "ZeroTierSockets.h"
+#import "external/ZeroTierFramework/ios-example-app/zt.framework/Headers/ZeroTierSockets.h"
 
 @interface ZeroTierBridge ()
 - (void)handleEvent:(zts_event_msg_t *)msg;
