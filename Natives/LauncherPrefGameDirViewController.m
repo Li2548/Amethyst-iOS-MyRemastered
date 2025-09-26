@@ -4,6 +4,7 @@
 #import "NSFileManager+NRFileManager.h"
 #import "PLProfiles.h"
 #import "ios_uikit_bridge.h"
+#import "UIUtils.h"
 #import "utils.h"
 
 @interface LauncherPrefGameDirViewController ()<UITextFieldDelegate>

@@ -7,6 +7,7 @@
 #import "TrackedTextField.h"
 #import "UnzipKit.h"
 #import "ios_uikit_bridge.h"
+#import "UIUtils.h"
 #include "glfw_keycodes.h"
 #include "utils.h"
 

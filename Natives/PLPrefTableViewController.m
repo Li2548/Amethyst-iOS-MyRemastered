@@ -9,6 +9,7 @@
 #import "UIKit+hook.h"
 
 #import "ios_uikit_bridge.h"
+#import "UIUtils.h"
 #import "utils.h"
 
 @interface PLPrefTableViewController()<UIContextMenuInteractionDelegate>{}

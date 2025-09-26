@@ -9,6 +9,7 @@
 #import "ModTableViewCell.h"
 #import "ModItem.h"
 #import "ModService.h"
+#import "UIUtils.h"
 
 @interface ModTableViewCell ()
 @property (nonatomic, strong) ModItem *currentMod;
