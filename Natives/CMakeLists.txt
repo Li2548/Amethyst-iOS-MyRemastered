@@ -177,6 +177,7 @@ add_executable(AngelAuraAmethyst
   input_bridge_v3.m
   ios_uikit_bridge.m
   utils.m
+  UIUtils.m
 
   # Mod-related sources (ensure implementations are compiled and linked)
   ModItem.m
