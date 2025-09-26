@@ -265,6 +265,7 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UnzipKit"
   "-framework WebKit"
   "-framework zt"
+  "-lc++"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES

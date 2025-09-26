@@ -1,0 +1,19 @@
+﻿2025-09-26T12:00:08.6403340Z ##[group]Run brew install --cask temurin@8 || true
+2025-09-26T12:00:08.6403750Z [36;1mbrew install --cask temurin@8 || true[0m
+2025-09-26T12:00:08.6549070Z shell: /bin/bash -e {0}
+2025-09-26T12:00:08.6549420Z ##[endgroup]
+2025-09-26T12:00:09.2055690Z [34m==>[0m [1mCaveats[0m
+2025-09-26T12:00:09.2056150Z temurin@8 is built for Intel macOS and so requires Rosetta 2 to be installed.
+2025-09-26T12:00:09.2056510Z You can install Rosetta 2 with:
+2025-09-26T12:00:09.2056760Z   softwareupdate --install-rosetta --agree-to-license
+2025-09-26T12:00:09.2057080Z Note that it is very difficult to remove Rosetta 2 once it is installed.
+2025-09-26T12:00:09.2057270Z 
+2025-09-26T12:00:09.6556340Z [34m==>[0m [1mDownloading https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u462-b08/OpenJDK8U-jdk_x64_mac_hotspot_8u462b08.pkg[0m
+2025-09-26T12:00:09.6560820Z [34m==>[0m [1mDownloading from https://release-assets.githubusercontent.com/github-production-release-asset/372924428/4ef1c15f-92c6-44da-8245-30cfb5287697?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-09-26T12%3A50%3A58Z&rscd=attachment%3B+filename%3DOpenJDK8U-jdk_x64_mac_hotspot_8u462b08.pkg&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-09-26T11%3A50%3A35Z&ske=2025-09-26T12%3A50%3A58Z&sks=b&skv=2018-11-09&sig=O3GgR0wQbX9p9pfjD6k3R2VLFOLB4VOB3%2Fq0z20TfCA%3D&jwt=***
+2025-09-26T12:00:12.6153640Z [32m==>[0m [1mInstalling Cask [32mtemurin@8[39m[0m
+2025-09-26T12:00:12.6416580Z [34m==>[0m [1mRunning installer for temurin@8 with `sudo` (which may request your password)...[0m
+2025-09-26T12:00:35.8412890Z installer: Package name is Eclipse Temurin
+2025-09-26T12:00:35.8413430Z installer: Installing at base path /
+2025-09-26T12:00:35.8413720Z installer: The install was successful.
+2025-09-26T12:00:35.8774580Z 🍺  temurin@8 was successfully installed!
+2025-09-26T12:00:35.8852080Z [34m==>[0m [1mNo outdated dependents to upgrade![0m
