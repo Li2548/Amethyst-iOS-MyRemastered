@@ -40,6 +40,9 @@
         // Display one singe section if prefSection is unspecified
         self.prefSectionsVisibility = (id)@[@YES];
     }
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 }
 
 - (UIBarButtonItem *)drawHelpButton {
@@ -112,6 +115,8 @@
         cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.detailTextLabel.numberOfLines = 0;
         cell.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
     // Reset cell properties, as it could be reused
     cell.accessoryType = UITableViewCellAccessoryNone;
@@ -290,6 +295,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     if (indexPath.row == 0 && self.prefSections) {
         self.prefSectionsVisibility[indexPath.section] = @(![self.prefSectionsVisibility[indexPath.section] boolValue]);
         [tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationFade];

@@ -23,6 +23,9 @@
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.tableView.sectionFooterHeight = 50;
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 
     NSString *path = [NSString stringWithFormat:@"%s/instances", getenv("POJAV_HOME")];
 
@@ -61,6 +64,9 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
+        
         view = [[UITextField alloc] initWithFrame:CGRectMake(20, 10, (cell.bounds.size.width-40)/2, cell.bounds.size.height-20)];
         [view addTarget:view action:@selector(resignFirstResponder) forControlEvents:UIControlEventEditingDidEndOnExit];
         view.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -110,9 +116,15 @@ viewForFooterInSection:(NSInteger)section
     return view;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
+    if ([getPrefObject(@"general.game_directory") isEqualToString:self.array[indexPath.row]]) return;
     [self changeSelectionTo:self.array[indexPath.row]];
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
     for (int i = 0; i < self.array.count; i++) {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         if (i == indexPath.row) {

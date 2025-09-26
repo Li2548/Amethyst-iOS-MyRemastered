@@ -230,6 +230,9 @@ void AWTInputBridge_sendKey(int keycode) {
     [self setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
     [self setNeedsUpdateOfHomeIndicatorAutoHidden];
     virtualMouseEnabled = getPrefBool(@"control.virtmouse_enable");
+    
+    // Apply rounded corners to main view
+    [UIUtils applyRoundedCorners:self.view];
 
     CGRect screenBounds = self.view.bounds;
     CGFloat screenScale = UIScreen.mainScreen.scale * getPrefFloat(@"video.resolution") / 100.0;

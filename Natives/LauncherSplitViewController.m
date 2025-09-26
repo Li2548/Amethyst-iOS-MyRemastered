@@ -4,6 +4,7 @@
 #import "LauncherNavigationController.h"
 #import "LauncherPreferences.h"
 #import "utils.h"
+#import "UIUtils.h"
 
 extern NSMutableDictionary *prefDict;
 
@@ -20,6 +21,12 @@ extern NSMutableDictionary *prefDict;
     if ([getPrefObject(@"control.control_safe_area") length] == 0) {
         setPrefObject(@"control.control_safe_area", NSStringFromUIEdgeInsets(getDefaultSafeArea()));
     }
+
+    // Apply rounded corners to the main view
+    [UIUtils applyRoundedCorners:self.view];
+    
+    // Apply non-linear animation to the view
+    [UIUtils applyNonLinearAnimation:self.view];
 
     self.delegate = self;
 

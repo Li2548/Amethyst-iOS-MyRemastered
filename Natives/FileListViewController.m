@@ -1,4 +1,5 @@
 #import "FileListViewController.h"
+#import "UIUtils.h"
 
 @interface FileListViewController () {
 }
@@ -31,6 +32,9 @@
     }
 
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -44,6 +48,8 @@
 
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
 
     cell.textLabel.text = [self.fileList objectAtIndex:indexPath.row];
@@ -51,6 +57,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 
     self.whenItemSelected(self.fileList [indexPath.row]);

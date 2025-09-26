@@ -2,6 +2,7 @@
 #import <objc/runtime.h>
 #import "DownloadProgressViewController.h"
 #import "WFWorkflowProgressView.h"
+#import "UIUtils.h"
 
 static void *CellProgressObserverContext = &CellProgressObserverContext;
 static void *TotalProgressObserverContext = &TotalProgressObserverContext;
@@ -25,6 +26,9 @@ static void *TotalProgressObserverContext = &TotalProgressObserverContext;
 
     // Load WFWorkflowProgressView
     dlopen("/System/Library/PrivateFrameworks/WorkflowUIServices.framework/WorkflowUIServices", RTLD_GLOBAL);
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 }
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];

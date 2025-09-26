@@ -48,6 +48,9 @@ typedef void(^CreateView)(UITableViewCell *, NSString *, NSDictionary *);
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.tableView.sectionFooterHeight = 50;
     
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
+    
     [self loadGamepadConfigurationFile];
     self.prefControllerTypes = @[@{@"name": @"xbox"}, @{@"name": @"playstation"}];
     
@@ -114,6 +117,8 @@ typedef void(^CreateView)(UITableViewCell *, NSString *, NSDictionary *);
         cell.detailTextLabel.numberOfLines = 0;
         cell.detailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
 
     if(indexPath.section == 0) {
@@ -165,9 +170,11 @@ typedef void(^CreateView)(UITableViewCell *, NSString *, NSDictionary *);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-
-    NSDictionary *item = [self prefContentForIndex:indexPath.section][indexPath.row];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     if(indexPath.section == 0) {
         [self actionMenuLoad];

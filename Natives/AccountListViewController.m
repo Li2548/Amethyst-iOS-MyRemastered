@@ -7,6 +7,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "ios_uikit_bridge.h"
 #import "utils.h"
+#import "UIUtils.h"
 
 @interface AccountListViewController()<ASWebAuthenticationPresentationContextProviding>
 
@@ -40,6 +41,9 @@
     }
 
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -53,6 +57,8 @@
 
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
 
     if (indexPath.row == self.accountList.count) {
@@ -83,6 +89,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
 
     if (indexPath.row == self.accountList.count) {

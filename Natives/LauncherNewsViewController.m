@@ -29,6 +29,9 @@ UIEdgeInsets insets;
     // Apply rounded corners to the main view
     [UIUtils applyRoundedCorners:self.view];
     
+    // Apply non-linear animation to the view
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     CGSize size = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
     insets = UIApplication.sharedApplication.windows.firstObject.safeAreaInsets;
     

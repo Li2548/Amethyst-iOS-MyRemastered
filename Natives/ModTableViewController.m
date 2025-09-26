@@ -10,6 +10,7 @@
 #import "ModItem.h"
 #import "ModService.h"
 #import "ModTableViewCell.h"
+#import "UIUtils.h"
 
 @interface ModTableViewController () <ModTableViewCellDelegate>
 @property (nonatomic, strong) NSArray<ModItem *> *mods;
@@ -23,6 +24,12 @@
     self.title = @"Mods";
     [self.tableView registerClass:[ModTableViewCell class] forCellReuseIdentifier:@"ModCell"];
     self.tableView.rowHeight = 76;
+
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
+    
+    // Apply non-linear animation to the view
+    [UIUtils applyNonLinearAnimation:self.view];
 
     // Create a container for label + switch and make it compact but wide enough
     UIView *container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 140, 32)];
@@ -164,6 +171,13 @@
             }];
         });
     }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
 }
 
 @end

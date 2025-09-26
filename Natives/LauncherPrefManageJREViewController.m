@@ -60,6 +60,9 @@ static WFWorkflowProgressView* currentProgressView;
 
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 
     self.javaRuntimes = @{
         @(DEFAULT_JRE): @[@"preference.manage_runtime.default.1165", @"preference.manage_runtime.default.117", @"launcher.menu.execute_jar"]
@@ -186,6 +189,8 @@ static WFWorkflowProgressView* currentProgressView;
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"DefaultCell"];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
     cell.textLabel.text = localize(self.javaRuntimes[@DEFAULT_JRE][indexPath.row], nil);
     cell.detailTextLabel.text = [NSString stringWithFormat:@"Java %@",
@@ -197,6 +202,8 @@ static WFWorkflowProgressView* currentProgressView;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RTCell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"RTCell"];
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     }
     NSNumber *version = self.sortedJavaVersions[indexPath.section];
     NSString *name = self.javaRuntimes[version][indexPath.row];
@@ -251,6 +258,10 @@ static WFWorkflowProgressView* currentProgressView;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
+    
     if (indexPath.section == 0) {
         [self tableView:tableView openPickerAtIndexPath:indexPath
             minVersion:(indexPath.row==1 ? 17 : 8)];

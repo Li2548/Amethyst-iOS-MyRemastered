@@ -148,6 +148,9 @@
     ];
 
     [super viewDidLoad];
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 }
 
 - (void)actionClose {

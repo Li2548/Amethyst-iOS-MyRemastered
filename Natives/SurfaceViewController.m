@@ -20,6 +20,7 @@
 #import "TrackedTextField.h"
 #import "UIKit+hook.h"
 #import "ios_uikit_bridge.h"
+#import "UIUtils.h"
 
 #include "glfw_keycodes.h"
 #include "utils.h"
@@ -88,6 +89,12 @@ static GameSurfaceView* pojavWindow;
         [self setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
         [self setNeedsUpdateOfHomeIndicatorAutoHidden];
     }
+
+    // Apply rounded corners to the main view
+    [UIUtils applyRoundedCorners:self.view];
+    
+    // Apply non-linear animation to the view
+    [UIUtils applyNonLinearAnimation:self.view];
 
     // Perform Gamepad joystick ticking, while also controlling frame rate?
     id tickInput = ^{

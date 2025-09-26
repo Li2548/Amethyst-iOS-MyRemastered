@@ -18,6 +18,9 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:self];
+        
         _modIconView = [[UIImageView alloc] initWithFrame:CGRectZero];
         _modIconView.layer.cornerRadius = 6;
         _modIconView.clipsToBounds = YES;

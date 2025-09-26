@@ -48,6 +48,9 @@
     self.tableView.delegate = self;
     self.tableView.rowHeight = 76;
     self.tableView.tableFooterView = [UIView new];
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
     [self.view addSubview:self.tableView];
 
     // Refresh control
