@@ -214,8 +214,14 @@
         view.minimumValue = [item[@"min"] intValue];
         view.maximumValue = [item[@"max"] intValue];
         view.continuous = YES;
+        // 确保从偏好设置中获取正确的值
         view.value = [weakSelf.getPreference(section, key) intValue];
         cell.accessoryView = view;
+        
+        // 特殊处理动画速度滑块，显示当前值
+        if ([key isEqualToString:@"animation_speed"]) {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f%%", view.value];
+        }
     };
 
     self.typeSwitch = ^void(UITableViewCell *cell, NSString *section, NSString *key, NSDictionary *item) {
@@ -268,6 +274,23 @@
 
     sender.value = (int)sender.value;
     self.setPreference(section, key, @(sender.value));
+    
+    // 特殊处理动画速度设置
+    if ([key isEqualToString:@"animation_speed"]) {
+        [UIUtils setAnimationSpeed:sender.value / 100.0];
+        // 更新显示的百分比值
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)sender.superview.superview];
+        if (indexPath != nil) {
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f%%", sender.value];
+        }
+    }
+    
+    // 更新单元格显示的值
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:(UITableViewCell *)sender.superview.superview];
+    if (indexPath != nil) {
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    }
 }
 
 - (void)switchChanged:(UISwitch *)sender {
@@ -298,7 +321,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
     // Apply non-linear animation when selecting a row
-    [UIUtils applyNonLinearAnimation:self.view];
+    [UIUtils applyNonLinearAnimation:self.view duration:0.5];
     
     if (indexPath.row == 0 && self.prefSections) {
         self.prefSectionsVisibility[indexPath.section] = @(![self.prefSectionsVisibility[indexPath.section] boolValue]);
