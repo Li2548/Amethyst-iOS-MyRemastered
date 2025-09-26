@@ -17,26 +17,23 @@
 }
 
 + (void)applyNonLinearAnimation:(UIView *)view duration:(CGFloat)duration {
-    // 使用UIView的弹簧动画实现更明显的非线性效果
-    // 先创建一个更明显的缩放效果，然后弹回原始大小
+    // 使用UIView的弹簧动画实现适度的非线性效果
+    // 先创建一个轻微的缩放效果，然后弹回原始大小
     CGAffineTransform originalTransform = view.transform;
-    CGAffineTransform scaledTransform = CGAffineTransformScale(originalTransform, 0.90, 0.90);
+    CGAffineTransform scaledTransform = CGAffineTransformScale(originalTransform, 0.98, 0.98);
     
-    // 添加轻微的旋转效果增强视觉反馈
-    CGAffineTransform rotatedTransform = CGAffineTransformRotate(scaledTransform, 0.05);
-    
-    [UIView animateWithDuration:duration * [self getAnimationSpeed] / 3
+    [UIView animateWithDuration:duration * [self getAnimationSpeed] / 2
                           delay:0
-         usingSpringWithDamping:0.6  // 更有弹性的阻尼
-          initialSpringVelocity:0.5  // 增加初始速度
+         usingSpringWithDamping:0.8  // 更柔和的弹性阻尼
+          initialSpringVelocity:0.2  // 更低的初始速度
                         options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAllowUserInteraction
                      animations:^{
-        view.transform = rotatedTransform;
+        view.transform = scaledTransform;
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:duration * [self getAnimationSpeed] / 1.5
+        [UIView animateWithDuration:duration * [self getAnimationSpeed] / 2
                               delay:0
-             usingSpringWithDamping:0.5  // 更有弹性的阻尼
-              initialSpringVelocity:0.3
+             usingSpringWithDamping:0.7  // 更柔和的弹性阻尼
+              initialSpringVelocity:0.1
                             options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction
                          animations:^{
             view.transform = originalTransform;
