@@ -19,6 +19,7 @@
 #import "utils.h"
 
 #import "ModsManagerViewController.h" // Added: Mods manager integration
+#import "UIUtils.h" // Added for UI improvements
 
 typedef NS_ENUM(NSUInteger, LauncherProfilesTableSection) {
     kInstances,
@@ -46,6 +47,9 @@ typedef NS_ENUM(NSUInteger, LauncherProfilesTableSection) {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
 
     UIMenu *createMenu = [UIMenu menuWithTitle:localize(@"profile.title.create", nil) image:nil identifier:nil
     options:UIMenuOptionsDisplayInline
@@ -215,6 +219,8 @@ typedef NS_ENUM(NSUInteger, LauncherProfilesTableSection) {
             cell.imageView.frame = CGRectMake(0, 0, 40, 40);
             cell.imageView.isSizeFixed = YES;
         }
+        // Apply rounded corners to cell
+        [UIUtils applyRoundedCorners:cell];
     } else {
         cell.imageView.image = nil;
         cell.userInteractionEnabled = YES;
@@ -233,6 +239,9 @@ typedef NS_ENUM(NSUInteger, LauncherProfilesTableSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    // Apply non-linear animation when selecting a row
+    [UIUtils applyNonLinearAnimation:self.view];
 
     if (indexPath.section == kInstances) {
         if (indexPath.row == 0) {

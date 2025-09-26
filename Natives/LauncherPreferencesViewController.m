@@ -477,6 +477,8 @@
     if (self.navigationController == nil) {
         self.tableView.alpha = 0.9;
     }
+    // Apply rounded corners to table view
+    [UIUtils applyRoundedCorners:self.tableView];
     if (NSProcessInfo.processInfo.isMacCatalystApp) {
         UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeClose];
         closeButton.frame = CGRectOffset(closeButton.frame, 10, 10);

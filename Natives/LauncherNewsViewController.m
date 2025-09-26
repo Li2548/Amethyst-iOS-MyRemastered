@@ -3,6 +3,7 @@
 #import "LauncherNewsViewController.h"
 #import "LauncherPreferences.h"
 #import "utils.h"
+#import "UIUtils.h"
 
 @interface LauncherNewsViewController()<WKNavigationDelegate>
 @end
@@ -24,6 +25,9 @@ UIEdgeInsets insets;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Apply rounded corners to the main view
+    [UIUtils applyRoundedCorners:self.view];
     
     CGSize size = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
     insets = UIApplication.sharedApplication.windows.firstObject.safeAreaInsets;
