@@ -195,11 +195,13 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    NSLog(@"[Debug] Number of rows in section %ld, options count: %ld", (long)section, (long)self.options.count);
     return self.options.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"[Debug] Creating cell for row %ld", (long)indexPath.row);
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
@@ -229,6 +231,8 @@
     }
     // Apply non-linear animation to cell
     [UIUtils applyNonLinearAnimation:cell];
+    NSLog(@"[Debug] Cell created successfully for row %ld", (long)indexPath.row);
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
