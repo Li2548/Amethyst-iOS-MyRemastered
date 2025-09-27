@@ -354,9 +354,12 @@ static GameSurfaceView* pojavWindow;
     [self updateSavedResolution];
     // Update performance HUD visibility
     if (@available(iOS 16, tvOS 16, *)) {
-        if ([self.surfaceView.layer isKindOfClass:CAMetalLayer.class]) {
-            BOOL perfHUDEnabled = getPrefBool(@"video.performance_hud");
-            ((CAMetalLayer *)self.surfaceView.layer).developerHUDProperties = perfHUDEnabled ? @{@"mode": @"default"} : nil;
+        // Additional check to ensure the property exists
+        if ([CAMetalLayer instancesRespondToSelector:@selector(setDeveloperHUDProperties:)]) {
+            if ([self.surfaceView.layer isKindOfClass:CAMetalLayer.class]) {
+                BOOL perfHUDEnabled = getPrefBool(@"video.performance_hud");
+                ((CAMetalLayer *)self.surfaceView.layer).developerHUDProperties = perfHUDEnabled ? @{@"mode": @"default"} : nil;
+            }
         }
     }
     // Update pointer lock state

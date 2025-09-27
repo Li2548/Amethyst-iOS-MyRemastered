@@ -11,9 +11,12 @@
 @property (nonatomic, strong) UIButton *joinRoomButton;
 @property (nonatomic, strong) UITableView *networksTableView;
 @property (nonatomic, strong) UILabel *infoLabel;
+@property (nonatomic, strong) UIActivityIndicatorView *statusIndicator;
 
 // Data
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSDictionary *> *joinedNetworks;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *networkStatus;
+@property (nonatomic, strong) NSTimer *statusUpdateTimer;
 
 @end
 
@@ -31,6 +34,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor systemBackgroundColor];
     self.joinedNetworks = [NSMutableDictionary new];
+    self.networkStatus = [NSMutableDictionary new];
 
     [self setupUI];
     
@@ -39,7 +43,11 @@
     NSString *homePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"zerotier-one"];
     [[ZeroTierBridge sharedInstance] startNodeWithHomeDirectory:homePath];
     
+    // Update UI for initial state
     [self updateUIForConnectionState];
+    
+    // Start periodic status updates
+    [self startStatusUpdates];
 }
 
 - (void)setupUI {
@@ -52,18 +60,24 @@
     self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.statusLabel];
 
+    // Status Indicator
+    self.statusIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.statusIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.statusIndicator];
+    [self.statusIndicator startAnimating];
+
     // Create Room Button
     self.createRoomButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.createRoomButton setTitle:@"进入ZeroTier官网创建房间" forState:UIControlStateNormal];
+    [self.createRoomButton setTitle:@"创建房间" forState:UIControlStateNormal];
     [self.createRoomButton addTarget:self action:@selector(createRoomTapped:) forControlEvents:UIControlEventTouchUpInside];
     self.createRoomButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.createRoomButton];
 
     // Tutorial Label
     self.tutorialLabel = [UILabel new];
-    self.tutorialLabel.text = @"创建教程：首先进入后登录账号，登录完成后默认会进入到创建第一个网络的页面，这个时候退出，重新点击此按钮，进入后点击“Create A Network”就会自动创建一个房间，在此页面的下方点击你创建的网络，在“Settings”中把Access Control设置为”Public“，然后把上方的Network ID复制给他人就可以了";
+    self.tutorialLabel.text = @"首次使用请先创建房间，然后将房间ID分享给其他玩家";
     self.tutorialLabel.numberOfLines = 0;
-    self.tutorialLabel.textAlignment = NSTextAlignmentLeft;
+    self.tutorialLabel.textAlignment = NSTextAlignmentCenter;
     self.tutorialLabel.font = [UIFont systemFontOfSize:12];
     self.tutorialLabel.textColor = [UIColor secondaryLabelColor];
     self.tutorialLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -71,8 +85,9 @@
 
     // Network ID Text Field
     self.networkIdTextField = [UITextField new];
-    self.networkIdTextField.placeholder = @"输入16位网络ID (邀请码)";
+    self.networkIdTextField.placeholder = @"输入16位网络ID";
     self.networkIdTextField.borderStyle = UITextBorderStyleRoundedRect;
+    self.networkIdTextField.textAlignment = NSTextAlignmentCenter;
     self.networkIdTextField.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.networkIdTextField];
 
@@ -93,7 +108,7 @@
     
     // Info Label
     self.infoLabel = [UILabel new];
-    self.infoLabel.text = @"加入网络后，让房主在单人游戏中“对局域网开放”，其他玩家即可在“多人游戏”中看到房间";
+    self.infoLabel.text = @"加入网络后，房主需在单人游戏中\"对局域网开放\"，其他玩家即可在\"多人游戏\"中看到房间";
     self.infoLabel.numberOfLines = 0;
     self.infoLabel.textAlignment = NSTextAlignmentCenter;
     self.infoLabel.font = [UIFont systemFontOfSize:12];
@@ -107,20 +122,28 @@
         [self.statusLabel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:16],
         [self.statusLabel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-16],
 
-        [self.createRoomButton.topAnchor constraintEqualToAnchor:self.statusLabel.bottomAnchor constant:20],
+        [self.statusIndicator.topAnchor constraintEqualToAnchor:self.statusLabel.bottomAnchor constant:4],
+        [self.statusIndicator.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+        [self.statusIndicator.widthAnchor constraintEqualToConstant:20],
+        [self.statusIndicator.heightAnchor constraintEqualToConstant:20],
+        
+        [self.createRoomButton.topAnchor constraintEqualToAnchor:self.statusIndicator.bottomAnchor constant:12],
         [self.createRoomButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+        [self.createRoomButton.widthAnchor constraintEqualToConstant:120],
 
         [self.tutorialLabel.topAnchor constraintEqualToAnchor:self.createRoomButton.bottomAnchor constant:8],
         [self.tutorialLabel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:20],
         [self.tutorialLabel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-20],
 
         [self.networkIdTextField.topAnchor constraintEqualToAnchor:self.tutorialLabel.bottomAnchor constant:20],
-        [self.networkIdTextField.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:20],
-        [self.networkIdTextField.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-20],
+        [self.networkIdTextField.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:40],
+        [self.networkIdTextField.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-40],
+        [self.networkIdTextField.heightAnchor constraintEqualToConstant:36],
 
-        [self.joinRoomButton.topAnchor constraintEqualToAnchor:self.networkIdTextField.bottomAnchor constant:10],
+        [self.joinRoomButton.topAnchor constraintEqualToAnchor:self.networkIdTextField.bottomAnchor constant:12],
         [self.joinRoomButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-        [self.joinRoomButton.widthAnchor constraintEqualToConstant:200],
+        [self.joinRoomButton.widthAnchor constraintEqualToConstant:120],
+        [self.joinRoomButton.heightAnchor constraintEqualToConstant:36],
         
         [self.networksTableView.topAnchor constraintEqualToAnchor:self.joinRoomButton.bottomAnchor constant:20],
         [self.networksTableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
@@ -135,11 +158,15 @@
 
 - (void)updateUIForConnectionState {
     BOOL hasJoinedNetworks = self.joinedNetworks.count > 0;
-
-    self.createRoomButton.hidden = hasJoinedNetworks;
-    self.tutorialLabel.hidden = hasJoinedNetworks;
-    self.networkIdTextField.hidden = hasJoinedNetworks;
-    self.joinRoomButton.hidden = hasJoinedNetworks;
+    
+    // Always show these elements
+    self.createRoomButton.hidden = NO;
+    self.tutorialLabel.hidden = NO;
+    self.networkIdTextField.hidden = NO;
+    self.joinRoomButton.hidden = NO;
+    
+    // Update networks table visibility
+    self.networksTableView.hidden = !hasJoinedNetworks;
 }
 
 - (NSString *)imageName {
@@ -149,14 +176,28 @@
 #pragma mark - Actions
 
 - (void)createRoomTapped:(UIButton *)sender {
-    NSURL *url = [NSURL URLWithString:@"https://my.zerotier.com/"];
-    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    // Show an alert with instructions first
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"创建房间" 
+                                                                   message:@"将打开ZeroTier官网，请登录后创建网络。创建完成后，将网络ID分享给其他玩家即可。" 
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"前往官网" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        NSURL *url = [NSURL URLWithString:@"https://my.zerotier.com/"];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    }]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)joinRoomTapped:(UIButton *)sender {
     NSString *networkIDString = self.networkIdTextField.text;
     if (networkIDString.length == 0) {
         [self showAlertWithTitle:@"错误" message:@"请输入网络ID"];
+        return;
+    }
+    
+    // Validate network ID format (should be 16 hex characters)
+    if (networkIDString.length != 16) {
+        [self showAlertWithTitle:@"错误" message:@"网络ID应该是16位十六进制数字"];
         return;
     }
     
@@ -167,40 +208,87 @@
         return;
     }
 
+    // Update UI to show joining state
+    [self.statusIndicator startAnimating];
+    self.statusLabel.text = [NSString stringWithFormat:@"正在加入网络: %llx...", networkID];
+    self.joinRoomButton.enabled = NO;
+    
+    // Store the network status
+    self.networkStatus[@(networkID)] = @"正在连接...";
+    [self.networksTableView reloadData];
+    
     [[ZeroTierBridge sharedInstance] joinNetworkWithID:networkID];
 }
 
 - (void)leaveRoomTapped:(UIButton *)sender {
     uint64_t networkID = sender.tag;
     [[ZeroTierBridge sharedInstance] leaveNetworkWithID:networkID];
+    
+    // Update status
+    self.networkStatus[@(networkID)] = @"正在离开...";
+    [self.networksTableView.reloadData];
 }
 
 #pragma mark - ZeroTierBridgeDelegate
 
 - (void)zeroTierNodeOnlineWithID:(uint64_t)nodeID {
     self.statusLabel.text = [NSString stringWithFormat:@"ZT 节点: %llx | 状态: 在线", nodeID];
+    [self.statusIndicator stopAnimating];
+    self.joinRoomButton.enabled = YES;
 }
 
 - (void)zeroTierNodeOffline {
     self.statusLabel.text = @"ZT 节点: 离线";
+    [self.statusIndicator startAnimating];
+    self.joinRoomButton.enabled = NO;
 }
 
 - (void)zeroTierDidJoinNetwork:(uint64_t)networkID {
     NSNumber *key = @(networkID);
     self.joinedNetworks[key] = @{@"networkID": [NSString stringWithFormat:@"%llx", networkID]};
+    self.networkStatus[key] = @"已连接";
+    
     [self.networksTableView reloadData];
     [self updateUIForConnectionState];
+    
+    // Update status label
+    self.statusLabel.text = [NSString stringWithFormat:@"已加入网络: %llx", networkID];
+    self.joinRoomButton.enabled = YES;
+    [self.statusIndicator stopAnimating];
+    
     [self showAlertWithTitle:@"成功" message:[NSString stringWithFormat:@"已加入网络: %llx", networkID]];
 }
 
 - (void)zeroTierDidLeaveNetwork:(uint64_t)networkID {
     [self.joinedNetworks removeObjectForKey:@(networkID)];
+    [self.networkStatus removeObjectForKey:@(networkID)];
+    
     [self.networksTableView reloadData];
     [self updateUIForConnectionState];
+    
+    // If no more networks, show node status
+    if (self.joinedNetworks.count == 0) {
+        uint64_t nodeID = [[ZeroTierBridge sharedInstance] nodeID];
+        if ([[ZeroTierBridge sharedInstance] isNodeOnline]) {
+            self.statusLabel.text = [NSString stringWithFormat:@"ZT 节点: %llx | 状态: 在线", nodeID];
+        } else {
+            self.statusLabel.text = @"ZT 节点: 离线";
+        }
+    }
+    
     [self showAlertWithTitle:@"成功" message:[NSString stringWithFormat:@"已退出网络: %llx", networkID]];
 }
 
 - (void)zeroTierFailedToJoinNetwork:(uint64_t)networkID withError:(NSString *)error {
+    // Update status
+    self.networkStatus[@(networkID)] = [NSString stringWithFormat:@"错误: %@", error];
+    [self.networksTableView reloadData];
+    
+    // Update main status
+    self.statusLabel.text = [NSString stringWithFormat:@"加入 %llx 失败", networkID];
+    self.joinRoomButton.enabled = YES;
+    [self.statusIndicator stopAnimating];
+    
     [self showAlertWithTitle:[NSString stringWithFormat:@"加入 %llx 失败", networkID] message:error];
 }
 
@@ -210,6 +298,7 @@
     if (networkInfo) {
         networkInfo[@"ipAddress"] = ipAddress;
         self.joinedNetworks[key] = networkInfo;
+        self.networkStatus[key] = [NSString stringWithFormat:@"已连接 (%@)", ipAddress];
         [self.networksTableView reloadData];
     }
 }
@@ -229,10 +318,13 @@
     NSString *networkID = networkInfo[@"networkID"];
     NSString *ipAddress = networkInfo[@"ipAddress"];
     
+    // Get status
+    NSString *status = self.networkStatus[@(strtoull([networkID UTF8String], NULL, 16))] ?: @"未知状态";
+    
     if (ipAddress) {
         cell.textLabel.text = [NSString stringWithFormat:@"网络: %@ (IP: %@)", networkID, ipAddress];
     } else {
-        cell.textLabel.text = [NSString stringWithFormat:@"网络: %@ (正在获取IP...)", networkID];
+        cell.textLabel.text = [NSString stringWithFormat:@"网络: %@ (%@)", networkID, status];
     }
     
     UIButton *leaveButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -254,8 +346,41 @@
 
 - (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)startStatusUpdates {
+    // Periodically check node status to ensure UI stays in sync
+    __weak typeof(self) weakSelf = self;
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (strongSelf) {
+            if ([[ZeroTierBridge sharedInstance] isNodeOnline]) {
+                uint64_t nodeID = [[ZeroTierBridge sharedInstance] nodeID];
+                // Only update if not already showing a network status
+                if (![strongSelf.statusLabel.text containsString:@"已加入网络"]) {
+                    strongSelf.statusLabel.text = [NSString stringWithFormat:@"ZT 节点: %llx | 状态: 在线", nodeID];
+                    [strongSelf.statusIndicator stopAnimating];
+                }
+            } else {
+                // Only update if not already showing a network status
+                if (![strongSelf.statusLabel.text containsString:@"正在加入网络"] && 
+                    ![strongSelf.statusLabel.text containsString:@"加入"] && 
+                    ![strongSelf.statusLabel.text containsString:@"失败"]) {
+                    strongSelf.statusLabel.text = @"ZT 节点: 离线";
+                    [strongSelf.statusIndicator startAnimating];
+                }
+            }
+        }
+    }];
+    
+    // Keep a reference to the timer
+    self.statusUpdateTimer = timer;
+}
+
+- (void)dealloc {
+    [self.statusUpdateTimer invalidate];
 }
 
 @end
