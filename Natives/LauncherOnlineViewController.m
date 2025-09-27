@@ -61,7 +61,7 @@
     [self.view addSubview:self.statusLabel];
 
     // Status Indicator
-    self.statusIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.statusIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     self.statusIndicator.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.statusIndicator];
     [self.statusIndicator startAnimating];
@@ -226,7 +226,7 @@
     
     // Update status
     self.networkStatus[@(networkID)] = @"正在离开...";
-    [self.networksTableView.reloadData];
+    [self.networksTableView reloadData];
 }
 
 #pragma mark - ZeroTierBridgeDelegate
