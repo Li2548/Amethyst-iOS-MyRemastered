@@ -15,6 +15,7 @@
 #import "UIKit+hook.h"
 #import "ios_uikit_bridge.h"
 #import "utils.h"
+#import "FrpcViewController.h"
 
 #include <dlfcn.h>
 
@@ -63,7 +64,7 @@
     self.options = @[
         [LauncherMenuCustomItem vcClass:LauncherNewsViewController.class],
         [LauncherMenuCustomItem vcClass:LauncherProfilesViewController.class],
-        [LauncherMenuCustomItem vcClass:LauncherOnlineViewController.class],
+        [LauncherMenuCustomItem vcClass:OnlineModeSelectViewController.class],
         [LauncherMenuCustomItem vcClass:LauncherPreferencesViewController.class],
     ].mutableCopy;
     if (realUIIdiom != UIUserInterfaceIdiomTV) {

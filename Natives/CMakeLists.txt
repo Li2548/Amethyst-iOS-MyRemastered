@@ -161,6 +161,7 @@ add_executable(AngelAuraAmethyst
   LauncherSplitViewController.m
   MinecraftResourceDownloadTask.m
   MinecraftResourceUtils.m
+  OnlineModeSelectViewController.m
   PickTextField.m
   PLLogOutputView.m
   PLPickerView.m
@@ -176,6 +177,8 @@ add_executable(AngelAuraAmethyst
   TrackedTextField.m
   ZeroTierBridge.m
   egl_bridge.m
+  FrpcBridge.m
+  FrpcViewController.m
   input_bridge_v3.m
   ios_uikit_bridge.m
   utils.m
