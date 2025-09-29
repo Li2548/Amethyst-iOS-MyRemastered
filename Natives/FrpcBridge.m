@@ -40,10 +40,27 @@
     // 启动frpc进程
     NSString *frpcPath = [[NSBundle mainBundle] pathForResource:@"frpc" ofType:@""];
     if (!frpcPath || ![[NSFileManager defaultManager] fileExistsAtPath:frpcPath]) {
-        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-            [self.delegate frpcDidFailWithError:@"Frpc可执行文件不存在"];
+        // 尝试在不同位置查找frpc
+        NSArray *searchPaths = @[
+            [[NSBundle mainBundle] pathForResource:@"frpc" ofType:@"" inDirectory:@"resources"],
+            [[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"frpc",
+            @"/usr/local/bin/frpc",
+            @"/usr/bin/frpc"
+        ];
+        
+        for (NSString *path in searchPaths) {
+            if (path && [[NSFileManager defaultManager] fileExistsAtPath:path]) {
+                frpcPath = path;
+                break;
+            }
         }
-        return;
+        
+        if (!frpcPath || ![[NSFileManager defaultManager] fileExistsAtPath:frpcPath]) {
+            if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+                [self.delegate frpcDidFailWithError:@"Frpc可执行文件不存在。请将frpc可执行文件添加到项目中，或将frpc安装到系统路径中。"];
+            }
+            return;
+        }
     }
     
     // 创建进程
