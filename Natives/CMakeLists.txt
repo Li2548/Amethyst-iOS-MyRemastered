@@ -268,6 +268,7 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UnzipKit"
   "-framework WebKit"
   "-framework zt"
+  "-framework Frpclib"
   "-lc++"
   "-weak_framework SafariServices"
 )
