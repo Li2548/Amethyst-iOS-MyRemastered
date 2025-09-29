@@ -6,7 +6,7 @@
 #ifndef __Frpclib_H__
 #define __Frpclib_H__
 
-#import <Foundation/Foundation.h>
+#include <Foundation/Foundation.h>
 #include "universe.objc.h"
 
 
