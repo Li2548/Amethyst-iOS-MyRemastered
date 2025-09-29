@@ -16,6 +16,7 @@
 #import "ios_uikit_bridge.h"
 #import "utils.h"
 #import "FrpcViewController.h"
+#import "OnlineModeSelectViewController.h"
 
 #include <dlfcn.h>
 
