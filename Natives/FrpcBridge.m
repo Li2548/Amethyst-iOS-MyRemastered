@@ -5,6 +5,7 @@
 @property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, strong) NSTimer *statusTimer;
 @property (nonatomic, strong) NSString *configPath;
+@property (nonatomic, assign) pid_t frpcProcessId;
 @end
 
 @implementation FrpcBridge
@@ -27,23 +28,51 @@
     }
     
     self.configPath = configPath;
-    self.isRunning = YES;
     
-    // 在实际实现中，这里会启动frpc进程
-    // 由于这是一个示例实现，我们只是模拟启动过程
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // 模拟启动过程
-        sleep(1);
+    // 检查配置文件是否存在
+    if (![[NSFileManager defaultManager] fileExistsAtPath:configPath]) {
+        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+            [self.delegate frpcDidFailWithError:@"配置文件不存在"];
+        }
+        return;
+    }
+    
+    // 启动frpc进程
+    NSString *frpcPath = [[NSBundle mainBundle] pathForResource:@"frpc" ofType:@""];
+    if (!frpcPath || ![[NSFileManager defaultManager] fileExistsAtPath:frpcPath]) {
+        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+            [self.delegate frpcDidFailWithError:@"Frpc可执行文件不存在"];
+        }
+        return;
+    }
+    
+    // 创建进程
+    pid_t pid = fork();
+    if (pid == 0) {
+        // 子进程
+        const char *frpcPathC = [frpcPath UTF8String];
+        const char *configPathC = [configPath UTF8String];
+        execl(frpcPathC, "frpc", "-c", configPathC, NULL);
+        exit(1);
+    } else if (pid > 0) {
+        // 父进程
+        self.frpcProcessId = pid;
+        self.isRunning = YES;
+        
+        // 启动状态检查定时器
+        [self startStatusTimer];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([self.delegate respondsToSelector:@selector(frpcDidStartWithMessage:)]) {
                 [self.delegate frpcDidStartWithMessage:@"Frpc started successfully"];
             }
-            
-            // 启动状态检查定时器
-            [self startStatusTimer];
         });
-    });
+    } else {
+        // 错误
+        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+            [self.delegate frpcDidFailWithError:@"无法启动Frpc进程"];
+        }
+    }
 }
 
 - (void)stopFrpc {
@@ -54,27 +83,25 @@
         return;
     }
     
+    // 停止frpc进程
+    if (self.frpcProcessId > 0) {
+        kill(self.frpcProcessId, SIGTERM);
+        self.frpcProcessId = 0;
+    }
+    
     self.isRunning = NO;
     
     // 停止状态检查定时器
     [self stopStatusTimer];
     
-    // 在实际实现中，这里会停止frpc进程
-    // 由于这是一个示例实现，我们只是模拟停止过程
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // 模拟停止过程
-        sleep(1);
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.delegate respondsToSelector:@selector(frpcDidStopWithMessage:)]) {
-                [self.delegate frpcDidStopWithMessage:@"Frpc stopped successfully"];
-            }
-        });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(frpcDidStopWithMessage:)]) {
+            [self.delegate frpcDidStopWithMessage:@"Frpc stopped successfully"];
+        }
     });
 }
 
 - (void)updateConfig:(NSString *)configContent toPath:(NSString *)configPath {
-    // 在实际实现中，这里会将配置内容写入指定路径的文件
     NSError *error;
     [configContent writeToFile:configPath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     
@@ -92,9 +119,27 @@
     self.statusTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (strongSelf && strongSelf.isRunning) {
-            // 在实际实现中，这里会检查frpc进程的状态
-            // 由于这是一个示例实现，我们只是记录日志
-            NSLog(@"Frpc is running...");
+            // 检查frpc进程是否仍在运行
+            if (strongSelf.frpcProcessId > 0) {
+                int status;
+                pid_t result = waitpid(strongSelf.frpcProcessId, &status, WNOHANG);
+                
+                // 如果进程已退出
+                if (result == strongSelf.frpcProcessId || result == -1) {
+                    strongSelf.isRunning = NO;
+                    strongSelf.frpcProcessId = 0;
+                    [strongSelf stopStatusTimer];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([strongSelf.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+                            NSString *errorMessage = WIFEXITED(status) ? 
+                                [NSString stringWithFormat:@"Frpc进程已退出，退出码: %d", WEXITSTATUS(status)] : 
+                                @"Frpc进程异常终止";
+                            [strongSelf.delegate frpcDidFailWithError:errorMessage];
+                        }
+                    });
+                }
+            }
         }
     }];
 }
@@ -108,6 +153,9 @@
 
 - (void)dealloc {
     [self stopStatusTimer];
+    if (self.isRunning) {
+        [self stopFrpc];
+    }
 }
 
 @end
