@@ -6,8 +6,8 @@
 #ifndef __Frpclib_H__
 #define __Frpclib_H__
 
-@import Foundation;
-#include "Universe.objc.h"
+#import <Foundation/Foundation.h>
+#include "universe.objc.h"
 
 
 FOUNDATION_EXPORT void FrpclibRun(NSString* cfgFilePath);

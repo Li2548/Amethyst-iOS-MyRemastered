@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "Frpclib.framework/Versions/A/Headers/ref.h"
 #import "Frpclib.framework/Versions/A/Headers/Frpclib.h"
 
 NS_ASSUME_NONNULL_BEGIN
