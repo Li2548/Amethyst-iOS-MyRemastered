@@ -1,11 +1,12 @@
 #import "FrpcBridge.h"
 #import "utils.h"
+#import "Frpclib.framework/Headers/Frpclib.h"
 
 @interface FrpcBridge ()
 @property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, strong) NSTimer *statusTimer;
 @property (nonatomic, strong) NSString *configPath;
-@property (nonatomic, assign) pid_t frpcProcessId;
+@property (nonatomic, assign) BOOL frpcProcessRunning;
 @end
 
 @implementation FrpcBridge
@@ -37,43 +38,35 @@
         return;
     }
     
-    // 启动frpc进程
-    NSString *frpcPath = [[NSBundle mainBundle] pathForResource:@"frpc" ofType:@""];
-    if (!frpcPath || ![[NSFileManager defaultManager] fileExistsAtPath:frpcPath]) {
-        // 尝试在不同位置查找frpc
-        NSArray *searchPaths = @[
-            [[NSBundle mainBundle] pathForResource:@"frpc" ofType:@"" inDirectory:@"resources"],
-            [[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"frpc",
-            @"/usr/local/bin/frpc",
-            @"/usr/bin/frpc"
-        ];
-        
-        for (NSString *path in searchPaths) {
-            if (path && [[NSFileManager defaultManager] fileExistsAtPath:path]) {
-                frpcPath = path;
-                break;
+    // 使用Frpclib启动frpc服务
+    @try {
+        // 在后台线程中启动frpc
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            @autoreleasepool {
+                // 标记frpc进程正在运行
+                self.frpcProcessRunning = YES;
+                
+                // 启动frpc服务
+                FrpclibRun(configPath);
+                
+                // frpc服务已停止
+                self.frpcProcessRunning = NO;
+                
+                // 在主线程中更新UI
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (self.isRunning) {
+                        self.isRunning = NO;
+                        [self stopStatusTimer];
+                        
+                        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+                            [self.delegate frpcDidFailWithError:@"Frpc服务已停止"];
+                        }
+                    }
+                });
             }
-        }
+        });
         
-        if (!frpcPath || ![[NSFileManager defaultManager] fileExistsAtPath:frpcPath]) {
-            if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-                [self.delegate frpcDidFailWithError:@"Frpc可执行文件不存在。请将frpc可执行文件添加到项目中，或将frpc安装到系统路径中。"];
-            }
-            return;
-        }
-    }
-    
-    // 创建进程
-    pid_t pid = fork();
-    if (pid == 0) {
-        // 子进程
-        const char *frpcPathC = [frpcPath UTF8String];
-        const char *configPathC = [configPath UTF8String];
-        execl(frpcPathC, "frpc", "-c", configPathC, NULL);
-        exit(1);
-    } else if (pid > 0) {
-        // 父进程
-        self.frpcProcessId = pid;
+        // 更新状态
         self.isRunning = YES;
         
         // 启动状态检查定时器
@@ -84,10 +77,14 @@
                 [self.delegate frpcDidStartWithMessage:@"Frpc started successfully"];
             }
         });
-    } else {
-        // 错误
+    }
+    @catch (NSException *exception) {
+        self.isRunning = NO;
+        self.frpcProcessRunning = NO;
+        [self stopStatusTimer];
+        
         if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-            [self.delegate frpcDidFailWithError:@"无法启动Frpc进程"];
+            [self.delegate frpcDidFailWithError:[NSString stringWithFormat:@"启动Frpc失败: %@", exception.reason]];
         }
     }
 }
@@ -100,13 +97,11 @@
         return;
     }
     
-    // 停止frpc进程
-    if (self.frpcProcessId > 0) {
-        kill(self.frpcProcessId, SIGTERM);
-        self.frpcProcessId = 0;
-    }
-    
+    // 停止frpc服务
+    // 注意：由于FrpclibRun是阻塞调用，我们无法直接停止它
+    // 我们只能标记服务为停止状态
     self.isRunning = NO;
+    self.frpcProcessRunning = NO;
     
     // 停止状态检查定时器
     [self stopStatusTimer];
@@ -137,25 +132,15 @@
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (strongSelf && strongSelf.isRunning) {
             // 检查frpc进程是否仍在运行
-            if (strongSelf.frpcProcessId > 0) {
-                int status;
-                pid_t result = waitpid(strongSelf.frpcProcessId, &status, WNOHANG);
+            if (!strongSelf.frpcProcessRunning) {
+                strongSelf.isRunning = NO;
+                [strongSelf stopStatusTimer];
                 
-                // 如果进程已退出
-                if (result == strongSelf.frpcProcessId || result == -1) {
-                    strongSelf.isRunning = NO;
-                    strongSelf.frpcProcessId = 0;
-                    [strongSelf stopStatusTimer];
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if ([strongSelf.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-                            NSString *errorMessage = WIFEXITED(status) ? 
-                                [NSString stringWithFormat:@"Frpc进程已退出，退出码: %d", WEXITSTATUS(status)] : 
-                                @"Frpc进程异常终止";
-                            [strongSelf.delegate frpcDidFailWithError:errorMessage];
-                        }
-                    });
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([strongSelf.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+                        [strongSelf.delegate frpcDidFailWithError:@"Frpc进程已停止运行"];
+                    }
+                });
             }
         }
     }];
