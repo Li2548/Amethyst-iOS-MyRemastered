@@ -103,16 +103,7 @@
     self.configTextView.layer.borderWidth = 1.0;
     self.configTextView.layer.cornerRadius = 5.0;
     self.configTextView.delegate = self;
-    self.configTextView.text = @"# 示例 Frpc 配置 (.ini格式)
-[common]
-server_addr = example.com
-server_port = 7000
-
-[minecraft]
-type = tcp
-local_ip = 127.0.0.1
-local_port = 25565
-remote_port = 0";
+    self.configTextView.text = @"# 示例 Frpc 配置 (.ini格式)\n[common]\nserver_addr = example.com\nserver_port = 7000\n\n[minecraft]\ntype = tcp\nlocal_ip = 127.0.0.1\nlocal_port = 25565\nremote_port = 0";
     self.configTextView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.configTextView];
     
@@ -287,14 +278,6 @@ remote_port = 0";
     
     return YES;
 }
-
-- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
-}
-
-#pragma mark - Helpers
 
 - (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
