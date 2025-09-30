@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <Frpclib/Frpclib.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
