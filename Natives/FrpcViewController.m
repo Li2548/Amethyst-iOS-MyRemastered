@@ -1,7 +1,6 @@
 #import "FrpcViewController.h"
 #import "FrpcBridge.h"
 #import <UIKit/UIKit.h>
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 @interface FrpcViewController () <FrpcBridgeDelegate, UITextViewDelegate, UIDocumentPickerDelegate>
 
@@ -200,9 +199,7 @@
 
 - (void)importConfigTapped:(UIButton *)sender {
     // 创建文档选择器
-    UTType *plainTextType = [UTType typeWithFilenameExtension:@"txt"];
-    NSArray *contentTypes = @[plainTextType];
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithContentTypes:contentTypes];
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.plain-text"] inMode:UIDocumentPickerModeImport];
     documentPicker.delegate = self;
     [self presentViewController:documentPicker animated:YES completion:nil];
 }
