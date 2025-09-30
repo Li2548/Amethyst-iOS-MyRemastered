@@ -1,6 +1,6 @@
 #import "FrpcBridge.h"
 #import "utils.h"
-#import <Frpclib/Frpclib.h>
+#import "resources/Frameworks/Frpclib.framework/Versions/A/Headers/Frpclib.h"
 
 @interface FrpcBridge ()
 @property (nonatomic, assign) BOOL isRunning;
