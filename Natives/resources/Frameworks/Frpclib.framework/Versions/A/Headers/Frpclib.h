@@ -8,6 +8,6 @@
 #define __Frpclib_FRAMEWORK_H__
 
 #include "Frpclib.objc.h"
-#include "universe.objc.h"
+#include "Universe.objc.h"
 
 #endif

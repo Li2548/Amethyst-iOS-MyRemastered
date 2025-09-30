@@ -1,7 +1,7 @@
 framework module "Frpclib" {
 	header "ref.h"
     header "Frpclib.objc.h"
-    header "universe.objc.h"
+    header "Universe.objc.h"
     header "Frpclib.h"
 
     export *
