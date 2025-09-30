@@ -7,9 +7,10 @@
 #define __Frpclib_H__
 
 @import Foundation;
+#include "ref.h"
 #include "Universe.objc.h"
 
 
-FOUNDATION_EXPORT void FrpclibRun(NSString* cfgFilePath);
+FOUNDATION_EXPORT void FrpclibRun(NSString* _Nullable cfgFilePath);
 
 #endif
