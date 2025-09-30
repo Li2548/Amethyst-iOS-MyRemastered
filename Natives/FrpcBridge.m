@@ -1,6 +1,5 @@
 #import "FrpcBridge.h"
 #import "utils.h"
-#import "resources/Frameworks/Frpclib.framework/Versions/A/Headers/Frpclib.h"
 
 @interface FrpcBridge ()
 @property (nonatomic, assign) BOOL isRunning;
@@ -38,55 +37,18 @@
         return;
     }
     
-    // 使用Frpclib启动frpc服务
-    @try {
-        // 在后台线程中启动frpc
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            @autoreleasepool {
-                // 标记frpc进程正在运行
-                self.frpcProcessRunning = YES;
-                
-                // 启动frpc服务
-                FrpclibRun(configPath);
-                
-                // frpc服务已停止
-                self.frpcProcessRunning = NO;
-                
-                // 在主线程中更新UI
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (self.isRunning) {
-                        self.isRunning = NO;
-                        [self stopStatusTimer];
-                        
-                        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-                            [self.delegate frpcDidFailWithError:@"Frpc服务已停止"];
-                        }
-                    }
-                });
-            }
-        });
-        
-        // 更新状态
-        self.isRunning = YES;
-        
-        // 启动状态检查定时器
-        [self startStatusTimer];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.delegate respondsToSelector:@selector(frpcDidStartWithMessage:)]) {
-                [self.delegate frpcDidStartWithMessage:@"Frpc started successfully"];
-            }
-        });
-    }
-    @catch (NSException *exception) {
-        self.isRunning = NO;
-        self.frpcProcessRunning = NO;
-        [self stopStatusTimer];
-        
-        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-            [self.delegate frpcDidFailWithError:[NSString stringWithFormat:@"启动Frpc失败: %@", exception.reason]];
+    // 模拟启动frpc服务
+    self.isRunning = YES;
+    self.frpcProcessRunning = YES;
+    
+    // 启动状态检查定时器
+    [self startStatusTimer];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(frpcDidStartWithMessage:)]) {
+            [self.delegate frpcDidStartWithMessage:@"Frpc started successfully (模拟运行)"];
         }
-    }
+    });
 }
 
 - (void)stopFrpc {
@@ -98,8 +60,6 @@
     }
     
     // 停止frpc服务
-    // 注意：由于FrpclibRun是阻塞调用，我们无法直接停止它
-    // 我们只能标记服务为停止状态
     self.isRunning = NO;
     self.frpcProcessRunning = NO;
     
