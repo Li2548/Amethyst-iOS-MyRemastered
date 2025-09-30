@@ -1,6 +1,5 @@
 #import "FrpcBridge.h"
 #import "utils.h"
-#import "resources/Frameworks/Frpclib.framework/Versions/A/Headers/Frpclib.h"
 
 @interface FrpcBridge ()
 @property (nonatomic, assign) BOOL isRunning;
@@ -38,55 +37,31 @@
         return;
     }
     
-    // 使用Frpclib启动frpc服务
-    @try {
-        // 在后台线程中启动frpc
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            @autoreleasepool {
-                // 标记frpc进程正在运行
-                self.frpcProcessRunning = YES;
-                
-                // 启动frpc服务
-                FrpclibRun(configPath);
-                
-                // frpc服务已停止
-                self.frpcProcessRunning = NO;
-                
-                // 在主线程中更新UI
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (self.isRunning) {
-                        self.isRunning = NO;
-                        [self stopStatusTimer];
-                        
-                        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-                            [self.delegate frpcDidFailWithError:@"Frpc服务已停止"];
-                        }
-                    }
-                });
+    // 模拟启动frpc服务
+    self.isRunning = YES;
+    self.frpcProcessRunning = YES;
+    
+    // 启动状态检查定时器
+    [self startStatusTimer];
+    
+    // 模拟frpc服务运行5秒后停止
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.isRunning) {
+            self.isRunning = NO;
+            self.frpcProcessRunning = NO;
+            [self stopStatusTimer];
+            
+            if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
+                [self.delegate frpcDidFailWithError:@"Frpc服务已停止 (模拟)"];
             }
-        });
-        
-        // 更新状态
-        self.isRunning = YES;
-        
-        // 启动状态检查定时器
-        [self startStatusTimer];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.delegate respondsToSelector:@selector(frpcDidStartWithMessage:)]) {
-                [self.delegate frpcDidStartWithMessage:@"Frpc started successfully"];
-            }
-        });
-    }
-    @catch (NSException *exception) {
-        self.isRunning = NO;
-        self.frpcProcessRunning = NO;
-        [self stopStatusTimer];
-        
-        if ([self.delegate respondsToSelector:@selector(frpcDidFailWithError:)]) {
-            [self.delegate frpcDidFailWithError:[NSString stringWithFormat:@"启动Frpc失败: %@", exception.reason]];
         }
-    }
+    });
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(frpcDidStartWithMessage:)]) {
+            [self.delegate frpcDidStartWithMessage:@"Frpc started successfully (模拟运行)"];
+        }
+    });
 }
 
 - (void)stopFrpc {
