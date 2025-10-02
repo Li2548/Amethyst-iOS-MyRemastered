@@ -191,6 +191,7 @@ add_executable(AngelAuraAmethyst
 
   # Online mode selection
   OnlineModeSelectViewController.m
+  LauncherOnlineViewController.m
 
   # JIT Support
   JITSupport/JITManager.m
