@@ -1,6 +1,5 @@
 #import "OnlineModeSelectViewController.h"
 #import "LauncherOnlineViewController.h"
-#import "FrpcViewController.h"
 
 @interface OnlineModeSelectViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -25,8 +24,7 @@
     
     // 初始化模式选项
     self.modeOptions = @[
-        @{@"title": @"ZeroTier", @"description": @"使用ZeroTier进行联机，需要网络ID", @"icon": @"network"},
-        @{@"title": @"Frpc", @"description": @"使用Frpc进行联机，需要配置文件", @"icon": @"server"}
+        @{@"title": @"ZeroTier", @"description": @"使用ZeroTier进行联机，需要网络ID", @"icon": @"network"}
     ];
     
     [self setupUI];
@@ -93,8 +91,6 @@
     
     if ([modeTitle isEqualToString:@"ZeroTier"]) {
         targetViewController = [[LauncherOnlineViewController alloc] init];
-    } else if ([modeTitle isEqualToString:@"Frpc"]) {
-        targetViewController = [[FrpcViewController alloc] init];
     }
     
     if (targetViewController) {

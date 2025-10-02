@@ -15,7 +15,6 @@
 #import "UIKit+hook.h"
 #import "ios_uikit_bridge.h"
 #import "utils.h"
-#import "FrpcViewController.h"
 
 #include <dlfcn.h>
 
