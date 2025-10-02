@@ -51,6 +51,10 @@ target_link_libraries(awt_xawt
   awt_headless
 )
 
+# 添加libidevice_ffi.a库
+add_library(libidevice_ffi STATIC IMPORTED)
+set_target_properties(libidevice_ffi PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_LIST_DIR}/JITSupport/idevice/libidevice_ffi.a")
+
 set(CMAKE_FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks")
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
@@ -160,7 +164,6 @@ add_executable(AngelAuraAmethyst
   LauncherSplitViewController.m
   MinecraftResourceDownloadTask.m
   MinecraftResourceUtils.m
-  OnlineModeSelectViewController.m
   PickTextField.m
   PLLogOutputView.m
   PLPickerView.m
@@ -175,8 +178,6 @@ add_executable(AngelAuraAmethyst
   SurfaceViewController+Navigation.m
   TrackedTextField.m
   egl_bridge.m
-  FrpcBridge.m
-  FrpcViewController.m
   input_bridge_v3.m
   ios_uikit_bridge.m
   utils.m
@@ -190,6 +191,7 @@ add_executable(AngelAuraAmethyst
 
   # JIT Support
   JITSupport/JITManager.m
+  JITSupport/idevice/JITEnableContext.m
 )
 
 # Add ModLoaderIcons PNG files into the app bundle Resources/ModLoaderIcons so they are available at runtime.
@@ -250,6 +252,7 @@ endif()
 target_link_libraries(AngelAuraAmethyst
   PUBLIC AFNetworking
   lzma
+  libidevice_ffi
   "-F'${CMAKE_CURRENT_LIST_DIR}/build'"
   "-F'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
   "-framework AltKit"
@@ -267,9 +270,6 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UniformTypeIdentifiers"
   "-framework UnzipKit"
   "-framework WebKit"
-  "-framework zt"
-  "-framework Frpclib"
-  "-lc++"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES
