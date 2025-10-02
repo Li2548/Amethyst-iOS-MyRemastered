@@ -193,6 +193,9 @@ add_executable(AngelAuraAmethyst
   OnlineModeSelectViewController.m
   LauncherOnlineViewController.m
 
+  # ZeroTier Bridge
+  ZeroTierBridge.m
+
   # JIT Support
   JITSupport/JITManager.m
   JITSupport/idevice/JITEnableContext.m
@@ -274,6 +277,7 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UniformTypeIdentifiers"
   "-framework UnzipKit"
   "-framework WebKit"
+  "-framework zt"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES
