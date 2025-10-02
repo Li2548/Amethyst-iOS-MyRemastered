@@ -44,7 +44,7 @@
     self.hasDetail = YES;
     self.prefDetailVisible = self.navigationController == nil;
     
-    self.prefSections = @[@"general", @"video", @"control", @"java", @"debug"];
+    self.prefSections = @[@"general", @"video", @"control", @"java", @"jit", @"debug"];
 
     self.rendererKeys = getRendererKeys(NO);
     self.rendererList = getRendererNames(NO);
@@ -362,6 +362,25 @@
                     return view.value >= NSProcessInfo.processInfo.physicalMemory / 1048576 * 0.37;
                 },
                 @"warnKey": @"mem_warn"
+            }
+        ], @[
+            // JIT settings
+            @{@"icon": @"cpu"},
+            @{@"key": @"enable_jit",
+                @"hasDetail": @YES,
+                @"icon": @"cpu",
+                @"type": self.typeButton,
+                @"enableCondition": whenNotInGame,
+                @"action": ^void(){
+                    // 导入JITManager并调用enableJITForCurrentProcess方法
+                    #import "JITSupport/JITManager.h"
+                    BOOL success = [[JITManager sharedManager] enableJITForCurrentProcess];
+                    if (success) {
+                        showDialog(localize(@"Success", nil), localize(@"JIT enabled successfully", nil));
+                    } else {
+                        showDialog(localize(@"Error", nil), localize(@"Failed to enable JIT", nil));
+                    }
+                }
             }
         ], @[
             // Debug settings - only recommended for developer use

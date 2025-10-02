@@ -184,6 +184,9 @@ add_executable(AngelAuraAmethyst
   ModTableViewCell.m
   ModTableViewController.m
   ModsManagerViewController.m
+
+  # JIT Support
+  JITSupport/JITManager.m
 )
 
 # Add ModLoaderIcons PNG files into the app bundle Resources/ModLoaderIcons so they are available at runtime.
