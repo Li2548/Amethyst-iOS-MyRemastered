@@ -372,9 +372,9 @@
                 @"type": self.typeButton,
                 @"enableCondition": whenNotInGame,
                 @"action": ^void(){
-                    // 导入JITManager并调用enableJITForCurrentProcess方法
-                    #import "JITSupport/JITManager.h"
-                    BOOL success = [[JITManager sharedManager] enableJITForCurrentProcess];
+                    // 调用JITManager的C接口来启用JIT
+                    void* manager = JITManager_sharedManager();
+                    int success = JITManager_enableJITForCurrentProcess(manager);
                     if (success) {
                         showDialog(localize(@"Success", nil), localize(@"JIT enabled successfully", nil));
                     } else {

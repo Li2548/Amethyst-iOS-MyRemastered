@@ -1,13 +1,21 @@
 #import "JITManager.h"
 #import <mach/mach.h>
+#import <Foundation/Foundation.h>
 
-@implementation JITManager
+// 声明内部的Objective-C类和方法
+@interface JITManagerInternal : NSObject
++ (instancetype)sharedManager;
+- (BOOL)enableJITForCurrentProcess;
+- (BOOL)isJITSupported;
+@end
+
+@implementation JITManagerInternal
 
 + (instancetype)sharedManager {
-    static JITManager *sharedInstance = nil;
+    static JITManagerInternal *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [[JITManager alloc] init];
+        sharedInstance = [[JITManagerInternal alloc] init];
     });
     return sharedInstance;
 }
@@ -29,8 +37,24 @@
 
 - (BOOL)isJITSupported {
     // 在iOS 26上，JIT支持是可用的
-    // 这里可以添加更详细的检查逻辑
     return YES;
 }
 
 @end
+
+// C接口的实现
+void* JITManager_sharedManager(void) {
+    return (__bridge_retained void*)[JITManagerInternal sharedManager];
+}
+
+int JITManager_enableJITForCurrentProcess(void* manager) {
+    if (!manager) return 0;
+    JITManagerInternal *obj = (__bridge JITManagerInternal*)manager;
+    return [obj enableJITForCurrentProcess] ? 1 : 0;
+}
+
+int JITManager_isJITSupported(void* manager) {
+    if (!manager) return 0;
+    JITManagerInternal *obj = (__bridge JITManagerInternal*)manager;
+    return [obj isJITSupported] ? 1 : 0;
+}

@@ -1,9 +1,17 @@
-#import <Foundation/Foundation.h>
+#ifndef JITMANAGER_H
+#define JITMANAGER_H
 
-@interface JITManager : NSObject
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-+ (instancetype)sharedManager;
-- (BOOL)enableJITForCurrentProcess;
-- (BOOL)isJITSupported;
+// 声明JITManager的C接口
+void* JITManager_sharedManager(void);
+int JITManager_enableJITForCurrentProcess(void* manager);
+int JITManager_isJITSupported(void* manager);
 
-@end
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* JITMANAGER_H */
