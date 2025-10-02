@@ -154,6 +154,7 @@ add_executable(AngelAuraAmethyst
   LauncherMenuViewController.m
   LauncherNavigationController.m
   LauncherNewsViewController.m
+  LauncherOnlineViewController.m
   LauncherPreferences.m
   LauncherPreferencesViewController.m
   LauncherPrefContCfgViewController.m
@@ -177,6 +178,7 @@ add_executable(AngelAuraAmethyst
   SurfaceViewController+LogView.m
   SurfaceViewController+Navigation.m
   TrackedTextField.m
+  ZeroTierBridge.m
   egl_bridge.m
   input_bridge_v3.m
   ios_uikit_bridge.m
@@ -259,6 +261,7 @@ target_link_libraries(AngelAuraAmethyst
   libidevice_ffi
   "-F'${CMAKE_CURRENT_LIST_DIR}/build'"
   "-F'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
+  "-F'${CMAKE_CURRENT_LIST_DIR}/external/ZeroTierFramework/ios-example-app'"
   "-framework AltKit"
   "-framework AuthenticationServices"
   "-framework AVFoundation"
@@ -274,6 +277,8 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UniformTypeIdentifiers"
   "-framework UnzipKit"
   "-framework WebKit"
+  "-framework zt"
+  "-lc++"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES
