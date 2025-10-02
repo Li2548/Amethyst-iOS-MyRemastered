@@ -31,7 +31,6 @@ include_directories(
   "external/Apple"
   "external/ballpa1n"
   "external/ballpa1n/wrapped"
-  "resources/Frameworks/zt.framework/Headers"
 )
 
 # For cacio support library
