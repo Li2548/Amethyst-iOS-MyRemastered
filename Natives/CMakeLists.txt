@@ -189,6 +189,9 @@ add_executable(AngelAuraAmethyst
   ModTableViewController.m
   ModsManagerViewController.m
 
+  # Online mode selection
+  OnlineModeSelectViewController.m
+
   # JIT Support
   JITSupport/JITManager.m
   JITSupport/idevice/JITEnableContext.m
