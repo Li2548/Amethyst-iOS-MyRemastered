@@ -1,5 +1,0 @@
-2025-09-26T11:59:35.3870000Z Job is waiting for a hosted runner to come online.
-2025-09-26T11:59:35.3860000Z Job is about to start running on the hosted runner: GitHub Actions 1000000466
-2025-09-26T11:59:35.3590000Z Requested labels: macos-14
-2025-09-26T11:59:35.3590000Z Job defined at: herbrine8403/Amethyst-iOS-MyRemastered/.github/workflows/development.yml@refs/heads/feature/multiplayer
-2025-09-26T11:59:35.3590000Z Waiting for a runner to pick up this job...
