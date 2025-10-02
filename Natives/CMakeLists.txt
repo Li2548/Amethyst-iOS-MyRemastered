@@ -51,10 +51,6 @@ target_link_libraries(awt_xawt
   awt_headless
 )
 
-# 添加libidevice_ffi.a库
-add_library(libidevice_ffi STATIC IMPORTED)
-set_target_properties(libidevice_ffi PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_LIST_DIR}/JITSupport/idevice/libidevice_ffi.a")
-
 set(CMAKE_FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks")
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rpath @executable_path/Frameworks -rpath @loader_path/Frameworks")
@@ -100,7 +96,7 @@ add_library(AmethystAccountJNI SHARED
 )
 target_link_libraries(AmethystAccountJNI)
 
-# Angel Aura Amethyst
+# Angel Aura Amethyst - 合并所有源文件，去除frpc相关文件
 add_executable(AngelAuraAmethyst
   dyld_bypass_validation.m
   dyld_patch_platform.m
@@ -191,13 +187,8 @@ add_executable(AngelAuraAmethyst
   ModTableViewController.m
   ModsManagerViewController.m
 
-  # Online mode selection
-  OnlineModeSelectViewController.m
-  LauncherOnlineViewController.m
-
-  # JIT Support
+  # JIT Support - 从第二个文件添加
   JITSupport/JITManager.m
-  JITSupport/idevice/JITEnableContext.m
 )
 
 # Add ModLoaderIcons PNG files into the app bundle Resources/ModLoaderIcons so they are available at runtime.
@@ -258,7 +249,6 @@ endif()
 target_link_libraries(AngelAuraAmethyst
   PUBLIC AFNetworking
   lzma
-  libidevice_ffi
   "-F'${CMAKE_CURRENT_LIST_DIR}/build'"
   "-F'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
   "-F'${CMAKE_CURRENT_LIST_DIR}/external/ZeroTierFramework/ios-example-app'"
