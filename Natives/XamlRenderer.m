@@ -118,7 +118,8 @@
     if (heightStr != nil) {
         CGFloat height = [heightStr floatValue];
         if (height > 0) {
-            button.heightAnchor.constraintEqualToConstant(height).active = YES;
+            // Fix the constraint syntax
+            [button.heightAnchor constraintEqualToConstant:height].active = YES;
         }
     }
     
@@ -211,7 +212,8 @@
     if (heightStr != nil) {
         CGFloat height = [heightStr floatValue];
         if (height > 0) {
-            imageView.heightAnchor.constraintEqualToConstant(height).active = YES;
+            // Fix the constraint syntax
+            [imageView.heightAnchor constraintEqualToConstant:height].active = YES;
         }
     }
     
