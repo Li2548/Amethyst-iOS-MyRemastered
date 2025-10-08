@@ -96,16 +96,15 @@
     ]];
     
     // If card can be swapped, add tap gesture to collapse/expand
-    if (canSwap) {
-        // Create a tap gesture recognizer
-        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleCard:)];
-        tapGesture.view = cardView; // Store reference to card view
-        [titleLabel addGestureRecognizer:tapGesture];
-        titleLabel.userInteractionEnabled = YES;
-        
-        // If card is initially swapped (collapsed), hide content
-        contentView.hidden = isSwapped;
-    }
+        if (canSwap) {
+            // Create a tap gesture recognizer
+            UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleCard:)];
+            [titleLabel addGestureRecognizer:tapGesture];
+            titleLabel.userInteractionEnabled = YES;
+            
+            // If card is initially swapped (collapsed), hide content
+            contentView.hidden = isSwapped;
+        }
     
     [NSLayoutConstraint activateConstraints:constraints];
     
@@ -394,7 +393,7 @@
     [button setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
     // Use attributed string to add underline
     NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:text attributes:@{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle)}];
-    [button.setAttributedTitle:attributedString forState:UIControlStateNormal];
+    [button setAttributedTitle:attributedString forState:UIControlStateNormal];
     
     // Apply height if specified
     NSString *heightStr = node.attributes[@"Height"];
@@ -670,12 +669,15 @@
 }
 
 + (void)toggleCard:(UITapGestureRecognizer *)gesture {
-    // Get the card view from the gesture recognizer
-    UIView *cardView = gesture.view;
+    // Get the title label from the gesture recognizer
+    UILabel *titleLabel = (UILabel *)gesture.view;
     
-    // Find the content view within the card (assuming it's the second subview)
+    // Find the card view (parent of title label)
+    UIView *cardView = titleLabel.superview;
+    
+    // Find the content view within the card (assuming it's the last subview)
     if (cardView.subviews.count >= 2) {
-        UIView *contentView = cardView.subviews[1]; // Assuming content view is the second subview
+        UIView *contentView = cardView.subviews.lastObject;
         contentView.hidden = !contentView.hidden;
     }
 }
