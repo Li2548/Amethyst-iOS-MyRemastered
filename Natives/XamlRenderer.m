@@ -62,23 +62,43 @@
     
     // Find the last card in parent view to set proper top constraint
     UIView *lastCard = nil;
-    for (UIView *subview in parentView.subviews) {
-        if (subview != cardView && [subview isKindOfClass:[UIView class]]) {
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *subview = parentView.subviews[i];
+        if (subview != cardView && subview.translatesAutoresizingMaskIntoConstraints == NO) {
             lastCard = subview;
+            break;
+        }
+    }
+    
+    // Apply margin if specified
+    NSString *marginStr = node.attributes[@"Margin"];
+    UIEdgeInsets margin = UIEdgeInsetsZero;
+    if (marginStr != nil) {
+        NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
+        if (marginValues.count == 4) {
+            margin = UIEdgeInsetsMake([marginValues[0] floatValue], [marginValues[3] floatValue], 
+                                     [marginValues[2] floatValue], [marginValues[1] floatValue]);
+        } else if (marginValues.count == 2) {
+            CGFloat horizontal = [marginValues[0] floatValue];
+            CGFloat vertical = [marginValues[1] floatValue];
+            margin = UIEdgeInsetsMake(vertical, horizontal, vertical, horizontal);
+        } else if (marginValues.count == 1) {
+            CGFloat all = [marginValues[0] floatValue];
+            margin = UIEdgeInsetsMake(all, all, all, all);
         }
     }
     
     NSMutableArray *constraints = [NSMutableArray array];
     
     if (lastCard) {
-        [constraints addObject:[cardView.topAnchor constraintEqualToAnchor:lastCard.bottomAnchor constant:16]];
+        [constraints addObject:[cardView.topAnchor constraintEqualToAnchor:lastCard.bottomAnchor constant:margin.top]];
     } else {
-        [constraints addObject:[cardView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:16]];
+        [constraints addObject:[cardView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
     }
     
     [constraints addObjectsFromArray:@[
-        [cardView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16],
-        [cardView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16],
+        [cardView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left],
+        [cardView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right],
     ]];
     
     [constraints addObjectsFromArray:@[
@@ -112,6 +132,10 @@
     if (node.children.count > 0) {
         [self renderNodes:node.children inView:contentView];
     }
+    
+    // Set content hugging and compression resistance priorities
+    [cardView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    [cardView setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
 }
 
 + (void)renderStackPanel:(StackPanelNode *)node inView:(UIView *)parentView {
@@ -140,20 +164,18 @@
     // Add to parent
     [parentView addSubview:stackPanelView];
     
-    // Set up constraints
-    NSMutableArray *constraints = [NSMutableArray array];
-    
     // Find the last view in parent to set proper top constraint
     UIView *lastView = nil;
-    if (parentView.subviews.count > 1) { // More than just the stackPanelView we just added
-        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
-            UIView *view = parentView.subviews[i];
-            if (view != stackPanelView) {
-                lastView = view;
-                break;
-            }
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *view = parentView.subviews[i];
+        if (view != stackPanelView && view.translatesAutoresizingMaskIntoConstraints == NO) {
+            lastView = view;
+            break;
         }
     }
+    
+    // Set up constraints
+    NSMutableArray *constraints = [NSMutableArray array];
     
     if (lastView) {
         [constraints addObject:[stackPanelView.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
@@ -166,6 +188,9 @@
         [stackPanelView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right],
     ]];
     
+    // Add width constraint to match parent
+    [constraints addObject:[stackPanelView.widthAnchor constraintEqualToAnchor:parentView.widthAnchor constant:-(margin.left + margin.right)]];
+    
     [NSLayoutConstraint activateConstraints:constraints];
     
     // Render children in stack panel view
@@ -175,11 +200,27 @@
         // Add bottom constraint based on last child
         if (stackPanelView.subviews.count > 0) {
             UIView *lastChild = stackPanelView.subviews.lastObject;
-            [NSLayoutConstraint activateConstraints:@[
-                [lastChild.bottomAnchor constraintEqualToAnchor:stackPanelView.bottomAnchor constant:-margin.bottom]
-            ]];
+            // Only add bottom constraint if the last child doesn't already have a bottom constraint
+            BOOL hasBottomConstraint = NO;
+            for (NSLayoutConstraint *constraint in lastChild.constraints) {
+                if (constraint.firstItem == lastChild && constraint.secondItem == stackPanelView && 
+                    constraint.firstAttribute == NSLayoutAttributeBottom && constraint.secondAttribute == NSLayoutAttributeBottom) {
+                    hasBottomConstraint = YES;
+                    break;
+                }
+            }
+            
+            if (!hasBottomConstraint) {
+                [NSLayoutConstraint activateConstraints:@[
+                    [lastChild.bottomAnchor constraintEqualToAnchor:stackPanelView.bottomAnchor constant:-margin.bottom]
+                ]];
+            }
         }
     }
+    
+    // Add height constraint based on content
+    [stackPanelView setNeedsLayout];
+    [stackPanelView layoutIfNeeded];
 }
 
 + (void)renderTextBlock:(TextBlockNode *)node inView:(UIView *)parentView {
@@ -195,6 +236,7 @@
     label.numberOfLines = 0;
     label.font = [UIFont systemFontOfSize:16]; // Increase default font size for better visibility
     label.textColor = [UIColor labelColor];
+    label.lineBreakMode = NSLineBreakByWordWrapping;
     
     // Apply font size if specified
     NSString *fontSizeStr = node.attributes[@"FontSize"];
@@ -230,12 +272,21 @@
         label.textAlignment = NSTextAlignmentLeft;
     }
     
-    // Apply width if specified
-    NSString *widthStr = node.attributes[@"Width"];
-    if (widthStr != nil) {
-        CGFloat width = [widthStr floatValue];
-        if (width > 0) {
-            label.preferredMaxLayoutWidth = width;
+    // Apply margin if specified
+    NSString *marginStr = node.attributes[@"Margin"];
+    UIEdgeInsets margin = UIEdgeInsetsZero;
+    if (marginStr != nil) {
+        NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
+        if (marginValues.count == 4) {
+            margin = UIEdgeInsetsMake([marginValues[0] floatValue], [marginValues[3] floatValue], 
+                                     [marginValues[2] floatValue], [marginValues[1] floatValue]);
+        } else if (marginValues.count == 2) {
+            CGFloat horizontal = [marginValues[0] floatValue];
+            CGFloat vertical = [marginValues[1] floatValue];
+            margin = UIEdgeInsetsMake(vertical, horizontal, vertical, horizontal);
+        } else if (marginValues.count == 1) {
+            CGFloat all = [marginValues[0] floatValue];
+            margin = UIEdgeInsetsMake(all, all, all, all);
         }
     }
     
@@ -247,27 +298,29 @@
     
     // Find the last view in parent to set proper top constraint
     UIView *lastView = nil;
-    if (parentView.subviews.count > 0) {
-        lastView = parentView.subviews.lastObject;
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *view = parentView.subviews[i];
+        if (view != label && view.translatesAutoresizingMaskIntoConstraints == NO) {
+            lastView = view;
+            break;
+        }
     }
     
     NSMutableArray *constraints = [NSMutableArray array];
-    [constraints addObject:[label.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:0]];
-    [constraints addObject:[label.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:0]];
     
+    // Apply margin to constraints
     if (lastView && lastView != label) {
-        [constraints addObject:[label.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:8]];
+        [constraints addObject:[label.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
     } else {
-        [constraints addObject:[label.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]];
+        [constraints addObject:[label.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
     }
     
-    // Apply width constraint if specified
-    if (widthStr != nil) {
-        CGFloat width = [widthStr floatValue];
-        if (width > 0) {
-            [constraints addObject:[label.widthAnchor constraintEqualToConstant:width]];
-        }
-    }
+    [constraints addObject:[label.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left]];
+    [constraints addObject:[label.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right]];
+    
+    // Set content hugging and compression resistance priorities
+    [label setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    [label setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     
     [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -323,6 +376,24 @@
         button.titleLabel.textAlignment = NSTextAlignmentLeft;
     }
     
+    // Apply margin if specified
+    NSString *marginStr = node.attributes[@"Margin"];
+    UIEdgeInsets margin = UIEdgeInsetsZero;
+    if (marginStr != nil) {
+        NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
+        if (marginValues.count == 4) {
+            margin = UIEdgeInsetsMake([marginValues[0] floatValue], [marginValues[3] floatValue], 
+                                     [marginValues[2] floatValue], [marginValues[1] floatValue]);
+        } else if (marginValues.count == 2) {
+            CGFloat horizontal = [marginValues[0] floatValue];
+            CGFloat vertical = [marginValues[1] floatValue];
+            margin = UIEdgeInsetsMake(vertical, horizontal, vertical, horizontal);
+        } else if (marginValues.count == 1) {
+            CGFloat all = [marginValues[0] floatValue];
+            margin = UIEdgeInsetsMake(all, all, all, all);
+        }
+    }
+    
     // Add event handling
     NSString *eventType = node.attributes[@"EventType"];
     NSString *eventData = node.attributes[@"EventData"];
@@ -342,31 +413,30 @@
     
     // Find the last view in parent to set proper top constraint
     UIView *lastView = nil;
-    if (parentView.subviews.count > 1) { // More than just the button we just added
-        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
-            UIView *view = parentView.subviews[i];
-            if (view != button) {
-                lastView = view;
-                break;
-            }
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *view = parentView.subviews[i];
+        if (view != button && view.translatesAutoresizingMaskIntoConstraints == NO) {
+            lastView = view;
+            break;
         }
     }
     
     NSMutableArray *constraints = [NSMutableArray array];
     
+    // Apply margin to constraints
     if (lastView) {
-        [constraints addObject:[button.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:12]];
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
     } else {
-        [constraints addObject:[button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:12]];
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
     }
     
     // Apply horizontal alignment through constraints
     if ([horizontalAlignment isEqualToString:@"Center"]) {
         [constraints addObject:[button.centerXAnchor constraintEqualToAnchor:parentView.centerXAnchor]];
     } else if ([horizontalAlignment isEqualToString:@"Right"]) {
-        [constraints addObject:[button.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16]];
+        [constraints addObject:[button.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right]];
     } else {
-        [constraints addObject:[button.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16]];
+        [constraints addObject:[button.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left]];
     }
     
     // Add size constraints if specified
@@ -395,12 +465,21 @@
     NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:text attributes:@{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle)}];
     [button setAttributedTitle:attributedString forState:UIControlStateNormal];
     
-    // Apply height if specified
-    NSString *heightStr = node.attributes[@"Height"];
-    if (heightStr != nil) {
-        CGFloat height = [heightStr floatValue];
-        if (height > 0) {
-            [button.heightAnchor constraintEqualToConstant:height].active = YES;
+    // Apply margin if specified
+    NSString *marginStr = node.attributes[@"Margin"];
+    UIEdgeInsets margin = UIEdgeInsetsZero;
+    if (marginStr != nil) {
+        NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
+        if (marginValues.count == 4) {
+            margin = UIEdgeInsetsMake([marginValues[0] floatValue], [marginValues[3] floatValue], 
+                                     [marginValues[2] floatValue], [marginValues[1] floatValue]);
+        } else if (marginValues.count == 2) {
+            CGFloat horizontal = [marginValues[0] floatValue];
+            CGFloat vertical = [marginValues[1] floatValue];
+            margin = UIEdgeInsetsMake(vertical, horizontal, vertical, horizontal);
+        } else if (marginValues.count == 1) {
+            CGFloat all = [marginValues[0] floatValue];
+            margin = UIEdgeInsetsMake(all, all, all, all);
         }
     }
     
@@ -412,27 +491,26 @@
     
     // Find the last view in parent to set proper top constraint
     UIView *lastView = nil;
-    if (parentView.subviews.count > 1) { // More than just the button we just added
-        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
-            UIView *view = parentView.subviews[i];
-            if (view != button) {
-                lastView = view;
-                break;
-            }
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *view = parentView.subviews[i];
+        if (view != button && view.translatesAutoresizingMaskIntoConstraints == NO) {
+            lastView = view;
+            break;
         }
     }
     
     NSMutableArray *constraints = [NSMutableArray array];
     
+    // Apply margin to constraints
     if (lastView) {
-        [constraints addObject:[button.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:12]];
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
     } else {
-        [constraints addObject:[button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:12]];
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
     }
     
     [constraints addObjectsFromArray:@[
-        [button.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16],
-        [button.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16]
+        [button.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left],
+        [button.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right]
     ]];
     
     [NSLayoutConstraint activateConstraints:constraints];
@@ -468,6 +546,7 @@
     label.text = text;
     label.numberOfLines = 0;
     label.font = [UIFont systemFontOfSize:16]; // Increase font size for better visibility
+    label.lineBreakMode = NSLineBreakByWordWrapping;
     
     // Apply text color based on theme
     if ([theme isEqualToString:@"Blue"]) {
@@ -496,8 +575,8 @@
     if (marginStr != nil) {
         NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
         if (marginValues.count == 4) {
-            margin = UIEdgeInsetsMake([marginValues[1] floatValue], [marginValues[0] floatValue], 
-                                     [marginValues[3] floatValue], [marginValues[2] floatValue]);
+            margin = UIEdgeInsetsMake([marginValues[0] floatValue], [marginValues[3] floatValue], 
+                                     [marginValues[2] floatValue], [marginValues[1] floatValue]);
         } else if (marginValues.count == 2) {
             CGFloat horizontal = [marginValues[0] floatValue];
             CGFloat vertical = [marginValues[1] floatValue];
@@ -510,13 +589,11 @@
     
     // Find the last view in parent to set proper top constraint
     UIView *lastView = nil;
-    if (parentView.subviews.count > 1) { // More than just the hintView we just added
-        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
-            UIView *view = parentView.subviews[i];
-            if (view != hintView) {
-                lastView = view;
-                break;
-            }
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *view = parentView.subviews[i];
+        if (view != hintView && view.translatesAutoresizingMaskIntoConstraints == NO) {
+            lastView = view;
+            break;
         }
     }
     
@@ -529,14 +606,20 @@
     }
     
     [constraints addObjectsFromArray:@[
-        [hintView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:0],
-        [hintView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:0],
+        [hintView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left],
+        [hintView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right],
         
         [label.leadingAnchor constraintEqualToAnchor:hintView.leadingAnchor constant:12],
         [label.trailingAnchor constraintEqualToAnchor:hintView.trailingAnchor constant:-12],
         [label.topAnchor constraintEqualToAnchor:hintView.topAnchor constant:12],
         [label.bottomAnchor constraintEqualToAnchor:hintView.bottomAnchor constant:-12]
     ]];
+    
+    // Set content hugging and compression resistance priorities
+    [hintView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    [hintView setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    [label setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    [label setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     
     [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -572,6 +655,24 @@
     NSString *horizontalAlignment = node.attributes[@"HorizontalAlignment"];
     // We'll handle alignment through constraints when setting up constraints
     
+    // Apply margin if specified
+    NSString *marginStr = node.attributes[@"Margin"];
+    UIEdgeInsets margin = UIEdgeInsetsZero;
+    if (marginStr != nil) {
+        NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
+        if (marginValues.count == 4) {
+            margin = UIEdgeInsetsMake([marginValues[0] floatValue], [marginValues[3] floatValue], 
+                                     [marginValues[2] floatValue], [marginValues[1] floatValue]);
+        } else if (marginValues.count == 2) {
+            CGFloat horizontal = [marginValues[0] floatValue];
+            CGFloat vertical = [marginValues[1] floatValue];
+            margin = UIEdgeInsetsMake(vertical, horizontal, vertical, horizontal);
+        } else if (marginValues.count == 1) {
+            CGFloat all = [marginValues[0] floatValue];
+            margin = UIEdgeInsetsMake(all, all, all, all);
+        }
+    }
+    
     // Add to parent
     [parentView addSubview:imageView];
     
@@ -580,31 +681,30 @@
     
     // Find the last view in parent to set proper top constraint
     UIView *lastView = nil;
-    if (parentView.subviews.count > 1) { // More than just the imageView we just added
-        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
-            UIView *view = parentView.subviews[i];
-            if (view != imageView) {
-                lastView = view;
-                break;
-            }
+    for (NSInteger i = (NSInteger)parentView.subviews.count - 1; i >= 0; i--) {
+        UIView *view = parentView.subviews[i];
+        if (view != imageView && view.translatesAutoresizingMaskIntoConstraints == NO) {
+            lastView = view;
+            break;
         }
     }
     
     NSMutableArray *constraints = [NSMutableArray array];
     
+    // Apply margin to constraints
     if (lastView) {
-        [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:12]];
+        [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
     } else {
-        [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:12]];
+        [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
     }
     
     // Apply horizontal alignment
     if ([horizontalAlignment isEqualToString:@"Center"]) {
         [constraints addObject:[imageView.centerXAnchor constraintEqualToAnchor:parentView.centerXAnchor]];
     } else if ([horizontalAlignment isEqualToString:@"Right"]) {
-        [constraints addObject:[imageView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16]];
+        [constraints addObject:[imageView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right]];
     } else {
-        [constraints addObject:[imageView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16]];
+        [constraints addObject:[imageView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left]];
     }
     
     // Apply size constraints
