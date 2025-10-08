@@ -161,11 +161,22 @@ UIEdgeInsets insets;
 }
 
 - (NSString *)loadXaml:(NSString *)fileName {
-    // First try to load from documents directory
+    // First try to load custom XAML from documents directory with custom name
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileName];
+    NSString *customXamlPath = [documentsDirectory stringByAppendingPathComponent:@"custom_home.xaml"];
     
+    // Check if custom XAML file exists
+    if ([[NSFileManager defaultManager] fileExistsAtPath:customXamlPath]) {
+        NSError *error;
+        NSString *content = [NSString stringWithContentsOfFile:customXamlPath encoding:NSUTF8StringEncoding error:&error];
+        if (content != nil) {
+            return content;
+        }
+    }
+    
+    // Then try to load the default file from documents directory
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileName];
     NSError *error;
     NSString *content = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
     if (content != nil) {

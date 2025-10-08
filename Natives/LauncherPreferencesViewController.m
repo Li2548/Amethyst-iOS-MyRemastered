@@ -61,6 +61,15 @@
     });
 }
 
+- (void)openXAMLFilePicker {
+    // 创建文档选择器来导入XAML文件
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.xml"] inMode:UIDocumentPickerModeImport];
+    documentPicker.delegate = self;
+    documentPicker.allowsMultipleSelection = NO;
+    
+    [self presentViewController:documentPicker animated:YES completion:nil];
+}
+
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
@@ -128,6 +137,84 @@
             [self showCustomIconError:@"图片选择已取消"];
         });
     }];
+}
+
+#pragma mark - UIDocumentPickerDelegate
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
+    if (urls.count > 0) {
+        NSURL *selectedURL = urls.firstObject;
+        
+        // 在后台线程中读取文件内容
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error;
+            NSString *fileContent = [NSString stringWithContentsOfURL:selectedURL encoding:NSUTF8StringEncoding error:&error];
+            
+            if (error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showXAMLError:[NSString stringWithFormat:@"读取XAML文件失败: %@", error.localizedDescription]];
+                });
+                return;
+            }
+            
+            // 验证文件是否为有效的XAML文件
+            if (![self isValidXAMLContent:fileContent]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showXAMLError:@"选择的文件不是有效的XAML文件"];
+                });
+                return;
+            }
+            
+            // 保存XAML内容到应用沙盒
+            NSString *xamlPath = [self getCustomXAMLPath];
+            NSError *writeError;
+            BOOL success = [fileContent writeToFile:xamlPath atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (success) {
+                    [self showXAMLSuccess:@"XAML布局文件已成功导入，重启应用以查看效果"];
+                    // 重新加载表格以更新UI
+                    [self.tableView reloadData];
+                } else {
+                    [self showXAMLError:[NSString stringWithFormat:@"保存XAML文件失败: %@", writeError.localizedDescription]];
+                }
+            });
+        });
+    }
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showXAMLError:@"XAML文件选择已取消"];
+    });
+}
+
+#pragma mark - XAML Helper Methods
+
+- (BOOL)isValidXAMLContent:(NSString *)content {
+    // 简单验证XAML内容是否包含基本的XML结构
+    return [content containsString:@"<"] && [content containsString:@">"] && 
+           ([content containsString:@"Card"] || [content containsString:@"StackPanel"] || [content containsString:@"TextBlock"]);
+}
+
+- (NSString *)getCustomXAMLPath {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = paths.firstObject;
+    return [documentsDirectory stringByAppendingPathComponent:@"custom_home.xaml"];
+}
+
+- (void)showXAMLSuccess:(NSString *)message {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"成功" message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:okAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)showXAMLError:(NSString *)errorMessage {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"错误" message:errorMessage preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
+    [alert addAction:okAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Custom Icon Helper Methods
@@ -201,6 +288,16 @@
               @"action": ^(BOOL enabled){
                   debugLogEnabled = enabled;
                   NSLog(@"[Debugging] Debug log enabled: %@", enabled ? @"YES" : @"NO");
+              }
+            },
+            @{@"key": @"import_xaml",
+              @"hasDetail": @YES,
+              @"icon": @"doc.badge.plus",
+              @"type": self.typeButton,
+              @"enableCondition": whenNotInGame,
+              @"action": ^void(){
+                  // 打开文件选择器导入XAML文件
+                  [self openXAMLFilePicker];
               }
             },
             @{@"key": @"appicon",
