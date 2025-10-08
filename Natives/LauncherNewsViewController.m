@@ -188,8 +188,13 @@ UIEdgeInsets insets;
     if (bundlePath != nil) {
         content = [NSString stringWithContentsOfFile:bundlePath encoding:NSUTF8StringEncoding error:&error];
         if (content != nil) {
+            NSLog(@"Successfully loaded XAML from bundle: %@", bundlePath);
             return content;
+        } else {
+            NSLog(@"Failed to load XAML from bundle: %@, error: %@", bundlePath, error);
         }
+    } else {
+        NSLog(@"XAML file not found in bundle: %@", fileName);
     }
     
     // Return default XAML content with namespace definition
