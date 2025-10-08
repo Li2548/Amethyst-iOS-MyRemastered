@@ -91,8 +91,8 @@
 @implementation XamlParser
 
 + (NSArray<XamlNode *> *)parseXaml:(NSString *)xaml {
-    // Wrap XAML in a root element to make it valid XML
-    NSString *wrappedXaml = [NSString stringWithFormat:@"<root>%@</root>", xaml];
+    // Wrap XAML in a root element to make it valid XML with namespace definition
+    NSString *wrappedXaml = [NSString stringWithFormat:@"<root xmlns:local=\"Amethyst\">%@</root>", xaml];
     
     // Convert NSString to UTF-8 C string
     const char *xmlContent = [wrappedXaml UTF8String];
