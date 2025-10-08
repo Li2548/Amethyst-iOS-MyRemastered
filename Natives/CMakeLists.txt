@@ -216,6 +216,7 @@ endif()
 # Add XAML files to the bundle
 set(XAML_FILES
   "${CMAKE_CURRENT_LIST_DIR}/home.xaml"
+  "${CMAKE_CURRENT_LIST_DIR}/test_shardlauncher.xaml"
 )
 foreach(_xaml ${XAML_FILES})
   if(EXISTS ${_xaml})

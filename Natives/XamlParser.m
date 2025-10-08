@@ -47,6 +47,16 @@
 }
 @end
 
+@implementation TextButtonNode
+- (instancetype)initWithAttributes:(NSDictionary<NSString *, NSString *> *)attributes {
+    self = [super init];
+    if (self) {
+        _attributes = [attributes copy];
+    }
+    return self;
+}
+@end
+
 @implementation HintNode
 - (instancetype)initWithAttributes:(NSDictionary<NSString *, NSString *> *)attributes {
     self = [super init];
@@ -157,6 +167,8 @@
         return [[TextBlockNode alloc] initWithAttributes:attributes];
     } else if ([tagName isEqualToString:@"local:MyButton"]) {
         return [[ButtonNode alloc] initWithAttributes:attributes];
+    } else if ([tagName isEqualToString:@"local:MyTextButton"]) {
+        return [[TextButtonNode alloc] initWithAttributes:attributes];
     } else if ([tagName isEqualToString:@"local:MyHint"]) {
         return [[HintNode alloc] initWithAttributes:attributes];
     } else if ([tagName isEqualToString:@"local:MyImage"]) {

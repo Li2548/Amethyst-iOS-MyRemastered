@@ -30,6 +30,12 @@
 - (instancetype)initWithAttributes:(NSDictionary<NSString *, NSString *> *)attributes;
 @end
 
+// TextButton node
+@interface TextButtonNode : XamlNode
+@property (nonatomic, strong) NSDictionary<NSString *, NSString *> *attributes;
+- (instancetype)initWithAttributes:(NSDictionary<NSString *, NSString *> *)attributes;
+@end
+
 // Hint node
 @interface HintNode : XamlNode
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *attributes;
