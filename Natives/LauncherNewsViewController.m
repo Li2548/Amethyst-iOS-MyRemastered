@@ -192,13 +192,13 @@ UIEdgeInsets insets;
         }
     }
     
-    // Return default XAML content
-    return @"<local:MyCard Title=\"Amethyst Launcher\" Margin=\"0,0,0,15\">\
+    // Return default XAML content with namespace definition
+    return @"<root xmlns:local=\"Amethyst\"><local:MyCard Title=\"Amethyst Launcher\" Margin=\"0,0,0,15\">\
     <StackPanel Margin=\"25,40,23,15\">\
         <TextBlock Margin=\"0,0,0,4\" FontSize=\"16\" HorizontalAlignment=\"Center\" Foreground=\"{DynamicResource ColorBrush1}\"\
                     Text=\"欢迎使用 Amethyst Launcher！本启动器为 iOS 平台定制。\" />\
     </StackPanel>\
-</local:MyCard>";
+</local:MyCard></root>";
 }
 
 -(void)showWarningAlert:(NSString *)key hasPreference:(BOOL)isPreferenced exitWhenCompleted:(BOOL)shouldExit {
