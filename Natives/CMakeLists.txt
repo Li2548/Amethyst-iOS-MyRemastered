@@ -282,7 +282,7 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UniformTypeIdentifiers"
   "-framework UnzipKit"
   "-framework WebKit"
-  "-framework libxml2"
+  "-lxml2"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES
