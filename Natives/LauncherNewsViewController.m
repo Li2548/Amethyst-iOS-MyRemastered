@@ -4,6 +4,8 @@
 #import "LauncherPreferences.h"
 #import "utils.h"
 #import "PLProfiles.h"
+#import "XamlParser.h"
+#import "XamlRenderer.h"
 
 @interface LauncherNewsViewController()<WKNavigationDelegate>
 @property (nonatomic, strong) UIScrollView *mainScrollView;
@@ -110,28 +112,35 @@ UIEdgeInsets insets;
         [descriptionLabel.bottomAnchor constraintEqualToAnchor:welcomeCard.bottomAnchor constant:-16]
     ]];
     
-    // Add news web view
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://amethyst.ct.ws/welcome"]];
-    WKWebViewConfiguration *webConfig = [[WKWebViewConfiguration alloc] init];
-    self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:webConfig];
-    self.webView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.webView.navigationDelegate = self;
-    self.webView.opaque = NO;
-    self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    NSString *javascript = @"var meta = document.createElement('meta');meta.setAttribute('name', 'viewport');meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');document.getElementsByTagName('head')[0].appendChild(meta);";
-    WKUserScript *nozoom = [[WKUserScript alloc] initWithSource:javascript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
-    [self.webView.configuration.userContentController addUserScript:nozoom];
-    [self.webView.scrollView setShowsHorizontalScrollIndicator:NO];
-    [self.webView loadRequest:request];
-    [self.contentView addSubview:self.webView];
-    
-    // Constraints for web view
-    [NSLayoutConstraint activateConstraints:@[
-        [self.webView.topAnchor constraintEqualToAnchor:welcomeCard.bottomAnchor constant:16],
-        [self.webView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:16],
-        [self.webView.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-16],
-        [self.webView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-16]
-    ]];
+    // Load and render XAML content
+    NSString *xamlContent = [self loadXaml:@"home.xaml"];
+    if (xamlContent.length > 0) {
+        NSArray<XamlNode *> *nodes = [XamlParser parseXaml:xamlContent];
+        [XamlRenderer renderNodes:nodes inView:self.contentView];
+    } else {
+        // Fallback to news web view if no XAML content
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://amethyst.ct.ws/welcome"]];
+        WKWebViewConfiguration *webConfig = [[WKWebViewConfiguration alloc] init];
+        self.webView = [[WKWebView alloc] initWithFrame:CGRectZero configuration:webConfig];
+        self.webView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.webView.navigationDelegate = self;
+        self.webView.opaque = NO;
+        self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        NSString *javascript = @"var meta = document.createElement('meta');meta.setAttribute('name', 'viewport');meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');document.getElementsByTagName('head')[0].appendChild(meta);";
+        WKUserScript *nozoom = [[WKUserScript alloc] initWithSource:javascript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+        [self.webView.configuration.userContentController addUserScript:nozoom];
+        [self.webView.scrollView setShowsHorizontalScrollIndicator:NO];
+        [self.webView loadRequest:request];
+        [self.contentView addSubview:self.webView];
+        
+        // Constraints for web view
+        [NSLayoutConstraint activateConstraints:@[
+            [self.webView.topAnchor constraintEqualToAnchor:welcomeCard.bottomAnchor constant:16],
+            [self.webView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:16],
+            [self.webView.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-16],
+            [self.webView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-16]
+        ]];
+    }
 }
 
 - (void)setupConstraints {
@@ -149,6 +158,36 @@ UIEdgeInsets insets;
         [self.contentView.bottomAnchor constraintEqualToAnchor:self.mainScrollView.bottomAnchor],
         [self.contentView.widthAnchor constraintEqualToAnchor:self.mainScrollView.widthAnchor]
     ]];
+}
+
+- (NSString *)loadXaml:(NSString *)fileName {
+    // First try to load from documents directory
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileName];
+    
+    NSError *error;
+    NSString *content = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+    if (content != nil) {
+        return content;
+    }
+    
+    // If not found, try to load from bundle
+    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:[fileName stringByDeletingPathExtension] ofType:@"xaml"];
+    if (bundlePath != nil) {
+        content = [NSString stringWithContentsOfFile:bundlePath encoding:NSUTF8StringEncoding error:&error];
+        if (content != nil) {
+            return content;
+        }
+    }
+    
+    // Return default XAML content
+    return @"<local:MyCard Title=\"Amethyst Launcher\" Margin=\"0,0,0,15\">\
+    <StackPanel Margin=\"25,40,23,15\">\
+        <TextBlock Margin=\"0,0,0,4\" FontSize=\"13\" HorizontalAlignment=\"Center\" Foreground=\"{DynamicResource ColorBrush1}\"\
+                    Text=\"欢迎使用 Amethyst Launcher！本启动器为 iOS 平台定制。\" />\
+    </StackPanel>\
+</local:MyCard>";
 }
 
 -(void)showWarningAlert:(NSString *)key hasPreference:(BOOL)isPreferenced exitWhenCompleted:(BOOL)shouldExit {

@@ -178,6 +178,10 @@ add_executable(AngelAuraAmethyst
   ios_uikit_bridge.m
   utils.m
 
+  # XAML parsing and rendering
+  XamlParser.m
+  XamlRenderer.m
+
   # Mod-related sources (ensure implementations are compiled and linked)
   ModItem.m
   ModService.m
@@ -208,6 +212,19 @@ if(EXISTS "${MODLOADER_ICONS_DIR}")
 else()
   message(STATUS "ModLoaderIcons directory not found: ${MODLOADER_ICONS_DIR}")
 endif()
+
+# Add XAML files to the bundle
+set(XAML_FILES
+  "${CMAKE_CURRENT_LIST_DIR}/home.xaml"
+)
+foreach(_xaml ${XAML_FILES})
+  if(EXISTS ${_xaml})
+    get_filename_component(_name ${_xaml} NAME)
+    message(STATUS "Including XAML file in bundle: ${_name}")
+    set_source_files_properties(${_xaml} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+  endif()
+endforeach()
+target_sources(AngelAuraAmethyst PRIVATE ${XAML_FILES})
 
 if("${CMAKE_HOST_SYSTEM_NAME}" MATCHES "Linux|^GNU$|Android")
   target_sources(AngelAuraAmethyst PUBLIC non_darwin_utils.m)
@@ -248,8 +265,8 @@ endif()
 target_link_libraries(AngelAuraAmethyst
   PUBLIC AFNetworking
   lzma
-  "-F'${CMAKE_CURRENT_LIST_DIR}/build'"
-  "-F'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
+  "-L'${CMAKE_CURRENT_LIST_DIR}/build'"
+  "-L'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
   "-framework AltKit"
   "-framework AuthenticationServices"
   "-framework AVFoundation"
@@ -265,6 +282,7 @@ target_link_libraries(AngelAuraAmethyst
   "-framework UniformTypeIdentifiers"
   "-framework UnzipKit"
   "-framework WebKit"
+  "-framework libxml2"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES
