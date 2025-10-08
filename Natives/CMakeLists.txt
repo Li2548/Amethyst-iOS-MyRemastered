@@ -266,7 +266,7 @@ target_link_libraries(AngelAuraAmethyst
   PUBLIC AFNetworking
   lzma
   "-L'${CMAKE_CURRENT_LIST_DIR}/build'"
-  "-L'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
+  "-F'${CMAKE_CURRENT_LIST_DIR}/resources/Frameworks'"
   "-framework AltKit"
   "-framework AuthenticationServices"
   "-framework AVFoundation"
