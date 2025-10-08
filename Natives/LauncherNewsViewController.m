@@ -80,13 +80,13 @@ UIEdgeInsets insets;
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     titleLabel.text = localize(@"Welcome", nil);
-    titleLabel.font = [UIFont boldSystemFontOfSize:20];
+    titleLabel.font = [UIFont boldSystemFontOfSize:24];
     titleLabel.textColor = [UIColor labelColor];
     
     UILabel *descriptionLabel = [[UILabel alloc] init];
     descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
     descriptionLabel.text = localize(@"Welcome back to Amethyst Launcher", nil);
-    descriptionLabel.font = [UIFont systemFontOfSize:16];
+    descriptionLabel.font = [UIFont systemFontOfSize:18];
     descriptionLabel.textColor = [UIColor secondaryLabelColor];
     descriptionLabel.numberOfLines = 0;
     
@@ -100,13 +100,13 @@ UIEdgeInsets insets;
         [welcomeCard.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:16],
         [welcomeCard.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:16],
         [welcomeCard.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-16],
-        [welcomeCard.heightAnchor constraintGreaterThanOrEqualToConstant:100],
+        [welcomeCard.heightAnchor constraintGreaterThanOrEqualToConstant:120],
         
         [titleLabel.topAnchor constraintEqualToAnchor:welcomeCard.topAnchor constant:16],
         [titleLabel.leadingAnchor constraintEqualToAnchor:welcomeCard.leadingAnchor constant:16],
         [titleLabel.trailingAnchor constraintEqualToAnchor:welcomeCard.trailingAnchor constant:-16],
         
-        [descriptionLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor constant:8],
+        [descriptionLabel.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor constant:12],
         [descriptionLabel.leadingAnchor constraintEqualToAnchor:welcomeCard.leadingAnchor constant:16],
         [descriptionLabel.trailingAnchor constraintEqualToAnchor:welcomeCard.trailingAnchor constant:-16],
         [descriptionLabel.bottomAnchor constraintEqualToAnchor:welcomeCard.bottomAnchor constant:-16]
@@ -195,7 +195,7 @@ UIEdgeInsets insets;
     // Return default XAML content
     return @"<local:MyCard Title=\"Amethyst Launcher\" Margin=\"0,0,0,15\">\
     <StackPanel Margin=\"25,40,23,15\">\
-        <TextBlock Margin=\"0,0,0,4\" FontSize=\"13\" HorizontalAlignment=\"Center\" Foreground=\"{DynamicResource ColorBrush1}\"\
+        <TextBlock Margin=\"0,0,0,4\" FontSize=\"16\" HorizontalAlignment=\"Center\" Foreground=\"{DynamicResource ColorBrush1}\"\
                     Text=\"欢迎使用 Amethyst Launcher！本启动器为 iOS 平台定制。\" />\
     </StackPanel>\
 </local:MyCard>";

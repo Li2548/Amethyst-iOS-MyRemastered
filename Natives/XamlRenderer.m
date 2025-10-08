@@ -36,7 +36,7 @@
     NSString *title = node.attributes[@"Title"] ?: @"Card";
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.text = title;
-    titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    titleLabel.font = [UIFont boldSystemFontOfSize:20]; // Increase font size for better visibility
     titleLabel.textColor = [UIColor labelColor];
     
     // Add title to card
@@ -60,25 +60,38 @@
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
     
+    // Find the last card in parent view to set proper top constraint
+    UIView *lastCard = nil;
+    for (UIView *subview in parentView.subviews) {
+        if (subview != cardView && [subview isKindOfClass:[UIView class]]) {
+            lastCard = subview;
+        }
+    }
+    
     NSMutableArray *constraints = [NSMutableArray array];
+    
+    if (lastCard) {
+        [constraints addObject:[cardView.topAnchor constraintEqualToAnchor:lastCard.bottomAnchor constant:16]];
+    } else {
+        [constraints addObject:[cardView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:16]];
+    }
     
     [constraints addObjectsFromArray:@[
         [cardView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16],
         [cardView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16],
-        [cardView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]
     ]];
     
     [constraints addObjectsFromArray:@[
         [titleLabel.leadingAnchor constraintEqualToAnchor:cardView.leadingAnchor constant:16],
         [titleLabel.trailingAnchor constraintEqualToAnchor:cardView.trailingAnchor constant:-16],
         [titleLabel.topAnchor constraintEqualToAnchor:cardView.topAnchor constant:16],
-        [titleLabel.heightAnchor constraintEqualToConstant:24]
+        [titleLabel.heightAnchor constraintEqualToConstant:28] // Increase height for better visibility
     ]];
     
     [constraints addObjectsFromArray:@[
-        [contentView.leadingAnchor constraintEqualToAnchor:cardView.leadingAnchor],
-        [contentView.trailingAnchor constraintEqualToAnchor:cardView.trailingAnchor],
-        [contentView.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor constant:8],
+        [contentView.leadingAnchor constraintEqualToAnchor:cardView.leadingAnchor constant:16],
+        [contentView.trailingAnchor constraintEqualToAnchor:cardView.trailingAnchor constant:-16],
+        [contentView.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor constant:12],
         [contentView.bottomAnchor constraintEqualToAnchor:cardView.bottomAnchor constant:-16]
     ]];
     
@@ -103,9 +116,70 @@
 }
 
 + (void)renderStackPanel:(StackPanelNode *)node inView:(UIView *)parentView {
-    // For simplicity, we'll just render the children directly
+    // Create a container view for the stack panel
+    UIView *stackPanelView = [[UIView alloc] init];
+    stackPanelView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    // Apply margin if specified
+    NSString *marginStr = node.attributes[@"Margin"];
+    UIEdgeInsets margin = UIEdgeInsetsZero;
+    if (marginStr != nil) {
+        NSArray *marginValues = [marginStr componentsSeparatedByString:@","];
+        if (marginValues.count == 4) {
+            margin = UIEdgeInsetsMake([marginValues[1] floatValue], [marginValues[0] floatValue], 
+                                     [marginValues[3] floatValue], [marginValues[2] floatValue]);
+        } else if (marginValues.count == 2) {
+            CGFloat horizontal = [marginValues[0] floatValue];
+            CGFloat vertical = [marginValues[1] floatValue];
+            margin = UIEdgeInsetsMake(vertical, horizontal, vertical, horizontal);
+        } else if (marginValues.count == 1) {
+            CGFloat all = [marginValues[0] floatValue];
+            margin = UIEdgeInsetsMake(all, all, all, all);
+        }
+    }
+    
+    // Add to parent
+    [parentView addSubview:stackPanelView];
+    
+    // Set up constraints
+    NSMutableArray *constraints = [NSMutableArray array];
+    
+    // Find the last view in parent to set proper top constraint
+    UIView *lastView = nil;
+    if (parentView.subviews.count > 1) { // More than just the stackPanelView we just added
+        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
+            UIView *view = parentView.subviews[i];
+            if (view != stackPanelView) {
+                lastView = view;
+                break;
+            }
+        }
+    }
+    
+    if (lastView) {
+        [constraints addObject:[stackPanelView.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
+    } else {
+        [constraints addObject:[stackPanelView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
+    }
+    
+    [constraints addObjectsFromArray:@[
+        [stackPanelView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:margin.left],
+        [stackPanelView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-margin.right],
+    ]];
+    
+    [NSLayoutConstraint activateConstraints:constraints];
+    
+    // Render children in stack panel view
     if (node.children.count > 0) {
-        [self renderNodes:node.children inView:parentView];
+        [self renderNodes:node.children inView:stackPanelView];
+        
+        // Add bottom constraint based on last child
+        if (stackPanelView.subviews.count > 0) {
+            UIView *lastChild = stackPanelView.subviews.lastObject;
+            [NSLayoutConstraint activateConstraints:@[
+                [lastChild.bottomAnchor constraintEqualToAnchor:stackPanelView.bottomAnchor constant:-margin.bottom]
+            ]];
+        }
     }
 }
 
@@ -120,7 +194,7 @@
     UILabel *label = [[UILabel alloc] init];
     label.text = text;
     label.numberOfLines = 0;
-    label.font = [UIFont systemFontOfSize:14];
+    label.font = [UIFont systemFontOfSize:16]; // Increase default font size for better visibility
     label.textColor = [UIColor labelColor];
     
     // Apply font size if specified
@@ -172,10 +246,21 @@
     // Set up constraints
     label.translatesAutoresizingMaskIntoConstraints = NO;
     
+    // Find the last view in parent to set proper top constraint
+    UIView *lastView = nil;
+    if (parentView.subviews.count > 0) {
+        lastView = parentView.subviews.lastObject;
+    }
+    
     NSMutableArray *constraints = [NSMutableArray array];
-    [constraints addObject:[label.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16]];
-    [constraints addObject:[label.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16]];
-    [constraints addObject:[label.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]];
+    [constraints addObject:[label.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:0]];
+    [constraints addObject:[label.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:0]];
+    
+    if (lastView && lastView != label) {
+        [constraints addObject:[label.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:8]];
+    } else {
+        [constraints addObject:[label.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]];
+    }
     
     // Apply width constraint if specified
     if (widthStr != nil) {
@@ -195,7 +280,7 @@
     // Create button
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     [button setTitle:text forState:UIControlStateNormal];
-    button.titleLabel.font = [UIFont systemFontOfSize:16];
+    button.titleLabel.font = [UIFont systemFontOfSize:17]; // Increase font size for better visibility
     
     // Apply height if specified
     NSString *heightStr = node.attributes[@"Height"];
@@ -204,6 +289,9 @@
         if (height > 0) {
             [button.heightAnchor constraintEqualToConstant:height].active = YES;
         }
+    } else {
+        // Set default height
+        [button.heightAnchor constraintEqualToConstant:44].active = YES;
     }
     
     // Apply width if specified
@@ -253,7 +341,25 @@
     // Set up constraints
     button.translatesAutoresizingMaskIntoConstraints = NO;
     
+    // Find the last view in parent to set proper top constraint
+    UIView *lastView = nil;
+    if (parentView.subviews.count > 1) { // More than just the button we just added
+        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
+            UIView *view = parentView.subviews[i];
+            if (view != button) {
+                lastView = view;
+                break;
+            }
+        }
+    }
+    
     NSMutableArray *constraints = [NSMutableArray array];
+    
+    if (lastView) {
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:12]];
+    } else {
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:12]];
+    }
     
     // Apply horizontal alignment through constraints
     if ([horizontalAlignment isEqualToString:@"Center"]) {
@@ -264,22 +370,11 @@
         [constraints addObject:[button.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16]];
     }
     
-    [constraints addObjectsFromArray:@[
-        [button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]
-    ]];
-    
     // Add size constraints if specified
     if (widthStr != nil) {
         CGFloat width = [widthStr floatValue];
         if (width > 0) {
             [constraints addObject:[button.widthAnchor constraintEqualToConstant:width]];
-        }
-    }
-    
-    if (heightStr != nil) {
-        CGFloat height = [heightStr floatValue];
-        if (height > 0) {
-            [constraints addObject:[button.heightAnchor constraintEqualToConstant:height]];
         }
     }
     
@@ -293,7 +388,7 @@
     // Create text button (no border)
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     [button setTitle:text forState:UIControlStateNormal];
-    button.titleLabel.font = [UIFont systemFontOfSize:16];
+    button.titleLabel.font = [UIFont systemFontOfSize:17]; // Increase font size for better visibility
     
     // Make it look like a text button (no background, underlined)
     [button setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
@@ -315,11 +410,33 @@
     
     // Set up constraints
     button.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
+    
+    // Find the last view in parent to set proper top constraint
+    UIView *lastView = nil;
+    if (parentView.subviews.count > 1) { // More than just the button we just added
+        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
+            UIView *view = parentView.subviews[i];
+            if (view != button) {
+                lastView = view;
+                break;
+            }
+        }
+    }
+    
+    NSMutableArray *constraints = [NSMutableArray array];
+    
+    if (lastView) {
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:12]];
+    } else {
+        [constraints addObject:[button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:12]];
+    }
+    
+    [constraints addObjectsFromArray:@[
         [button.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16],
-        [button.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16],
-        [button.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]
+        [button.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16]
     ]];
+    
+    [NSLayoutConstraint activateConstraints:constraints];
 }
 
 + (void)renderHint:(HintNode *)node inView:(UIView *)parentView {
@@ -351,7 +468,7 @@
     UILabel *label = [[UILabel alloc] init];
     label.text = text;
     label.numberOfLines = 0;
-    label.font = [UIFont systemFontOfSize:14];
+    label.font = [UIFont systemFontOfSize:16]; // Increase font size for better visibility
     
     // Apply text color based on theme
     if ([theme isEqualToString:@"Blue"]) {
@@ -392,16 +509,37 @@
         }
     }
     
-    [NSLayoutConstraint activateConstraints:@[
-        [hintView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:16 + margin.left],
-        [hintView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16 - margin.right],
-        [hintView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8 + margin.top],
+    // Find the last view in parent to set proper top constraint
+    UIView *lastView = nil;
+    if (parentView.subviews.count > 1) { // More than just the hintView we just added
+        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
+            UIView *view = parentView.subviews[i];
+            if (view != hintView) {
+                lastView = view;
+                break;
+            }
+        }
+    }
+    
+    NSMutableArray *constraints = [NSMutableArray array];
+    
+    if (lastView) {
+        [constraints addObject:[hintView.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:margin.top]];
+    } else {
+        [constraints addObject:[hintView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:margin.top]];
+    }
+    
+    [constraints addObjectsFromArray:@[
+        [hintView.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor constant:0],
+        [hintView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:0],
         
         [label.leadingAnchor constraintEqualToAnchor:hintView.leadingAnchor constant:12],
         [label.trailingAnchor constraintEqualToAnchor:hintView.trailingAnchor constant:-12],
         [label.topAnchor constraintEqualToAnchor:hintView.topAnchor constant:12],
         [label.bottomAnchor constraintEqualToAnchor:hintView.bottomAnchor constant:-12]
     ]];
+    
+    [NSLayoutConstraint activateConstraints:constraints];
 }
 
 + (void)renderImage:(ImageNode *)node inView:(UIView *)parentView {
@@ -441,8 +579,25 @@
     // Set up constraints
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
     
+    // Find the last view in parent to set proper top constraint
+    UIView *lastView = nil;
+    if (parentView.subviews.count > 1) { // More than just the imageView we just added
+        for (NSInteger i = parentView.subviews.count - 2; i >= 0; i--) {
+            UIView *view = parentView.subviews[i];
+            if (view != imageView) {
+                lastView = view;
+                break;
+            }
+        }
+    }
+    
     NSMutableArray *constraints = [NSMutableArray array];
-    [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:8]];
+    
+    if (lastView) {
+        [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:lastView.bottomAnchor constant:12]];
+    } else {
+        [constraints addObject:[imageView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:12]];
+    }
     
     // Apply horizontal alignment
     if ([horizontalAlignment isEqualToString:@"Center"]) {
