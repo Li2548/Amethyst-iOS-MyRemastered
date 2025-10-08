@@ -4,7 +4,6 @@
 #import "LauncherPreferences.h"
 #import "utils.h"
 #import "PLProfiles.h"
-#import "BaseAuthenticator.h"
 
 @interface LauncherNewsViewController()<WKNavigationDelegate>
 @property (nonatomic, strong) UIScrollView *mainScrollView;
@@ -279,35 +278,24 @@ UIEdgeInsets insets;
 }
 
 - (void)updateAccountInfo {
-    NSDictionary *selected = BaseAuthenticator.current.authData;
+    // Get the currently selected account from preferences
+    NSString *selectedAccount = getPrefObject(@"internal.selected_account");
     
-    if (selected == nil) {
+    if (selectedAccount == nil || [selectedAccount isEqualToString:@""]) {
         self.usernameLabel.text = localize(@"Player", nil);
         self.accountTypeLabel.text = localize(@"No account selected", nil);
         self.avatarImageView.image = [UIImage imageNamed:@"DefaultAccount"];
         return;
     }
 
-    // Remove the prefix "Demo." if there is
-    BOOL isDemo = [selected[@"username"] hasPrefix:@"Demo."];
-    NSString *username = [selected[@"username"] substringFromIndex:(isDemo?5:0)];
-    self.usernameLabel.text = username;
+    // Set username
+    self.usernameLabel.text = selectedAccount;
 
-    if (isDemo) {
-        self.accountTypeLabel.text = localize(@"Demo Account", nil);
-    } else if (selected[@"xboxGamertag"] == nil) {
-        self.accountTypeLabel.text = localize(@"Local Account", nil);
-    } else {
-        // Display the Xbox gamertag for online accounts
-        self.accountTypeLabel.text = selected[@"xboxGamertag"];
-    }
+    // For account type, we'll use a generic label since we don't have access to BaseAuthenticator
+    self.accountTypeLabel.text = localize(@"Microsoft Account", nil);
 
-    // Set avatar image
-    NSURL *url = [NSURL URLWithString:[selected[@"profilePicURL"] stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"]];
-    if (url) {
-        UIImage *placeholder = [UIImage imageNamed:@"DefaultAccount"];
-        [self.avatarImageView setImageWithURL:url placeholderImage:placeholder];
-    }
+    // The avatar image will remain as the default since we don't have access to BaseAuthenticator
+    self.avatarImageView.image = [UIImage imageNamed:@"DefaultAccount"];
 }
 
 - (void)launchGame {
