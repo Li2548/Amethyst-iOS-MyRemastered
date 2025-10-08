@@ -1,0 +1,145 @@
+﻿2025-10-08T09:50:55.4186030Z ##[group]Run brew update
+2025-10-08T09:50:55.4186590Z [36;1mbrew update[0m
+2025-10-08T09:50:55.4186900Z [36;1mbrew install make[0m
+2025-10-08T09:50:55.4519440Z shell: /bin/bash -e {0}
+2025-10-08T09:50:55.4519830Z ##[endgroup]
+2025-10-08T09:50:58.3863660Z [34m==>[0m [1mUpdating Homebrew...[0m
+2025-10-08T09:51:13.2088770Z To restore the stashed changes to /opt/homebrew/Library/Taps/homebrew/homebrew-core, run:
+2025-10-08T09:51:13.2196240Z   cd /opt/homebrew/Library/Taps/homebrew/homebrew-core && git stash pop
+2025-10-08T09:51:15.0356380Z [34m==>[0m [1mHomebrew's analytics have entirely moved to our InfluxDB instance in the EU.[0m
+2025-10-08T09:51:15.0357370Z We gather less data than before and have destroyed all Google Analytics data:
+2025-10-08T09:51:15.0358820Z   [4mhttps://docs.brew.sh/Analytics[24m[0m
+2025-10-08T09:51:15.0360090Z Please reconsider re-enabling analytics to help our volunteer maintainers with:
+2025-10-08T09:51:15.0369170Z   brew analytics on
+2025-10-08T09:51:15.0604470Z [34m==>[0m [1mHomebrew is run entirely by unpaid volunteers. Please consider donating:[0m
+2025-10-08T09:51:15.0605510Z   [4mhttps://github.com/Homebrew/brew#donations[24m
+2025-10-08T09:51:15.0607410Z 
+2025-10-08T09:51:16.6398210Z Updated 5 taps (hashicorp/tap, azure/bicep, aws/tap, homebrew/core and homebrew/cask).
+2025-10-08T09:51:16.6416400Z [34m==>[0m [1mNew Formulae[0m
+2025-10-08T09:51:17.0676660Z airtable-mcp-server: MCP Server for Airtable
+2025-10-08T09:51:17.0677820Z archgw: CLI for Arch Gateway
+2025-10-08T09:51:17.0678480Z cagent: Agent Builder and Runtime by Docker Engineering
+2025-10-08T09:51:17.0679100Z chrome-devtools-mcp: Chrome DevTools for coding agents
+2025-10-08T09:51:17.0680250Z cliproxyapi: Wrap Gemini CLI, Codex, Claude Code, Qwen Code as an API service
+2025-10-08T09:51:17.0681130Z config-file-validator: CLI tool to validate different configuration file types
+2025-10-08T09:51:17.0681980Z container-compose: Manage Apple Container with Docker Compose files
+2025-10-08T09:51:17.0686500Z ctrld: Highly configurable, multi-protocol DNS forwarding proxy
+2025-10-08T09:51:17.0688600Z dnote: Simple command-line notebook
+2025-10-08T09:51:17.0691120Z fernflower: Advanced decompiler for Java bytecode
+2025-10-08T09:51:17.0699090Z granted: Easiest way to access your cloud
+2025-10-08T09:51:17.0708670Z jiratui: Textual User Interface for interacting with Atlassian Jira from your shell
+2025-10-08T09:51:17.0722460Z libptytty: Library for OS-independent pseudo-TTY management
+2025-10-08T09:51:17.0737840Z litehtml: Fast and lightweight HTML/CSS rendering engine
+2025-10-08T09:51:17.0751230Z mcp-google-sheets: MCP server integrates with your Google Drive and Google Sheets
+2025-10-08T09:51:17.0758270Z mcp-grafana: MCP server for Grafana
+2025-10-08T09:51:17.0764830Z mdserve: Fast markdown preview server with live reload and theme support
+2025-10-08T09:51:17.0773000Z mlx-lm: Run LLMs with MLX
+2025-10-08T09:51:17.0782640Z n8n-mcp: MCP for Claude Desktop, Claude Code, Windsurf, Cursor to build n8n workflows
+2025-10-08T09:51:17.0788320Z openblas64: Optimized BLAS library
+2025-10-08T09:51:17.0796730Z openssl@3.5: Cryptography and SSL/TLS Toolkit
+2025-10-08T09:51:17.0803760Z playwright-mcp: MCP server for Playwright
+2025-10-08T09:51:17.0812200Z portable-libffi: Portable Foreign Function Interface library
+2025-10-08T09:51:17.0820630Z portable-libxcrypt: Extended crypt library for descrypt, md5crypt, bcrypt, and others
+2025-10-08T09:51:17.0828060Z portable-libyaml: YAML Parser
+2025-10-08T09:51:17.0833430Z portable-openssl: Cryptography and SSL/TLS Toolkit
+2025-10-08T09:51:17.0839340Z portable-ruby: Powerful, clean, object-oriented scripting language
+2025-10-08T09:51:17.0848530Z portable-zlib: General-purpose lossless data-compression library
+2025-10-08T09:51:17.0852110Z qt3d: Provides functionality for near-realtime simulation systems
+2025-10-08T09:51:17.0857560Z qt5compat: Qt 5 Core APIs that were removed in Qt 6
+2025-10-08T09:51:17.0865740Z qtbase: Cross-platform application and UI framework
+2025-10-08T09:51:17.0896800Z qtcharts: UI Components for displaying visually pleasing charts
+2025-10-08T09:51:17.0917420Z qtconnectivity: Provides access to Bluetooth hardware
+2025-10-08T09:51:17.0931370Z qtdatavis3d: Provides functionality for 3D visualization
+2025-10-08T09:51:17.0942070Z qtdeclarative: QML, Qt Quick and several related modules
+2025-10-08T09:51:17.0954240Z qtgraphs: Provides functionality for 2D and 3D graphs
+2025-10-08T09:51:17.0969670Z qtgrpc: Provides support for communicating with gRPC services
+2025-10-08T09:51:17.0981340Z qthttpserver: Framework for embedding an HTTP server into a Qt application
+2025-10-08T09:51:17.0990200Z qtimageformats: Plugins for additional image formats: TIFF, MNG, TGA, WBMP
+2025-10-08T09:51:17.1002700Z qtlanguageserver: Implementation of the Language Server Protocol and JSON-RPC
+2025-10-08T09:51:17.1013680Z qtlocation: Provides C++ interfaces to retrieve location and navigational information
+2025-10-08T09:51:17.1026300Z qtlottie: Display graphics and animations exported by the Bodymovin plugin
+2025-10-08T09:51:17.1040280Z qtmultimedia: Provides APIs for playing back and recording audiovisual content
+2025-10-08T09:51:17.1050670Z qtnetworkauth: Provides support for OAuth-based authorization to online services
+2025-10-08T09:51:17.1063060Z qtpositioning: Provides access to position, satellite info and area monitoring classes
+2025-10-08T09:51:17.1073940Z qtquick3d: Provides a high-level API for creating 3D content or UIs based on Qt Quick
+2025-10-08T09:51:17.1086800Z qtquick3dphysics: High-level QML module adding physical simulation capabilities to Qt Quick 3D
+2025-10-08T09:51:17.1098090Z qtquickeffectmaker: Tool to create custom Qt Quick shader effects
+2025-10-08T09:51:17.1109220Z qtquicktimeline: Enables keyframe-based animations and parameterization
+2025-10-08T09:51:17.1131180Z qtremoteobjects: Provides APIs for inter-process communication
+2025-10-08T09:51:17.1149330Z qtscxml: Provides functionality to create state machines from SCXML files
+2025-10-08T09:51:17.1166450Z qtsensors: Provides access to sensors via QML and C++ interfaces
+2025-10-08T09:51:17.1181930Z qtserialbus: Provides access to serial industrial bus interfaces
+2025-10-08T09:51:17.1199540Z qtserialport: Provides classes to interact with hardware and virtual serial ports
+2025-10-08T09:51:17.1218020Z qtshadertools: Provides tools for the cross-platform Qt shader pipeline
+2025-10-08T09:51:17.1233530Z qtspeech: Enables access to text-to-speech engines
+2025-10-08T09:51:17.1245550Z qtsvg: Classes for displaying the contents of SVG files
+2025-10-08T09:51:17.1256020Z qttools: Facilitate the design, development, testing and deployment of applications
+2025-10-08T09:51:17.1267340Z qttranslations: Qt translation catalogs
+2025-10-08T09:51:17.1275750Z qtvirtualkeyboard: Provides an input framework and reference keyboard frontend
+2025-10-08T09:51:17.1281350Z qtwayland: Wayland platform plugin and QtWaylandCompositor API
+2025-10-08T09:51:17.1294480Z qtwebchannel: Bridges the gap between Qt applications and HTML/JavaScript
+2025-10-08T09:51:17.1296070Z qtwebengine: Provides functionality for rendering regions of dynamic web content
+2025-10-08T09:51:17.1301590Z qtwebsockets: Provides WebSocket communication compliant with RFC 6455
+2025-10-08T09:51:17.1306900Z qtwebview: Displays web content in a QML application
+2025-10-08T09:51:17.1314380Z radvd: IPv6 Router Advertisement Daemon
+2025-10-08T09:51:17.1320220Z salesforce-mcp: MCP Server for interacting with Salesforce instances
+2025-10-08T09:51:17.1326590Z sarif-tools: Set of command-line tools and Python library for working with SARIF files
+2025-10-08T09:51:17.1335060Z snooze: Run a command at a particular time
+2025-10-08T09:51:17.1344860Z wassette: Security-oriented runtime that runs WebAssembly Components via MCP
+2025-10-08T09:51:17.1353810Z yamlresume: Resumes as code in YAML
+2025-10-08T09:51:17.1377530Z yuque-dl: Knowledge base downloader for Yuque
+2025-10-08T09:51:17.1413630Z [34m==>[0m [1mNew Casks[0m
+2025-10-08T09:51:17.3450490Z 4k-image-compressor: Image compressor
+2025-10-08T09:51:17.3451530Z 4k-tokkit: Download TikTok videos and accounts
+2025-10-08T09:51:17.3452330Z atuin-desktop: Runbook editor for terminal workflows
+2025-10-08T09:51:17.3452580Z browseros: Open-source agentic browser
+2025-10-08T09:51:17.3452770Z font-kedebideri
+2025-10-08T09:51:17.3453000Z font-momo-signature
+2025-10-08T09:51:17.3453170Z font-momo-trust-display
+2025-10-08T09:51:17.3453320Z font-momo-trust-sans
+2025-10-08T09:51:17.3453510Z font-with-a-syntax-highlighter
+2025-10-08T09:51:17.3454090Z glide-browser: Extensible, firefox-based web browser
+2025-10-08T09:51:17.3454460Z graalvm-jdk@25: GraalVM from Oracle
+2025-10-08T09:51:17.3454750Z handy: Speech to text application
+2025-10-08T09:51:17.3454920Z iaito: GUI for radare2
+2025-10-08T09:51:17.3456840Z microsoft-openjdk@25: OpenJDK distribution from Microsoft
+2025-10-08T09:51:17.3460680Z oracle-jdk-javadoc@25: Documentation for the Oracle JDK
+2025-10-08T09:51:17.3465130Z oracle-jdk@25: JDK from Oracle
+2025-10-08T09:51:17.3471210Z semeru-jdk-open@25: Production-ready JDK with the OpenJDK class libraries and the Eclipse OpenJ9 JVM
+2025-10-08T09:51:17.3477030Z socialstream: Consolidate, control, and customise live social messaging streams
+2025-10-08T09:51:17.3485290Z supportcompanion: Provides utility and support tools
+2025-10-08T09:51:17.3492360Z temurin@25: JDK from the Eclipse Foundation (Adoptium)
+2025-10-08T09:51:17.3499830Z zulu@25: OpenJDK distribution from Azul
+2025-10-08T09:51:17.9356730Z [34m==>[0m [1mOutdated Formulae[0m
+2025-10-08T09:51:17.9357240Z bicep
+2025-10-08T09:51:17.9357760Z certifi
+2025-10-08T09:51:17.9357990Z cmake
+2025-10-08T09:51:17.9358780Z cryptography
+2025-10-08T09:51:17.9358980Z gcc
+2025-10-08T09:51:17.9359150Z gh
+2025-10-08T09:51:17.9359320Z git
+2025-10-08T09:51:17.9359420Z harfbuzz
+2025-10-08T09:51:17.9359650Z libgpg-error
+2025-10-08T09:51:17.9359760Z libunistring
+2025-10-08T09:51:17.9359870Z openssl@3
+2025-10-08T09:51:17.9360050Z pipx
+2025-10-08T09:51:17.9360150Z ruby@3.3
+2025-10-08T09:51:17.9360310Z selenium-server
+2025-10-08T09:51:17.9360520Z swiftformat
+2025-10-08T09:51:17.9360680Z 
+2025-10-08T09:51:17.9360890Z You have [1m15[0m outdated formulae installed.
+2025-10-08T09:51:17.9361210Z You can upgrade them with [1mbrew upgrade[0m
+2025-10-08T09:51:17.9361510Z or list them with [1mbrew outdated[0m.
+2025-10-08T09:51:19.9455430Z [32m==>[0m [1mFetching downloads for: [32mmake[39m[0m
+2025-10-08T09:51:19.9474770Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/make/manifests/4.4.1-1[0m
+2025-10-08T09:51:20.3941290Z [32m==>[0m [1mFetching [32mmake[39m[0m
+2025-10-08T09:51:20.3946630Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/make/blobs/sha256:94377dc5a364da305c75fd7aa923a42897993de9edd1eb074428e13c3f2aaf93[0m
+2025-10-08T09:51:20.7713200Z [34m==>[0m [1mPouring make--4.4.1.arm64_sonoma.bottle.1.tar.gz[0m
+2025-10-08T09:51:20.9192170Z [34m==>[0m [1mCaveats[0m
+2025-10-08T09:51:20.9192440Z GNU "make" has been installed as "gmake".
+2025-10-08T09:51:20.9192760Z If you need to use it as "make", you can add a "gnubin" directory
+2025-10-08T09:51:20.9193030Z to your PATH from your bashrc like:
+2025-10-08T09:51:20.9193160Z 
+2025-10-08T09:51:20.9193250Z     PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+2025-10-08T09:51:20.9193630Z [34m==>[0m [1mSummary[0m
+2025-10-08T09:51:20.9204370Z 🍺  /opt/homebrew/Cellar/make/4.4.1: 17 files, 1.3MB

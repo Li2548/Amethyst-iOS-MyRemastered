@@ -1,4 +1,5 @@
 #import "XamlRenderer.h"
+#import <objc/runtime.h>
 
 @implementation XamlRenderer
 
@@ -85,7 +86,7 @@
     if (canSwap) {
         // Create a tap gesture recognizer
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleCard:)];
-        tapGesture.viewTag = (NSUInteger)cardView; // Store reference to card view
+        tapGesture.view = cardView; // Store reference to card view
         [titleLabel addGestureRecognizer:tapGesture];
         titleLabel.userInteractionEnabled = YES;
         
@@ -296,7 +297,9 @@
     
     // Make it look like a text button (no background, underlined)
     [button setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
-    button.titleLabel.underlineStyle = NSUnderlineStyleSingle;
+    // Use attributed string to add underline
+    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:text attributes:@{NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle)}];
+    [button.setAttributedTitle:attributedString forState:UIControlStateNormal];
     
     // Apply height if specified
     NSString *heightStr = node.attributes[@"Height"];
@@ -512,9 +515,14 @@
 }
 
 + (void)toggleCard:(UITapGestureRecognizer *)gesture {
-    // This method would handle toggling the card's content
-    // In a real implementation, you would store a reference to the content view
-    // and toggle its visibility when the title is tapped
+    // Get the card view from the gesture recognizer
+    UIView *cardView = gesture.view;
+    
+    // Find the content view within the card (assuming it's the second subview)
+    if (cardView.subviews.count >= 2) {
+        UIView *contentView = cardView.subviews[1]; // Assuming content view is the second subview
+        contentView.hidden = !contentView.hidden;
+    }
 }
 
 + (void)handleButtonEvent:(UIButton *)sender forEvent:(UIEvent *)event {
@@ -552,7 +560,13 @@
 }
 
 + (UIViewController *)getCurrentViewController {
-    UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
+    UIWindow *window = [[UIApplication sharedApplication] delegate].window;
+    if (window == nil) {
+        // Fallback to keyWindow if window is nil
+        window = [UIApplication sharedApplication].keyWindow;
+    }
+    
+    UIViewController *vc = window.rootViewController;
     if (vc == nil) {
         return nil;
     }

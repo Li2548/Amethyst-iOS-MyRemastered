@@ -3,9 +3,9 @@
 
 @interface CustomIconManager : NSObject
 
-+ (instancetype)sharedManager;
-- (void)saveCustomIcon:(UIImage *)image withCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
-- (void)setCustomIconWithCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
++ (instancetype _Nonnull)sharedManager;
+- (void)saveCustomIcon:(UIImage * _Nonnull)image withCompletion:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completion;
+- (void)setCustomIconWithCompletion:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completion;
 - (BOOL)hasCustomIcon;
 - (void)removeCustomIcon;
 

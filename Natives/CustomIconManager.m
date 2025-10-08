@@ -8,7 +8,7 @@
 
 @implementation CustomIconManager
 
-+ (instancetype)sharedManager {
++ (instancetype _Nonnull)sharedManager {
     static CustomIconManager *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -28,7 +28,7 @@
     return self;
 }
 
-- (void)saveCustomIcon:(UIImage *)image withCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion {
+- (void)saveCustomIcon:(UIImage * _Nonnull)image withCompletion:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completion {
     // 将图片保存到文档目录
     NSData *imageData = UIImagePNGRepresentation(image);
     if (!imageData) {
@@ -46,7 +46,7 @@
     }
 }
 
-- (void)setCustomIconWithCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion {
+- (void)setCustomIconWithCompletion:(void (^ _Nullable)(BOOL success, NSError * _Nullable error))completion {
     // 检查是否支持替换图标
     if (!UIApplication.sharedApplication.supportsAlternateIcons) {
         if (completion) {

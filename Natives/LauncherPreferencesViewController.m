@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "DBNumberedSlider.h"
 #import "HostManagerBridge.h"
@@ -63,11 +64,24 @@
 
 - (void)openXAMLFilePicker {
     // 创建文档选择器来导入XAML文件
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.xml"] inMode:UIDocumentPickerModeImport];
-    documentPicker.delegate = self;
-    documentPicker.allowsMultipleSelection = NO;
-    
-    [self presentViewController:documentPicker animated:YES completion:nil];
+    if (@available(iOS 14.0, *)) {
+        // 使用新的初始化方法
+        NSArray *contentTypes = @[
+            [UTType typeWithFilenameExtension:@"xaml"]
+        ];
+        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:contentTypes];
+        documentPicker.delegate = self;
+        documentPicker.allowsMultipleSelection = NO;
+        
+        [self presentViewController:documentPicker animated:YES completion:nil];
+    } else {
+        // 保持旧版本的兼容性
+        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.xml"] inMode:UIDocumentPickerModeImport];
+        documentPicker.delegate = self;
+        documentPicker.allowsMultipleSelection = NO;
+        
+        [self presentViewController:documentPicker animated:YES completion:nil];
+    }
 }
 
 #pragma mark - UIImagePickerControllerDelegate

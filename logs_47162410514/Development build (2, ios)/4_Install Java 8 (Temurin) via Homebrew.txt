@@ -1,0 +1,18 @@
+﻿2025-10-08T09:51:20.9599650Z ##[group]Run brew install --cask temurin@8 || true
+2025-10-08T09:51:20.9599970Z [36;1mbrew install --cask temurin@8 || true[0m
+2025-10-08T09:51:20.9755340Z shell: /bin/bash -e {0}
+2025-10-08T09:51:20.9755720Z ##[endgroup]
+2025-10-08T09:51:21.7010080Z [34m==>[0m [1mCaveats[0m
+2025-10-08T09:51:21.7010970Z temurin@8 is built for Intel macOS and so requires Rosetta 2 to be installed.
+2025-10-08T09:51:21.7011380Z You can install Rosetta 2 with:
+2025-10-08T09:51:21.7011730Z   softwareupdate --install-rosetta --agree-to-license
+2025-10-08T09:51:21.7012110Z Note that it is very difficult to remove Rosetta 2 once it is installed.
+2025-10-08T09:51:21.7012400Z 
+2025-10-08T09:51:22.1501850Z [34m==>[0m [1mDownloading https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u462-b08/OpenJDK8U-jdk_x64_mac_hotspot_8u462b08.pkg[0m
+2025-10-08T09:51:22.1507180Z [34m==>[0m [1mDownloading from https://release-assets.githubusercontent.com/github-production-release-asset/372924428/4ef1c15f-92c6-44da-8245-30cfb5287697?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-10-08T10%3A24%3A40Z&rscd=attachment%3B+filename%3DOpenJDK8U-jdk_x64_mac_hotspot_8u462b08.pkg&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-10-08T09%3A24%3A25Z&ske=2025-10-08T10%3A24%3A40Z&sks=b&skv=2018-11-09&sig=DlAMIkQA7QD4UjBwu%2FupTe1har2ZTBjy8L1EcCOsHtA%3D&jwt=***
+2025-10-08T09:51:26.2947200Z [32m==>[0m [1mInstalling Cask [32mtemurin@8[39m[0m
+2025-10-08T09:51:26.3635320Z [34m==>[0m [1mRunning installer for temurin@8 with `sudo` (which may request your password)...[0m
+2025-10-08T09:51:52.5625440Z installer: Package name is Eclipse Temurin
+2025-10-08T09:51:52.5639050Z installer: Installing at base path /
+2025-10-08T09:51:52.5639680Z installer: The install was successful.
+2025-10-08T09:51:52.6354560Z 🍺  temurin@8 was successfully installed!

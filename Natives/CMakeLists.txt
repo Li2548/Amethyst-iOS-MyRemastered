@@ -217,6 +217,7 @@ endif()
 set(XAML_FILES
   "${CMAKE_CURRENT_LIST_DIR}/home.xaml"
   "${CMAKE_CURRENT_LIST_DIR}/test_shardlauncher.xaml"
+  "${CMAKE_CURRENT_LIST_DIR}/shardlauncher_compatibility_test.xaml"
 )
 foreach(_xaml ${XAML_FILES})
   if(EXISTS ${_xaml})

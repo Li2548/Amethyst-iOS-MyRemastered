@@ -174,7 +174,14 @@
     } else if ([tagName isEqualToString:@"local:MyImage"]) {
         return [[ImageNode alloc] initWithAttributes:attributes];
     } else {
-        return [[UnknownNode alloc] initWithTagName:tagName children:children];
+        // Handle other local:My* elements as generic nodes for now
+        if ([tagName hasPrefix:@"local:My"]) {
+            // For now, treat all local:My* elements as generic nodes
+            // In a more complete implementation, we would have specific classes for each
+            return [[UnknownNode alloc] initWithTagName:tagName children:children];
+        } else {
+            return [[UnknownNode alloc] initWithTagName:tagName children:children];
+        }
     }
 }
 
