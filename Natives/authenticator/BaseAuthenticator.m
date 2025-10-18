@@ -20,6 +20,12 @@ static BaseAuthenticator *current = nil;
     current = auth;
 }
 
++ (NSDictionary *)tokenDataOfProfile:(NSString *)profile {
+    // This is a base implementation that can be overridden by subclasses
+    // For MicrosoftAuthenticator, this method is implemented in its category
+    return nil;
+}
+
 + (id)loadSavedName:(NSString *)name {
     NSMutableDictionary *authData = parseJSONFromFile([NSString stringWithFormat:@"%s/accounts/%@.json", getenv("POJAV_HOME"), name]);
     if (authData[@"NSErrorObject"] != nil) {

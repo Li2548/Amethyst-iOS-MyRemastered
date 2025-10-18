@@ -250,7 +250,12 @@
         }
     };
     vc.whenItemSelected = ^void() {
-        setPrefObject(@"internal.selected_account", BaseAuthenticator.current.authData[@"username"]);
+        BaseAuthenticator *currentAuth = (BaseAuthenticator *)BaseAuthenticator.current;
+        if (currentAuth != nil && currentAuth.authData != nil) {
+            setPrefObject(@"internal.selected_account", currentAuth.authData[@"username"]);
+        } else {
+            setPrefObject(@"internal.selected_account", @"");
+        }
         [self updateAccountInfo];
         if (sender != self.accountButton) {
             // Called from the play button, so call back to continue
@@ -269,10 +274,11 @@
 }
 
 - (void)updateAccountInfo {
-    NSDictionary *selected = BaseAuthenticator.current.authData;
+    BaseAuthenticator *currentAuth = (BaseAuthenticator *)BaseAuthenticator.current;
+    NSDictionary *selected = currentAuth.authData;
     CGSize size = CGSizeMake(contentNavigationController.view.frame.size.width, contentNavigationController.view.frame.size.height);
     
-    if (selected == nil) {
+    if (selected == nil || currentAuth == nil) {
         if((size.width / 3) > 200) {
             [self.accountButton setAttributedTitle:[[NSAttributedString alloc] initWithString:localize(@"login.option.select", nil)] forState:UIControlStateNormal];
         } else {

@@ -9,6 +9,7 @@ typedef void(^Callback)(id status, BOOL success);
 + (id)current;
 + (void)setCurrent:(BaseAuthenticator *)auth;
 + (id)loadSavedName:(NSString *)name;
++ (NSDictionary *)tokenDataOfProfile:(NSString *)profile;
 
 - (id)initWithData:(NSMutableDictionary *)data;
 - (id)initWithInput:(NSString *)string;
