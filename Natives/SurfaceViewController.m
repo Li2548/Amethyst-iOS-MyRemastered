@@ -181,7 +181,20 @@ static GameSurfaceView* pojavWindow;
     self.mousePointerView = [[UIImageView alloc] initWithFrame:virtualMouseFrame];
     self.mousePointerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin |UIViewAutoresizingFlexibleBottomMargin;
     self.mousePointerView.hidden = !virtualMouseEnabled;
-    self.mousePointerView.image = [UIImage imageNamed:@"MousePointer"];
+    
+    // Check if custom mouse pointer exists
+    NSString *customMousePointerPath = getPrefObject(@"control.custom_mouse_pointer_path");
+    if (customMousePointerPath && [[NSFileManager defaultManager] fileExistsAtPath:customMousePointerPath]) {
+        UIImage *customMousePointerImage = [UIImage imageWithContentsOfFile:customMousePointerPath];
+        if (customMousePointerImage) {
+            self.mousePointerView.image = customMousePointerImage;
+        } else {
+            self.mousePointerView.image = [UIImage imageNamed:@"MousePointer"];
+        }
+    } else {
+        self.mousePointerView.image = [UIImage imageNamed:@"MousePointer"];
+    }
+    
     self.mousePointerView.userInteractionEnabled = NO;
     [self.touchView addSubview:self.mousePointerView];
 

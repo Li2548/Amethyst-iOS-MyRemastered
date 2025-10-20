@@ -1,4 +1,6 @@
 #import <Foundation/Foundation.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#import <Photos/Photos.h>
 
 #import "DBNumberedSlider.h"
 #import "HostManagerBridge.h"
@@ -17,8 +19,9 @@
 #import "ImageCropperViewController.h"
 #import "CustomIconManager.h"
 
-@interface LauncherPreferencesViewController()
+@interface LauncherPreferencesViewController() <UIDocumentPickerDelegate>
 @property(nonatomic) NSArray<NSString*> *rendererKeys, *rendererList;
+@property(nonatomic) UIImage *selectedMousePointerImage;
 @end
 
 @implementation LauncherPreferencesViewController
@@ -61,7 +64,7 @@
     });
 }
 
-#pragma mark - UIImagePickerControllerDelegate
+#pragma mark - UIImagePickerControllerDelegate (Custom Icon)
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
     [picker dismissViewControllerAnimated:YES completion:^{
@@ -130,6 +133,41 @@
     }];
 }
 
+#pragma mark - UIImagePickerControllerDelegate (Mouse Pointer)
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+    [picker dismissViewControllerAnimated:YES completion:^{
+        UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
+        if (!selectedImage) {
+            [self showCustomIconError:@"无法获取选中的图片"];
+            return;
+        }
+        
+        // 在后台线程处理图片
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            // 创建临时文件URL
+            NSURL *tempURL = [self createTemporaryImageURL:selectedImage];
+            if (tempURL) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self processSelectedImageAtURL:tempURL];
+                });
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showCustomIconError:@"创建临时文件失败"];
+                });
+            }
+        });
+    }];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showCustomIconError:@"图片选择已取消"];
+        });
+    }];
+}
+
 #pragma mark - Custom Icon Helper Methods
 
 - (void)showProcessingIndicator {
@@ -154,6 +192,191 @@
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
     [alert addAction:okAction];
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)showMousePointerSelectionAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"更改鼠标指针" message:@"请选择如何选择鼠标指针图片" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *fileAction = [UIAlertAction actionWithTitle:@"从文件中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self selectMousePointerFromFile];
+    }];
+    
+    UIAlertAction *photoAction = [UIAlertAction actionWithTitle:@"从图库中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self selectMousePointerFromPhoto];
+    }];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+    
+    [alert addAction:fileAction];
+    [alert addAction:photoAction];
+    [alert addAction:cancelAction];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)selectMousePointerFromFile {
+    if (@available(iOS 14.0, *)) {
+        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithForOpeningContentTypes:@[
+            UTTypePNG,
+            UTTypeJPEG,
+            UTTypeTIFF,
+            UTTypeBMP,
+            UTTypeGIF
+        ] allowMultipleSelection:NO];
+        documentPicker.delegate = self;
+        [self presentViewController:documentPicker animated:YES completion:nil];
+    } else {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"不支持" message:@"文件选择功能需要iOS 14.0或更高版本" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:okAction];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (void)selectMousePointerFromPhoto {
+    // 检查照片库访问权限
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (status == PHAuthorizationStatusAuthorized) {
+                // 权限已授权
+                UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+                imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                imagePicker.delegate = self;
+                imagePicker.mediaTypes = @[(NSString *)kUTTypeImage]; // 只显示图片
+                [self presentViewController:imagePicker animated:YES completion:nil];
+            } else {
+                // 权限未授权
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"访问受限" message:@"请前往设置开启对照片库的访问权限" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"前往设置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+                }];
+                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+                [alert addAction:settingsAction];
+                [alert addAction:cancelAction];
+                [self presentViewController:alert animated:YES completion:nil];
+            }
+        });
+    }];
+}
+
+#pragma mark - UIDocumentPickerDelegate
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didFinishPickingDocumentsWithURLs:(NSArray<NSURL *> *)urls {
+    if (urls.count > 0) {
+        NSURL *selectedFileURL = urls[0];
+        [self processSelectedImageAtURL:selectedFileURL];
+    }
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
+    // 用户取消选择
+    [self showCustomIconError:@"文件选择已取消"];
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+    [picker dismissViewControllerAnimated:YES completion:^{
+        UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
+        if (!selectedImage) {
+            [self showCustomIconError:@"无法获取选中的图片"];
+            return;
+        }
+        
+        // 在后台线程处理图片
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            // 创建临时文件URL
+            NSURL *tempURL = [self createTemporaryImageURL:selectedImage];
+            if (tempURL) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self processSelectedImageAtURL:tempURL];
+                });
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showCustomIconError:@"创建临时文件失败"];
+                });
+            }
+        });
+    }];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showCustomIconError:@"图片选择已取消"];
+        });
+    }];
+}
+
+- (NSURL *)createTemporaryImageURL:(UIImage *)image {
+    // 创建临时目录
+    NSURL *tempDirectory = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+    NSString *fileName = [NSString stringWithFormat:@"mouse_pointer_temp_%@.png", [[NSUUID UUID] UUIDString]];
+    NSURL *tempFileURL = [tempDirectory URLByAppendingPathComponent:fileName];
+    
+    // 将图片保存为PNG格式
+    NSData *imageData = UIImagePNGRepresentation(image);
+    if ([imageData writeToFile:tempFileURL.path atomically:YES]) {
+        return tempFileURL;
+    }
+    
+    return nil;
+}
+
+- (void)processSelectedImageAtURL:(NSURL *)fileURL {
+    // 在后台线程处理图片
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        // 读取图片
+        UIImage *originalImage = [UIImage imageWithContentsOfFile:fileURL.path];
+        if (!originalImage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showCustomIconError:@"无法读取选中的图片文件"];
+            });
+            return;
+        }
+        
+        // 检查图片尺寸是否合适
+        CGSize imageSize = originalImage.size;
+        if (imageSize.width > 534 || imageSize.height > 800) {
+            // 如果图片太大，进行缩放
+            float scale = MIN(MIN(534.0f / imageSize.width, 800.0f / imageSize.height), 1.0f);
+            CGSize newSize = CGSizeMake(imageSize.width * scale, imageSize.height * scale);
+            
+            UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+            [originalImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+            UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            originalImage = scaledImage;
+        }
+        
+        // 保存图片到应用文档目录
+        NSURL *documentsDirectory = [NSURL fileURLWithPath:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject]];
+        NSString *destinationPath = [documentsDirectory.path stringByAppendingPathComponent:@"custom_mouse_pointer.png"];
+        
+        NSData *imageData = UIImagePNGRepresentation(originalImage);
+        if ([imageData writeToFile:destinationPath atomically:YES]) {
+            // 设置为选中的鼠标指针图片
+            self.selectedMousePointerImage = originalImage;
+            
+            // 通知用户操作成功
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showSuccessMessage:@"鼠标指针已更新"];
+                
+                // 保存到偏好设置中，以便在SurfaceViewController中使用
+                setPrefObject(@"control.custom_mouse_pointer_path", destinationPath);
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showCustomIconError:@"保存鼠标指针图片失败"];
+            });
+        }
+        
+        // 删除临时文件（如果需要）
+        if ([[fileURL.path componentsSeparatedByString:@"/"] containsObject:@"mouse_pointer_temp_"]) {
+            [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
+        }
+    });
 }
 
 - (void)viewDidLoad
@@ -455,6 +678,14 @@
                 @"hasDetail": @YES,
                 @"icon": @"cursorarrow.rays",
                 @"type": self.typeSwitch
+            },
+            @{@"key": @"change_mouse_pointer",
+                @"hasDetail": @YES,
+                @"icon": @"cursorarrow",
+                @"type": self.typeButton,
+                @"action": ^void(){
+                    [self showMousePointerSelectionAlert];
+                }
             },
             @{@"key": @"gyroscope_enable",
                 @"hasDetail": @YES,
