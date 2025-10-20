@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <Photos/Photos.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import "DBNumberedSlider.h"
 #import "HostManagerBridge.h"
@@ -19,9 +20,10 @@
 #import "ImageCropperViewController.h"
 #import "CustomIconManager.h"
 
-@interface LauncherPreferencesViewController() <UIDocumentPickerDelegate>
+@interface LauncherPreferencesViewController() <UIDocumentPickerDelegate, UIImagePickerControllerDelegate>
 @property(nonatomic) NSArray<NSString*> *rendererKeys, *rendererList;
 @property(nonatomic) UIImage *selectedMousePointerImage;
+@property(nonatomic) BOOL isSelectingMousePointer;
 @end
 
 @implementation LauncherPreferencesViewController
@@ -137,9 +139,15 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
     [picker dismissViewControllerAnimated:YES completion:^{
+        // 只有在选择鼠标指针时才处理
+        if (!self.isSelectingMousePointer) {
+            return;
+        }
+        
         UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
         if (!selectedImage) {
             [self showCustomIconError:@"无法获取选中的图片"];
+            self.isSelectingMousePointer = NO; // 重置标志
             return;
         }
         
@@ -150,10 +158,12 @@
             if (tempURL) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self processSelectedImageAtURL:tempURL];
+                    self.isSelectingMousePointer = NO; // 重置标志
                 });
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self showCustomIconError:@"创建临时文件失败"];
+                    self.isSelectingMousePointer = NO; // 重置标志
                 });
             }
         });
@@ -163,7 +173,10 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self showCustomIconError:@"图片选择已取消"];
+            if (self.isSelectingMousePointer) {
+                [self showCustomIconError:@"图片选择已取消"];
+                self.isSelectingMousePointer = NO; // 重置标志
+            }
         });
     }];
 }
@@ -195,7 +208,7 @@
 }
 
 - (void)showMousePointerSelectionAlert {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"更改鼠标指针" message:@"请选择如何选择鼠标指针图片" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"更改鼠标指针" message:@"请选择鼠标指针图片来源" preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *fileAction = [UIAlertAction actionWithTitle:@"从文件中选择" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self selectMousePointerFromFile];
@@ -205,28 +218,34 @@
         [self selectMousePointerFromPhoto];
     }];
     
+    UIAlertAction *resetAction = [UIAlertAction actionWithTitle:@"恢复默认" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [self resetMousePointerToDefault];
+    }];
+    
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
     
     [alert addAction:fileAction];
     [alert addAction:photoAction];
+    [alert addAction:resetAction];
     [alert addAction:cancelAction];
     
     [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)selectMousePointerFromFile {
-    if (@available(iOS 14.0, *)) {
-        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithForOpeningContentTypes:@[
+    if (@available(iOS 14.5, *)) {
+        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[
             UTTypePNG,
             UTTypeJPEG,
             UTTypeTIFF,
             UTTypeBMP,
             UTTypeGIF
-        ] allowMultipleSelection:NO];
+        ]];
         documentPicker.delegate = self;
+        documentPicker.allowsMultipleSelection = NO;
         [self presentViewController:documentPicker animated:YES completion:nil];
     } else {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"不支持" message:@"文件选择功能需要iOS 14.0或更高版本" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"不支持" message:@"文件选择功能需要iOS 14.5或更高版本" preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil];
         [alert addAction:okAction];
         [self presentViewController:alert animated:YES completion:nil];
@@ -239,10 +258,11 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (status == PHAuthorizationStatusAuthorized) {
                 // 权限已授权
+                self.isSelectingMousePointer = YES; // 设置标志表示正在选择鼠标指针
                 UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
                 imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
                 imagePicker.delegate = self;
-                imagePicker.mediaTypes = @[(NSString *)kUTTypeImage]; // 只显示图片
+                imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
                 [self presentViewController:imagePicker animated:YES completion:nil];
             } else {
                 // 权限未授权
@@ -271,41 +291,6 @@
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
     // 用户取消选择
     [self showCustomIconError:@"文件选择已取消"];
-}
-
-#pragma mark - UIImagePickerControllerDelegate
-
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
-    [picker dismissViewControllerAnimated:YES completion:^{
-        UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
-        if (!selectedImage) {
-            [self showCustomIconError:@"无法获取选中的图片"];
-            return;
-        }
-        
-        // 在后台线程处理图片
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            // 创建临时文件URL
-            NSURL *tempURL = [self createTemporaryImageURL:selectedImage];
-            if (tempURL) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self processSelectedImageAtURL:tempURL];
-                });
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self showCustomIconError:@"创建临时文件失败"];
-                });
-            }
-        });
-    }];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    [picker dismissViewControllerAnimated:YES completion:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self showCustomIconError:@"图片选择已取消"];
-        });
-    }];
 }
 
 - (NSURL *)createTemporaryImageURL:(UIImage *)image {
@@ -376,6 +361,21 @@
         if ([[fileURL.path componentsSeparatedByString:@"/"] containsObject:@"mouse_pointer_temp_"]) {
             [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
         }
+    }];
+}
+
+- (void)resetMousePointerToDefault {
+    // 删除自定义鼠标指针文件
+    NSString *customMousePointerPath = getPrefObject(@"control.custom_mouse_pointer_path");
+    if (customMousePointerPath && [[NSFileManager defaultManager] fileExistsAtPath:customMousePointerPath]) {
+        [[NSFileManager defaultManager] removeItemAtPath:customMousePointerPath error:nil];
+    }
+    
+    // 清除偏好设置
+    setPrefObject(@"control.custom_mouse_pointer_path", nil);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showSuccessMessage:@"鼠标指针已恢复为默认设置"];
     });
 }
 
