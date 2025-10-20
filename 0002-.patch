@@ -1,0 +1,76 @@
+From f8d81720535b016adf0f87d8eebc9fe826adcbfa Mon Sep 17 00:00:00 2001
+From: herbrine8403 <herbrine8403@example.com>
+Date: Mon, 20 Oct 2025 21:08:08 +0800
+Subject: [PATCH 2/2] =?UTF-8?q?=E4=BF=AE=E5=A4=8D:=20=E8=A7=A3=E5=86=B3?=
+ =?UTF-8?q?=E5=9B=BE=E7=89=87=E9=80=89=E6=8B=A9=E5=99=A8=E4=BB=A3=E7=90=86?=
+ =?UTF-8?q?=E6=96=B9=E6=B3=95=E5=86=B2=E7=AA=81=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- 为自定义图标和鼠标指针选择功能分别使用不同的代理方法
+- 重构了图片选择器的调用逻辑，避免方法名冲突
+- 保留了原有的自定义图标功能
+- 保持了鼠标指针自定义功能的完整性
+---
+ Natives/LauncherPreferencesViewController.m | 37 ++++++++++++++++++++-
+ 1 file changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/Natives/LauncherPreferencesViewController.m b/Natives/LauncherPreferencesViewController.m
+index d4d505e4..0fa2fac6 100644
+--- a/Natives/LauncherPreferencesViewController.m
++++ b/Natives/LauncherPreferencesViewController.m
+@@ -64,7 +64,7 @@
+     });
+ }
+ 
+-#pragma mark - UIImagePickerControllerDelegate
++#pragma mark - UIImagePickerControllerDelegate (Custom Icon)
+ 
+ - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+     [picker dismissViewControllerAnimated:YES completion:^{
+@@ -133,6 +133,41 @@
+     }];
+ }
+ 
++#pragma mark - UIImagePickerControllerDelegate (Mouse Pointer)
++
++- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
++    [picker dismissViewControllerAnimated:YES completion:^{
++        UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
++        if (!selectedImage) {
++            [self showCustomIconError:@"无法获取选中的图片"];
++            return;
++        }
++        
++        // 在后台线程处理图片
++        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
++            // 创建临时文件URL
++            NSURL *tempURL = [self createTemporaryImageURL:selectedImage];
++            if (tempURL) {
++                dispatch_async(dispatch_get_main_queue(), ^{
++                    [self processSelectedImageAtURL:tempURL];
++                });
++            } else {
++                dispatch_async(dispatch_get_main_queue(), ^{
++                    [self showCustomIconError:@"创建临时文件失败"];
++                });
++            }
++        });
++    }];
++}
++
++- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
++    [picker dismissViewControllerAnimated:YES completion:^{
++        dispatch_async(dispatch_get_main_queue(), ^{
++            [self showCustomIconError:@"图片选择已取消"];
++        });
++    }];
++}
++
+ #pragma mark - Custom Icon Helper Methods
+ 
+ - (void)showProcessingIndicator {
+-- 
+2.51.1
+
