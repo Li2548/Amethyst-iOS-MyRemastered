@@ -66,60 +66,86 @@
     });
 }
 
-#pragma mark - UIImagePickerControllerDelegate (Custom Icon)
+#pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
     [picker dismissViewControllerAnimated:YES completion:^{
-        // 在图片选择器完全关闭后再处理图片
-        dispatch_async(dispatch_get_main_queue(), ^{
-            UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
-            if (!selectedImage) {
-                [self showCustomIconError:@"无法获取选中的图片"];
-                return;
-            }
+        UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
+        if (!selectedImage) {
+            [self showCustomIconError:@"无法获取选中的图片"];
+            return;
+        }
+        
+        if (self.isSelectingMousePointer) {
+            // 处理鼠标指针选择
+            self.isSelectingMousePointer = NO; // 重置标志
             
-            // 显示处理中的提示
-            [self showProcessingIndicator];
-            
-            // 检查图片是否为正方形
-            if (selectedImage.size.width != selectedImage.size.height) {
-                // 如果不是正方形，打开裁剪界面
-                ImageCropperViewController *cropperVC = [[ImageCropperViewController alloc] initWithImage:selectedImage];
-                __weak typeof(self) weakSelf = self;
-                cropperVC.completionHandler = ^(UIImage * _Nullable croppedImage) {
-                    if (croppedImage) {
-                        // 保存裁剪后的图片
-                        [[CustomIconManager sharedManager] saveCustomIcon:croppedImage withCompletion:^(BOOL success, NSError * _Nullable error) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                if (success) {
-                                    [weakSelf showSuccessMessage:@"图片已保存，您可以在应用图标设置中选择自定义图标"];
-                                    // 更新应用图标选择器的显示
-                                    [weakSelf.tableView reloadData];
-                                } else {
-                                    NSString *errorMessage = error.localizedDescription ?: @"保存自定义图标失败";
-                                    [weakSelf showCustomIconError:errorMessage];
-                                }
-                            });
-                        }];
-                    } else {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [weakSelf showCustomIconError:@"图片裁剪已取消"];
-                        });
-                    }
-                };
-                [weakSelf.navigationController pushViewController:cropperVC animated:YES];
-            } else {
-                // 如果是正方形，直接保存
-                [[CustomIconManager sharedManager] saveCustomIcon:selectedImage withCompletion:^(BOOL success, NSError * _Nullable error) {
+            // 在后台线程处理图片
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                // 创建临时文件URL
+                NSURL *tempURL = [self createTemporaryImageURL:selectedImage];
+                if (tempURL) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if (success) {
-                            [self showSuccessMessage:@"图片已保存，您可以在应用图标设置中选择自定义图标"];
-                            // 更新应用图标选择器的显示
-                            [self.tableView reloadData];
+                        [self processSelectedImageAtURL:tempURL];
+                    });
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self showCustomIconError:@"创建临时文件失败"];
+                    });
+                }
+            });
+        } else {
+            // 处理自定义图标选择
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // 显示处理中的提示
+                [self showProcessingIndicator];
+                
+                // 检查图片是否为正方形
+                if (selectedImage.size.width != selectedImage.size.height) {
+                    // 如果不是正方形，打开裁剪界面
+                    ImageCropperViewController *cropperVC = [[ImageCropperViewController alloc] initWithImage:selectedImage];
+                    __weak typeof(self) weakSelf = self;
+                    cropperVC.completionHandler = ^(UIImage * _Nullable croppedImage) {
+                        if (croppedImage) {
+                            // 保存裁剪后的图片
+                            [[CustomIconManager sharedManager] saveCustomIcon:croppedImage withCompletion:^(BOOL success, NSError * _Nullable error) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (success) {
+                                        [weakSelf showSuccessMessage:@"图片已保存，您可以在应用图标设置中选择自定义图标"];
+                                        // 更新应用图标选择器的显示
+                                        [weakSelf.tableView reloadData];
+                                    } else {
+                                        NSString *errorMessage = error.localizedDescription ?: @"保存自定义图标失败";
+                                        [weakSelf showCustomIconError:errorMessage];
+                                    }
+                                });
+                            }];
                         } else {
-                            NSString *errorMessage = error.localizedDescription ?: @"保存自定义图标失败";
-                            [self showCustomIconError:errorMessage];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [weakSelf showCustomIconError:@"图片裁剪已取消"];
+                            });
                         }
+                    };
+                    [weakSelf.navigationController pushViewController:cropperVC animated:YES];
+                } else {
+                    // 如果是正方形，直接保存
+                    [[CustomIconManager sharedManager] saveCustomIcon:selectedImage withCompletion:^(BOOL success, NSError * _Nullable error) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (success) {
+                                [weakSelf showSuccessMessage:@"图片已保存，您可以在应用图标设置中选择自定义图标"];
+                                // 更新应用图标选择器的显示
+                                [weakSelf.tableView reloadData];
+                            } else {
+                                NSString *errorMessage = error.localizedDescription ?: @"保存自定义图标失败";
+                                [weakSelf showCustomIconError:errorMessage];
+                            }
+                        });
+                    }];
+                }
+            });
+        }
+    }];
+}
                     });
                 }];
             }
@@ -176,6 +202,8 @@
             if (self.isSelectingMousePointer) {
                 [self showCustomIconError:@"图片选择已取消"];
                 self.isSelectingMousePointer = NO; // 重置标志
+            } else {
+                [self showCustomIconError:@"图片选择已取消"];
             }
         });
     }];
