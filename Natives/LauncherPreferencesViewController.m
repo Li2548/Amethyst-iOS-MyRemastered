@@ -132,12 +132,12 @@
                     [[CustomIconManager sharedManager] saveCustomIcon:selectedImage withCompletion:^(BOOL success, NSError * _Nullable error) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (success) {
-                                [weakSelf showSuccessMessage:@"图片已保存，您可以在应用图标设置中选择自定义图标"];
+                                [self showSuccessMessage:@"图片已保存，您可以在应用图标设置中选择自定义图标"];
                                 // 更新应用图标选择器的显示
-                                [weakSelf.tableView reloadData];
+                                [self.tableView reloadData];
                             } else {
                                 NSString *errorMessage = error.localizedDescription ?: @"保存自定义图标失败";
-                                [weakSelf showCustomIconError:errorMessage];
+                                [self showCustomIconError:errorMessage];
                             }
                         });
                     }];
@@ -146,65 +146,11 @@
         }
     }];
 }
-                    });
-                }];
-            }
-        });
-    }];
-}
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             [self showCustomIconError:@"图片选择已取消"];
-        });
-    }];
-}
-
-#pragma mark - UIImagePickerControllerDelegate (Mouse Pointer)
-
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
-    [picker dismissViewControllerAnimated:YES completion:^{
-        // 只有在选择鼠标指针时才处理
-        if (!self.isSelectingMousePointer) {
-            return;
-        }
-        
-        UIImage *selectedImage = info[UIImagePickerControllerOriginalImage];
-        if (!selectedImage) {
-            [self showCustomIconError:@"无法获取选中的图片"];
-            self.isSelectingMousePointer = NO; // 重置标志
-            return;
-        }
-        
-        // 在后台线程处理图片
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            // 创建临时文件URL
-            NSURL *tempURL = [self createTemporaryImageURL:selectedImage];
-            if (tempURL) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self processSelectedImageAtURL:tempURL];
-                    self.isSelectingMousePointer = NO; // 重置标志
-                });
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self showCustomIconError:@"创建临时文件失败"];
-                    self.isSelectingMousePointer = NO; // 重置标志
-                });
-            }
-        });
-    }];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    [picker dismissViewControllerAnimated:YES completion:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.isSelectingMousePointer) {
-                [self showCustomIconError:@"图片选择已取消"];
-                self.isSelectingMousePointer = NO; // 重置标志
-            } else {
-                [self showCustomIconError:@"图片选择已取消"];
-            }
         });
     }];
 }
