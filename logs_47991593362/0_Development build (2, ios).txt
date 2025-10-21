@@ -1,0 +1,927 @@
+﻿2025-10-20T14:54:13.8233150Z Current runner version: '2.329.0'
+2025-10-20T14:54:13.8250810Z ##[group]Runner Image Provisioner
+2025-10-20T14:54:13.8251350Z Hosted Compute Agent
+2025-10-20T14:54:13.8251700Z Version: 20251016.436
+2025-10-20T14:54:13.8252110Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+2025-10-20T14:54:13.8252630Z Build Date: 2025-10-15T20:44:12Z
+2025-10-20T14:54:13.8253060Z ##[endgroup]
+2025-10-20T14:54:13.8253450Z ##[group]Operating System
+2025-10-20T14:54:13.8253870Z macOS
+2025-10-20T14:54:13.8254190Z 14.7.6
+2025-10-20T14:54:13.8254550Z 23H626
+2025-10-20T14:54:13.8254880Z ##[endgroup]
+2025-10-20T14:54:13.8255190Z ##[group]Runner Image
+2025-10-20T14:54:13.8256170Z Image: macos-14-arm64
+2025-10-20T14:54:13.8257620Z Version: 20251013.0032
+2025-10-20T14:54:13.8259830Z Included Software: https://github.com/actions/runner-images/blob/macos-14-arm64/20251013.0032/images/macos/macos-14-arm64-Readme.md
+2025-10-20T14:54:13.8263120Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-14-arm64%2F20251013.0032
+2025-10-20T14:54:13.8264670Z ##[endgroup]
+2025-10-20T14:54:13.8266580Z ##[group]GITHUB_TOKEN Permissions
+2025-10-20T14:54:13.8269210Z Actions: write
+2025-10-20T14:54:13.8269600Z Attestations: write
+2025-10-20T14:54:13.8269970Z Checks: write
+2025-10-20T14:54:13.8270290Z Contents: write
+2025-10-20T14:54:13.8270600Z Deployments: write
+2025-10-20T14:54:13.8270950Z Discussions: write
+2025-10-20T14:54:13.8271320Z Issues: write
+2025-10-20T14:54:13.8271670Z Metadata: read
+2025-10-20T14:54:13.8271980Z Models: read
+2025-10-20T14:54:13.8272320Z Packages: write
+2025-10-20T14:54:13.8272780Z Pages: write
+2025-10-20T14:54:13.8273170Z PullRequests: write
+2025-10-20T14:54:13.8273540Z RepositoryProjects: write
+2025-10-20T14:54:13.8274470Z SecurityEvents: write
+2025-10-20T14:54:13.8274970Z Statuses: write
+2025-10-20T14:54:13.8275280Z ##[endgroup]
+2025-10-20T14:54:13.8277260Z Secret source: Actions
+2025-10-20T14:54:13.8277790Z Prepare workflow directory
+2025-10-20T14:54:13.8558100Z Prepare all required actions
+2025-10-20T14:54:13.8590310Z Getting action download info
+2025-10-20T14:54:14.2560580Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-10-20T14:54:14.7052660Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2025-10-20T14:54:14.8201270Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2025-10-20T14:54:15.0178450Z Complete job name: Development build (2, ios)
+2025-10-20T14:54:15.0511200Z ##[group]Run set -e
+2025-10-20T14:54:15.0511630Z [36;1mset -e[0m
+2025-10-20T14:54:15.0512030Z [36;1mecho "Available apps in /Applications (matching Xcode*):"[0m
+2025-10-20T14:54:15.0512550Z [36;1mls /Applications | grep -E "Xcode(.+)?\.app" || true[0m
+2025-10-20T14:54:15.0513070Z [36;1m# Prefer Xcode_16, then Xcode_15, then /Applications/Xcode.app[0m
+2025-10-20T14:54:15.0513560Z [36;1mif [ -d "/Applications/Xcode_16.app" ]; then[0m
+2025-10-20T14:54:15.0513980Z [36;1m  echo "Selecting /Applications/Xcode_16.app"[0m
+2025-10-20T14:54:15.0514510Z [36;1m  sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer[0m
+2025-10-20T14:54:15.0515030Z [36;1melif [ -d "/Applications/Xcode_15.app" ]; then[0m
+2025-10-20T14:54:15.0515470Z [36;1m  echo "Selecting /Applications/Xcode_15.app"[0m
+2025-10-20T14:54:15.0515990Z [36;1m  sudo xcode-select -s /Applications/Xcode_15.app/Contents/Developer[0m
+2025-10-20T14:54:15.0516520Z [36;1melif [ -d "/Applications/Xcode.app" ]; then[0m
+2025-10-20T14:54:15.0516940Z [36;1m  echo "Selecting /Applications/Xcode.app"[0m
+2025-10-20T14:54:15.0517440Z [36;1m  sudo xcode-select -s /Applications/Xcode.app/Contents/Developer[0m
+2025-10-20T14:54:15.0517890Z [36;1melse[0m
+2025-10-20T14:54:15.0518420Z [36;1m  echo "No preinstalled Xcode found under /Applications that matches the search. Leaving system default."[0m
+2025-10-20T14:54:15.0519010Z [36;1mfi[0m
+2025-10-20T14:54:15.0519290Z [36;1mxcodebuild -version || true[0m
+2025-10-20T14:54:15.0520160Z [36;1mecho "Available simulator runtimes (for debugging):"[0m
+2025-10-20T14:54:15.0520600Z [36;1mxcrun simctl list runtimes || true[0m
+2025-10-20T14:54:15.0577110Z shell: /bin/bash -e {0}
+2025-10-20T14:54:15.0577670Z ##[endgroup]
+2025-10-20T14:54:15.1108050Z Available apps in /Applications (matching Xcode*):
+2025-10-20T14:54:15.1210810Z Xcode.app
+2025-10-20T14:54:15.1312500Z Xcode_15.0.1.app
+2025-10-20T14:54:15.1336240Z Xcode_15.0.app
+2025-10-20T14:54:15.1339250Z Xcode_15.1.0.app
+2025-10-20T14:54:15.1346090Z Xcode_15.1.app
+2025-10-20T14:54:15.1370810Z Xcode_15.2.0.app
+2025-10-20T14:54:15.1473340Z Xcode_15.2.app
+2025-10-20T14:54:15.1479450Z Xcode_15.3.0.app
+2025-10-20T14:54:15.1582590Z Xcode_15.3.app
+2025-10-20T14:54:15.1684460Z Xcode_15.4.0.app
+2025-10-20T14:54:15.1785900Z Xcode_15.4.app
+2025-10-20T14:54:15.1890880Z Xcode_16.1.0.app
+2025-10-20T14:54:15.1996860Z Xcode_16.1.app
+2025-10-20T14:54:15.2105380Z Xcode_16.2.0.app
+2025-10-20T14:54:15.2207550Z Xcode_16.2.app
+2025-10-20T14:54:15.2260350Z Selecting /Applications/Xcode.app
+2025-10-20T14:54:16.2467420Z Xcode 15.4
+2025-10-20T14:54:16.2468280Z Build version 15F31d
+2025-10-20T14:54:16.2469880Z Available simulator runtimes (for debugging):
+2025-10-20T14:54:27.8759140Z == Runtimes ==
+2025-10-20T14:54:27.8874300Z iOS 17.0 (17.0.1 - 21A342) - com.apple.CoreSimulator.SimRuntime.iOS-17-0
+2025-10-20T14:54:27.8976840Z iOS 17.2 (17.2 - 21C62) - com.apple.CoreSimulator.SimRuntime.iOS-17-2
+2025-10-20T14:54:27.9079590Z iOS 17.4 (17.4 - 21E213) - com.apple.CoreSimulator.SimRuntime.iOS-17-4
+2025-10-20T14:54:27.9181020Z iOS 17.5 (17.5 - 21F79) - com.apple.CoreSimulator.SimRuntime.iOS-17-5
+2025-10-20T14:54:27.9284940Z iOS 18.1 (18.1 - 22B81) - com.apple.CoreSimulator.SimRuntime.iOS-18-1
+2025-10-20T14:54:27.9390380Z iOS 18.2 (18.2 - 22C150) - com.apple.CoreSimulator.SimRuntime.iOS-18-2
+2025-10-20T14:54:27.9494990Z tvOS 17.0 (17.0 - 21J353) - com.apple.CoreSimulator.SimRuntime.tvOS-17-0
+2025-10-20T14:54:27.9602020Z tvOS 17.2 (17.2 - 21K364) - com.apple.CoreSimulator.SimRuntime.tvOS-17-2
+2025-10-20T14:54:27.9708110Z tvOS 17.4 (17.4 - 21L224) - com.apple.CoreSimulator.SimRuntime.tvOS-17-4
+2025-10-20T14:54:27.9813840Z tvOS 17.5 (17.5 - 21L569) - com.apple.CoreSimulator.SimRuntime.tvOS-17-5
+2025-10-20T14:54:27.9920950Z tvOS 18.1 (18.1 - 22J578) - com.apple.CoreSimulator.SimRuntime.tvOS-18-1
+2025-10-20T14:54:28.0026640Z tvOS 18.2 (18.2 - 22K154) - com.apple.CoreSimulator.SimRuntime.tvOS-18-2
+2025-10-20T14:54:28.0130530Z watchOS 10.0 (10.0 - 21R355) - com.apple.CoreSimulator.SimRuntime.watchOS-10-0
+2025-10-20T14:54:28.0267610Z watchOS 10.2 (10.2 - 21S364) - com.apple.CoreSimulator.SimRuntime.watchOS-10-2
+2025-10-20T14:54:28.0393750Z watchOS 10.4 (10.4 - 21T214) - com.apple.CoreSimulator.SimRuntime.watchOS-10-4
+2025-10-20T14:54:28.0496730Z watchOS 10.5 (10.5 - 21T575) - com.apple.CoreSimulator.SimRuntime.watchOS-10-5
+2025-10-20T14:54:28.0498050Z watchOS 11.1 (11.1 - 22R581) - com.apple.CoreSimulator.SimRuntime.watchOS-11-1
+2025-10-20T14:54:28.0612890Z watchOS 11.2 (11.2 - 22S99) - com.apple.CoreSimulator.SimRuntime.watchOS-11-2
+2025-10-20T14:54:28.0717520Z visionOS 1.0 (1.0 - 21N305) - com.apple.CoreSimulator.SimRuntime.xrOS-1-0
+2025-10-20T14:54:28.0827200Z visionOS 1.1 (1.1 - 21O209) - com.apple.CoreSimulator.SimRuntime.xrOS-1-1
+2025-10-20T14:54:28.0951960Z visionOS 1.2 (1.2 - 21O5565d) - com.apple.CoreSimulator.SimRuntime.xrOS-1-2
+2025-10-20T14:54:28.1022980Z visionOS 2.1 (2.1 - 22N580) - com.apple.CoreSimulator.SimRuntime.xrOS-2-1
+2025-10-20T14:54:28.1127970Z visionOS 2.2 (2.2 - 22N840) - com.apple.CoreSimulator.SimRuntime.xrOS-2-2
+2025-10-20T14:54:28.1658230Z ##[group]Run brew update
+2025-10-20T14:54:28.1658610Z [36;1mbrew update[0m
+2025-10-20T14:54:28.1658870Z [36;1mbrew install make[0m
+2025-10-20T14:54:28.2339390Z shell: /bin/bash -e {0}
+2025-10-20T14:54:28.2339760Z ##[endgroup]
+2025-10-20T14:54:33.9878650Z [34m==>[0m [1mUpdating Homebrew...[0m
+2025-10-20T14:54:53.2057060Z To restore the stashed changes to /opt/homebrew/Library/Taps/homebrew/homebrew-core, run:
+2025-10-20T14:54:53.2078390Z   cd /opt/homebrew/Library/Taps/homebrew/homebrew-core && git stash pop
+2025-10-20T14:54:55.6549720Z [34m==>[0m [1mHomebrew's analytics have entirely moved to our InfluxDB instance in the EU.[0m
+2025-10-20T14:54:55.6551010Z We gather less data than before and have destroyed all Google Analytics data:
+2025-10-20T14:54:55.6552060Z   [4mhttps://docs.brew.sh/Analytics[24m[0m
+2025-10-20T14:54:55.6553940Z Please reconsider re-enabling analytics to help our volunteer maintainers with:
+2025-10-20T14:54:55.6559810Z   brew analytics on
+2025-10-20T14:54:55.6992720Z [34m==>[0m [1mHomebrew is run entirely by unpaid volunteers. Please consider donating:[0m
+2025-10-20T14:54:55.6994970Z   [4mhttps://github.com/Homebrew/brew#donations[24m
+2025-10-20T14:54:55.6997850Z 
+2025-10-20T14:54:57.1731020Z Updated 4 taps (hashicorp/tap, aws/tap, homebrew/core and homebrew/cask).
+2025-10-20T14:54:57.1833710Z [34m==>[0m [1mNew Formulae[0m
+2025-10-20T14:54:57.6752170Z clippy: Copy files from your terminal that actually paste into GUI apps
+2025-10-20T14:54:57.6876040Z fennel-ls: Language Server for Fennel
+2025-10-20T14:54:57.6977900Z taze: Modern cli tool that keeps your deps fresh
+2025-10-20T14:54:57.7085540Z zsv: Tabular data swiss-army knife CLI
+2025-10-20T14:54:57.7209430Z [34m==>[0m [1mNew Casks[0m
+2025-10-20T14:54:57.9983740Z backdrop: Live wallpaper app
+2025-10-20T14:54:58.0086740Z codex: OpenAI's coding agent that runs in your terminal
+2025-10-20T14:54:58.0188370Z dockflow: Manage Dock presets and switch between them instantly
+2025-10-20T14:54:58.0292980Z emdash: UI for running multiple coding agents in parallel
+2025-10-20T14:54:58.0400200Z launchos: Launchpad alternative
+2025-10-20T14:54:58.0502990Z liquibase-community: Library for database change tracking
+2025-10-20T14:54:58.0605960Z liquibase-secure: Database change management tool
+2025-10-20T14:54:58.0707410Z macpacker: Archive manager
+2025-10-20T14:54:58.0812140Z nook: Minimal browser with a sidebar-first design
+2025-10-20T14:54:58.0916570Z proxygen-app: HTTP proxy tool
+2025-10-20T14:54:58.1018940Z pxplay: Third-party Remote Play client for PlayStation consoles
+2025-10-20T14:54:58.1122270Z strawberry: AI-powered web browser
+2025-10-20T14:54:58.6956540Z [34m==>[0m [1mOutdated Formulae[0m
+2025-10-20T14:54:58.7060220Z aws-sam-cli
+2025-10-20T14:54:58.7183730Z azure-cli
+2025-10-20T14:54:58.7285830Z cryptography
+2025-10-20T14:54:58.7396520Z gh
+2025-10-20T14:54:58.7541590Z git
+2025-10-20T14:54:58.7642890Z git-lfs
+2025-10-20T14:54:58.7747140Z libngtcp2
+2025-10-20T14:54:58.7852790Z python@3.13
+2025-10-20T14:54:58.7954550Z swiftformat
+2025-10-20T14:54:58.7956080Z 
+2025-10-20T14:54:58.8075770Z You have [1m9[0m outdated formulae installed.
+2025-10-20T14:54:58.8177270Z You can upgrade them with [1mbrew upgrade[0m
+2025-10-20T14:54:58.8280800Z or list them with [1mbrew outdated[0m.
+2025-10-20T14:55:01.5901260Z [32m==>[0m [1mFetching downloads for: [32mmake[39m[0m
+2025-10-20T14:55:01.5914140Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/make/manifests/4.4.1-1[0m
+2025-10-20T14:55:02.0292300Z [32m==>[0m [1mFetching [32mmake[39m[0m
+2025-10-20T14:55:02.0393270Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/make/blobs/sha256:94377dc5a364da305c75fd7aa923a42897993de9edd1eb074428e13c3f2aaf93[0m
+2025-10-20T14:55:02.4721230Z [34m==>[0m [1mPouring make--4.4.1.arm64_sonoma.bottle.1.tar.gz[0m
+2025-10-20T14:55:02.6255120Z [34m==>[0m [1mCaveats[0m
+2025-10-20T14:55:02.6356400Z GNU "make" has been installed as "gmake".
+2025-10-20T14:55:02.6467970Z If you need to use it as "make", you can add a "gnubin" directory
+2025-10-20T14:55:02.6572410Z to your PATH from your bashrc like:
+2025-10-20T14:55:02.6605470Z 
+2025-10-20T14:55:02.6606110Z     PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+2025-10-20T14:55:02.6606780Z [34m==>[0m [1mSummary[0m
+2025-10-20T14:55:02.6607570Z 🍺  /opt/homebrew/Cellar/make/4.4.1: 17 files, 1.3MB
+2025-10-20T14:55:02.6660170Z ##[group]Run brew install --cask temurin@8 || true
+2025-10-20T14:55:02.6662290Z [36;1mbrew install --cask temurin@8 || true[0m
+2025-10-20T14:55:02.6865020Z shell: /bin/bash -e {0}
+2025-10-20T14:55:02.6865210Z ##[endgroup]
+2025-10-20T14:55:03.6077220Z [34m==>[0m [1mCaveats[0m
+2025-10-20T14:55:03.6077670Z temurin@8 is built for Intel macOS and so requires Rosetta 2 to be installed.
+2025-10-20T14:55:03.6078030Z You can install Rosetta 2 with:
+2025-10-20T14:55:03.6078330Z   softwareupdate --install-rosetta --agree-to-license
+2025-10-20T14:55:03.6078730Z Note that it is very difficult to remove Rosetta 2 once it is installed.
+2025-10-20T14:55:03.6078930Z 
+2025-10-20T14:55:04.0969870Z [34m==>[0m [1mDownloading https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u462-b08/OpenJDK8U-jdk_x64_mac_hotspot_8u462b08.pkg[0m
+2025-10-20T14:55:04.0976130Z [34m==>[0m [1mDownloading from https://release-assets.githubusercontent.com/github-production-release-asset/372924428/4ef1c15f-92c6-44da-8245-30cfb5287697?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-10-20T15%3A45%3A11Z&rscd=attachment%3B+filename%3DOpenJDK8U-jdk_x64_mac_hotspot_8u462b08.pkg&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-10-20T14%3A44%3A52Z&ske=2025-10-20T15%3A45%3A11Z&sks=b&skv=2018-11-09&sig=JuiJVzXQAtgjXtC3pXyv%2Fku5z6fbQKEE%2BEFtqz4vAVA%3D&jwt=***
+2025-10-20T14:55:08.6519760Z [32m==>[0m [1mInstalling Cask [32mtemurin@8[39m[0m
+2025-10-20T14:55:08.7034800Z [34m==>[0m [1mRunning installer for temurin@8 with `sudo` (which may request your password)...[0m
+2025-10-20T14:55:37.2604900Z installer: Package name is Eclipse Temurin
+2025-10-20T14:55:37.2606700Z installer: Installing at base path /
+2025-10-20T14:55:37.2607650Z installer: The install was successful.
+2025-10-20T14:55:37.3542750Z 🍺  temurin@8 was successfully installed!
+2025-10-20T14:55:37.4299290Z ##[group]Run brew install ldid || true
+2025-10-20T14:55:37.4299760Z [36;1mbrew install ldid || true[0m
+2025-10-20T14:55:37.4570770Z shell: /bin/bash -e {0}
+2025-10-20T14:55:37.4571180Z ##[endgroup]
+2025-10-20T14:55:39.9248700Z [32m==>[0m [1mFetching downloads for: [32mldid[39m[0m
+2025-10-20T14:55:39.9313380Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/ldid/manifests/2.1.5_1[0m
+2025-10-20T14:55:40.5623720Z [32m==>[0m [1mFetching dependencies for ldid: [32mlibplist[39m[0m
+2025-10-20T14:55:40.5630860Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/libplist/manifests/2.7.0[0m
+2025-10-20T14:55:40.9239430Z [32m==>[0m [1mFetching [32mlibplist[39m[0m
+2025-10-20T14:55:40.9271950Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/libplist/blobs/sha256:06036e6de87c0a8bfc917d72f2af3f63ea6eb557391035782ca8bddb5506c342[0m
+2025-10-20T14:55:41.4061060Z [32m==>[0m [1mFetching [32mldid[39m[0m
+2025-10-20T14:55:41.4070920Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/ldid/blobs/sha256:e3c26343041639b82e88edf54d3af9f579876f800b7aeada94d36c807e441c27[0m
+2025-10-20T14:55:41.8557700Z [32m==>[0m [1mInstalling ldid dependency: [32mlibplist[39m[0m
+2025-10-20T14:55:41.8577610Z [34m==>[0m [1mDownloading https://ghcr.io/v2/homebrew/core/libplist/manifests/2.7.0[0m
+2025-10-20T14:55:41.8578840Z Already downloaded: /Users/runner/Library/Caches/Homebrew/downloads/e0496924f58628f0bb8aae0a1177d8f8f003e2e9f9f949939fd2399aced47c4d--libplist-2.7.0.bottle_manifest.json
+2025-10-20T14:55:41.8669360Z [34m==>[0m [1mPouring libplist--2.7.0.arm64_sonoma.bottle.tar.gz[0m
+2025-10-20T14:55:42.2465670Z 🍺  /opt/homebrew/Cellar/libplist/2.7.0: 32 files, 646.5KB
+2025-10-20T14:55:42.2481810Z [34m==>[0m [1mPouring ldid--2.1.5_1.arm64_sonoma.bottle.tar.gz[0m
+2025-10-20T14:55:42.3763180Z 🍺  /opt/homebrew/Cellar/ldid/2.1.5_1: 6 files, 286.1KB
+2025-10-20T14:55:42.4059840Z ##[group]Run echo "before"
+2025-10-20T14:55:42.4060220Z [36;1mecho "before"[0m
+2025-10-20T14:55:42.4060440Z [36;1mls -lah ./[0m
+2025-10-20T14:55:42.4060640Z [36;1mrm -rf ./* || true[0m
+2025-10-20T14:55:42.4060880Z [36;1mrm -rf ./.??* || true[0m
+2025-10-20T14:55:42.4061720Z [36;1mecho "after"[0m
+2025-10-20T14:55:42.4061920Z [36;1mls -lah ./[0m
+2025-10-20T14:55:42.4157370Z shell: /bin/bash -e {0}
+2025-10-20T14:55:42.4157930Z ##[endgroup]
+2025-10-20T14:55:42.4710600Z before
+2025-10-20T14:55:42.4787720Z total 0
+2025-10-20T14:55:42.4790510Z drwxr-xr-x  2 runner  staff    64B Oct 20 14:54 .
+2025-10-20T14:55:42.4791430Z drwxr-xr-x  3 runner  staff    96B Oct 20 14:54 ..
+2025-10-20T14:55:42.4878050Z after
+2025-10-20T14:55:42.4949880Z total 0
+2025-10-20T14:55:42.4956710Z drwxr-xr-x  2 runner  staff    64B Oct 20 14:54 .
+2025-10-20T14:55:42.4957210Z drwxr-xr-x  3 runner  staff    96B Oct 20 14:54 ..
+2025-10-20T14:55:42.5075100Z ##[group]Run actions/checkout@v4
+2025-10-20T14:55:42.5075350Z with:
+2025-10-20T14:55:42.5075610Z   repository: herbrine8403/Amethyst-iOS-MyRemastered
+2025-10-20T14:55:42.5076050Z   token: ***
+2025-10-20T14:55:42.5076240Z   ssh-strict: true
+2025-10-20T14:55:42.5076440Z   ssh-user: git
+2025-10-20T14:55:42.5076640Z   persist-credentials: true
+2025-10-20T14:55:42.5076970Z   clean: true
+2025-10-20T14:55:42.5077100Z   sparse-checkout-cone-mode: true
+2025-10-20T14:55:42.5077330Z   fetch-depth: 1
+2025-10-20T14:55:42.5077460Z   fetch-tags: false
+2025-10-20T14:55:42.5077690Z   show-progress: true
+2025-10-20T14:55:42.5077880Z   lfs: false
+2025-10-20T14:55:42.5078060Z   submodules: false
+2025-10-20T14:55:42.5078330Z   set-safe-directory: true
+2025-10-20T14:55:42.5078530Z ##[endgroup]
+2025-10-20T14:55:42.9675650Z Syncing repository: herbrine8403/Amethyst-iOS-MyRemastered
+2025-10-20T14:55:42.9676740Z ##[group]Getting Git version info
+2025-10-20T14:55:42.9677180Z Working directory is '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered'
+2025-10-20T14:55:42.9677670Z [command]/opt/homebrew/bin/git version
+2025-10-20T14:55:42.9677850Z git version 2.50.1
+2025-10-20T14:55:42.9678430Z ##[endgroup]
+2025-10-20T14:55:42.9681030Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/1c69979a-a53e-49db-8523-4ecc646e6d49/.gitconfig'
+2025-10-20T14:55:42.9681660Z Temporarily overriding HOME='/Users/runner/work/_temp/1c69979a-a53e-49db-8523-4ecc646e6d49' before making global git config changes
+2025-10-20T14:55:42.9682210Z Adding repository directory to the temporary git global config as a safe directory
+2025-10-20T14:55:42.9682790Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered
+2025-10-20T14:55:42.9684350Z Deleting the contents of '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered'
+2025-10-20T14:55:42.9690480Z ##[group]Initializing the repository
+2025-10-20T14:55:42.9707670Z [command]/opt/homebrew/bin/git init /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered
+2025-10-20T14:55:42.9821790Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-10-20T14:55:42.9822430Z hint: is subject to change. To configure the initial branch name to use in all
+2025-10-20T14:55:42.9822840Z hint: of your new repositories, which will suppress this warning, call:
+2025-10-20T14:55:42.9823130Z hint:
+2025-10-20T14:55:42.9823350Z hint: 	git config --global init.defaultBranch <name>
+2025-10-20T14:55:42.9823580Z hint:
+2025-10-20T14:55:42.9823780Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-10-20T14:55:42.9824150Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-10-20T14:55:42.9824430Z hint:
+2025-10-20T14:55:42.9824560Z hint: 	git branch -m <name>
+2025-10-20T14:55:42.9824710Z hint:
+2025-10-20T14:55:42.9824950Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-10-20T14:55:42.9826150Z Initialized empty Git repository in /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/.git/
+2025-10-20T14:55:42.9833440Z [command]/opt/homebrew/bin/git remote add origin https://github.com/herbrine8403/Amethyst-iOS-MyRemastered
+2025-10-20T14:55:42.9955730Z ##[endgroup]
+2025-10-20T14:55:42.9956050Z ##[group]Disabling automatic garbage collection
+2025-10-20T14:55:42.9961400Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2025-10-20T14:55:43.0012760Z ##[endgroup]
+2025-10-20T14:55:43.0013440Z ##[group]Setting up auth
+2025-10-20T14:55:43.0018300Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-10-20T14:55:43.0068040Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-10-20T14:55:43.0750120Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-10-20T14:55:43.0811180Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-10-20T14:55:43.1416700Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-10-20T14:55:43.1478970Z ##[endgroup]
+2025-10-20T14:55:43.1479680Z ##[group]Fetching the repository
+2025-10-20T14:55:43.1484940Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +e63cf840536885245b01bf616ff707a6104eda98:refs/remotes/origin/auth/authlib-injector
+2025-10-20T14:55:46.3769620Z From https://github.com/herbrine8403/Amethyst-iOS-MyRemastered
+2025-10-20T14:55:46.3772340Z  * [new ref]         e63cf840536885245b01bf616ff707a6104eda98 -> origin/auth/authlib-injector
+2025-10-20T14:55:46.3833440Z ##[endgroup]
+2025-10-20T14:55:46.3834260Z ##[group]Determining the checkout info
+2025-10-20T14:55:46.3835090Z ##[endgroup]
+2025-10-20T14:55:46.3838400Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2025-10-20T14:55:46.3899390Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2025-10-20T14:55:46.3948900Z ##[group]Checking out the ref
+2025-10-20T14:55:46.3952410Z [command]/opt/homebrew/bin/git checkout --progress --force -B auth/authlib-injector refs/remotes/origin/auth/authlib-injector
+2025-10-20T14:55:46.6870850Z Switched to a new branch 'auth/authlib-injector'
+2025-10-20T14:55:46.6906280Z branch 'auth/authlib-injector' set up to track 'origin/auth/authlib-injector'.
+2025-10-20T14:55:46.6913740Z ##[endgroup]
+2025-10-20T14:55:46.7016540Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2025-10-20T14:55:46.7080870Z e63cf840536885245b01bf616ff707a6104eda98
+2025-10-20T14:55:46.7216940Z ##[group]Run git submodule update --init --recursive
+2025-10-20T14:55:46.7217240Z [36;1mgit submodule update --init --recursive[0m
+2025-10-20T14:55:46.7312430Z shell: /bin/bash -e {0}
+2025-10-20T14:55:46.7312640Z ##[endgroup]
+2025-10-20T14:55:46.8378620Z Submodule 'Natives/external/AFNetworking' (https://github.com/AFNetworking/AFNetworking) registered for path 'Natives/external/AFNetworking'
+2025-10-20T14:55:46.8382090Z Submodule 'Natives/external/DBNumberedSlider' (https://github.com/khanhduytran0/DBNumberedSlider) registered for path 'Natives/external/DBNumberedSlider'
+2025-10-20T14:55:46.8392390Z Submodule 'Natives/external/MobileGlues' (https://github.com/MobileGL-Dev/MobileGlues) registered for path 'Natives/external/MobileGlues'
+2025-10-20T14:55:46.8396640Z Submodule 'Natives/external/fishhook' (https://github.com/khanhduytran0/fishhook) registered for path 'Natives/external/fishhook'
+2025-10-20T14:55:46.8497610Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking'...
+2025-10-20T14:55:48.3268900Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/DBNumberedSlider'...
+2025-10-20T14:55:49.0191100Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues'...
+2025-10-20T14:55:52.8369520Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/fishhook'...
+2025-10-20T14:55:53.8387470Z Submodule path 'Natives/external/AFNetworking': checked out '4eaec5b586ddd897ebeda896e332a62a9fdab818'
+2025-10-20T14:55:53.8889830Z Submodule path 'Natives/external/DBNumberedSlider': checked out '4eddc68b5f92247f8afc0f6114d1b92b338749f4'
+2025-10-20T14:55:54.5276660Z Submodule path 'Natives/external/MobileGlues': checked out 'c2bcd17430d4fe4b8cfb0b3f59441047188b178b'
+2025-10-20T14:55:54.5532030Z Submodule 'src/main/cpp/3rdparty/glm' (https://github.com/g-truc/glm.git) registered for path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/glm'
+2025-10-20T14:55:54.5674040Z Submodule 'src/main/cpp/3rdparty/perfetto' (https://android.googlesource.com/platform/external/perfetto) registered for path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto'
+2025-10-20T14:55:54.5685130Z Submodule 'src/main/cpp/3rdparty/xxhash' (https://github.com/stbrumme/xxhash.git) registered for path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash'
+2025-10-20T14:55:54.5791570Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/3rdparty/glm'...
+2025-10-20T14:56:20.0756650Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto'...
+2025-10-20T14:56:34.4595120Z Cloning into '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash'...
+2025-10-20T14:56:35.4355000Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/glm': checked out '2d4c4b4dd31fde06cfffad7915c2b3006402322f'
+2025-10-20T14:56:37.8039200Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto': checked out '33a4fd07897a9a648664926ea27769278a19ff13'
+2025-10-20T14:56:37.8382580Z Submodule path 'Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash': checked out 'c2866db364b6ea3a11933e62235ddc166ba18565'
+2025-10-20T14:56:37.8723050Z Submodule path 'Natives/external/fishhook': checked out '27bedb2ab670cc51d7be06d538b249564b47cfbf'
+2025-10-20T14:56:37.8941280Z ##[group]Run echo "sha=$(git ls-remote https://github.com/PojavLauncherTeam/gl4es-114-extra refs/heads/master | grep -io '^\S*')" >> $GITHUB_OUTPUT
+2025-10-20T14:56:37.8942160Z [36;1mecho "sha=$(git ls-remote https://github.com/PojavLauncherTeam/gl4es-114-extra refs/heads/master | grep -io '^\S*')" >> $GITHUB_OUTPUT[0m
+2025-10-20T14:56:37.9399400Z shell: /bin/bash -e {0}
+2025-10-20T14:56:37.9399670Z ##[endgroup]
+2025-10-20T14:56:38.4935220Z ##[group]Run export PATH=/opt/homebrew/bin:$PATH
+2025-10-20T14:56:38.4935730Z [36;1mexport PATH=/opt/homebrew/bin:$PATH[0m
+2025-10-20T14:56:38.4935990Z [36;1mexport SLIMMED=0[0m
+2025-10-20T14:56:38.4936340Z [36;1mif [ "ios" == "ios" ]; then[0m
+2025-10-20T14:56:38.4936600Z [36;1m  # Build ipa and tipa for iOS[0m
+2025-10-20T14:56:38.4936930Z [36;1m  gmake -j$(sysctl -n hw.ncpu) dsym package PLATFORM=2[0m
+2025-10-20T14:56:38.4937380Z [36;1m  gmake -j$(sysctl -n hw.ncpu) dsym package PLATFORM=2 TROLLSTORE_JIT_ENT=1[0m
+2025-10-20T14:56:38.4937800Z [36;1melif [ "ios" == "tvos" ]; then[0m
+2025-10-20T14:56:38.4938050Z [36;1m  # Build tipa only for tvOS[0m
+2025-10-20T14:56:38.4938390Z [36;1m  gmake -j$(sysctl -n hw.ncpu) dsym package PLATFORM=2 TROLLSTORE_JIT_ENT=1[0m
+2025-10-20T14:56:38.4938810Z [36;1melse[0m
+2025-10-20T14:56:38.4939100Z [36;1m  # Build ipa only for everything else[0m
+2025-10-20T14:56:38.4939500Z [36;1m  gmake -j$(sysctl -n hw.ncpu) dsym package PLATFORM=2[0m
+2025-10-20T14:56:38.4939780Z [36;1mfi[0m
+2025-10-20T14:56:38.4991130Z shell: /bin/bash -e {0}
+2025-10-20T14:56:38.4991380Z env:
+2025-10-20T14:56:38.4991620Z   IPHONEOS_DEPLOYMENT_TARGET: 14
+2025-10-20T14:56:38.4991910Z ##[endgroup]
+2025-10-20T14:56:38.6089250Z Makefile:55: Building on macOS.
+2025-10-20T14:56:38.6090640Z Makefile:79: Set PLATFORM to 2, which is equal to iOS.
+2025-10-20T14:56:41.5924720Z [Amethyst v1.0] native - start
+2025-10-20T14:56:41.6226850Z gmake[1]: warning: -j3 forced in submake: resetting jobserver mode.
+2025-10-20T14:56:41.6238050Z [Amethyst v1.0] java - start
+2025-10-20T14:56:41.6238410Z [Amethyst v1.0] assets - start
+2025-10-20T14:56:41.6339720Z CMake Warning:
+2025-10-20T14:56:41.6340170Z gmake[1]: Entering directory '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/JavaApp'
+2025-10-20T14:56:41.6430580Z   Ignoring extra path from command line:
+2025-10-20T14:56:41.6533100Z 
+2025-10-20T14:56:41.6533740Z Compiling src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java
+2025-10-20T14:56:41.6637010Z    "/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/build"
+2025-10-20T14:56:41.6637740Z Compiling src/launcher/net/kdt/pojavlaunch/LWJGLGLFWKeycode.java
+2025-10-20T14:56:41.6746920Z 
+2025-10-20T14:56:41.6748430Z Compiling src/launcher/net/kdt/pojavlaunch/PojavLauncher.java
+2025-10-20T14:56:41.6860370Z 
+2025-10-20T14:56:41.6983660Z CMake Warning:
+2025-10-20T14:56:41.7085760Z   Ignoring extra path from command line:
+2025-10-20T14:56:41.7187660Z 
+2025-10-20T14:56:41.7293910Z    "."
+2025-10-20T14:56:41.7397240Z 
+2025-10-20T14:56:41.7506400Z 
+2025-10-20T14:56:41.7609470Z CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+2025-10-20T14:56:41.7715590Z   Compatibility with CMake < 3.10 will be removed from a future version of
+2025-10-20T14:56:41.7822850Z   CMake.
+2025-10-20T14:56:41.7923460Z 
+2025-10-20T14:56:41.8028470Z   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+2025-10-20T14:56:41.8152040Z   to tell CMake that the project requires at least <min> but has been updated
+2025-10-20T14:56:41.8267880Z   to work with policies introduced by <max> or earlier.
+2025-10-20T14:56:41.8373520Z 
+2025-10-20T14:56:41.8487030Z 
+2025-10-20T14:56:42.6460520Z -- The C compiler identification is AppleClang 15.0.0.15000309
+2025-10-20T14:56:44.5267420Z Compiling src/launcher/net/kdt/pojavlaunch/uikit/UIKitCallback.java
+2025-10-20T14:56:45.6551730Z -- The CXX compiler identification is AppleClang 15.0.0.15000309
+2025-10-20T14:56:45.7279230Z -- Detecting C compiler ABI info
+2025-10-20T14:56:45.9298150Z -- Detecting C compiler ABI info - done
+2025-10-20T14:56:45.9399470Z -- Check for working C compiler: /usr/bin/cc - skipped
+2025-10-20T14:56:45.9500550Z -- Detecting C compile features
+2025-10-20T14:56:45.9601670Z -- Detecting C compile features - done
+2025-10-20T14:56:45.9702920Z -- Detecting CXX compiler ABI info
+2025-10-20T14:56:46.1315460Z -- Detecting CXX compiler ABI info - done
+2025-10-20T14:56:46.1517780Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2025-10-20T14:56:46.1618930Z -- Detecting CXX compile features
+2025-10-20T14:56:46.1720250Z -- Detecting CXX compile features - done
+2025-10-20T14:56:46.1821350Z -- Including mod loader icon in bundle: fabric_dark.png
+2025-10-20T14:56:46.1922820Z -- Including mod loader icon in bundle: fabric_light.png
+2025-10-20T14:56:46.2024040Z -- Including mod loader icon in bundle: forge_dark.png
+2025-10-20T14:56:46.2125270Z -- Including mod loader icon in bundle: forge_light.png
+2025-10-20T14:56:46.2227190Z gmake[1]: warning: -j3 forced in submake: resetting jobserver mode.
+2025-10-20T14:56:46.2228880Z -- Including mod loader icon in bundle: neoforge_dark.png
+2025-10-20T14:56:46.2340400Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:56:46.2342090Z -- Including mod loader icon in bundle: neoforge_light.png
+2025-10-20T14:56:46.2444580Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:56:46.2445040Z -- minizip folder not found, skipping minizip compilation.
+2025-10-20T14:56:46.2547190Z -- Configuring done (4.5s)
+2025-10-20T14:56:46.2653890Z -- Generating done (0.0s)
+2025-10-20T14:56:46.2773410Z -- Build files have been written to: /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/build
+2025-10-20T14:56:46.2880300Z gmake[1]: Entering directory '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/build'
+2025-10-20T14:56:46.2985590Z Compiling src/launcher/net/kdt/pojavlaunch/uikit/UIKit.java
+2025-10-20T14:56:46.3090270Z [  1%] Building C object CMakeFiles/tinygl4angle.dir/external/gl4es/string_utils.c.o
+2025-10-20T14:56:46.3195600Z [  2%] Building C object CMakeFiles/awt_headless.dir/awt_xawt/empty.m.o
+2025-10-20T14:56:46.3301120Z [  2%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/AFNetworking/AFSecurityPolicy.m.o
+2025-10-20T14:56:46.3550480Z [  3%] Linking C shared library libawt_headless.dylib
+2025-10-20T14:56:46.5114100Z [  4%] Building C object CMakeFiles/tinygl4angle.dir/external/gl4es/tinygl4angle.c.o
+2025-10-20T14:56:46.8086020Z [  4%] Built target awt_headless
+2025-10-20T14:56:46.8226530Z [  5%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/AFNetworking/AFHTTPSessionManager.m.o
+2025-10-20T14:56:46.9147180Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/AFNetworking/AFSecurityPolicy.m:68:46: warning: 'SecTrustCopyPublicKey' is deprecated: first deprecated in iOS 14.0 [-Wdeprecated-declarations]
+2025-10-20T14:56:46.9246970Z     allowedPublicKey = (__bridge_transfer id)SecTrustCopyPublicKey(allowedTrust);
+2025-10-20T14:56:46.9348190Z                                              ^~~~~~~~~~~~~~~~~~~~~
+2025-10-20T14:56:46.9449820Z                                              SecTrustCopyKey
+2025-10-20T14:56:46.9552260Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/Security.framework/Headers/SecTrust.h:476:11: note: 'SecTrustCopyPublicKey' has been explicitly marked deprecated here
+2025-10-20T14:56:46.9652060Z SecKeyRef SecTrustCopyPublicKey(SecTrustRef trust)
+2025-10-20T14:56:46.9753830Z           ^
+2025-10-20T14:56:46.9869610Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/AFNetworking/AFSecurityPolicy.m:129:53: warning: 'SecTrustCopyPublicKey' is deprecated: first deprecated in iOS 14.0 [-Wdeprecated-declarations]
+2025-10-20T14:56:46.9870820Z         [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
+2025-10-20T14:56:46.9971970Z                                                     ^~~~~~~~~~~~~~~~~~~~~
+2025-10-20T14:56:47.0073260Z                                                     SecTrustCopyKey
+2025-10-20T14:56:47.0175240Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/Security.framework/Headers/SecTrust.h:476:11: note: 'SecTrustCopyPublicKey' has been explicitly marked deprecated here
+2025-10-20T14:56:47.0283240Z SecKeyRef SecTrustCopyPublicKey(SecTrustRef trust)
+2025-10-20T14:56:47.0384060Z           ^
+2025-10-20T14:56:47.0384520Z [  6%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/AFNetworking/AFURLRequestSerialization.m.o
+2025-10-20T14:56:47.0485750Z 2 warnings generated.
+2025-10-20T14:56:47.1400600Z [  7%] Linking C shared library libtinygl4angle.dylib
+2025-10-20T14:56:47.3095980Z [  7%] Built target tinygl4angle
+2025-10-20T14:56:47.3397700Z [  8%] Building C object CMakeFiles/AmethystAccountJNI.dir/authenticator/MinecraftAccountJNI.m.o
+2025-10-20T14:56:47.8073380Z [  9%] Linking C shared library libAmethystAccountJNI.dylib
+2025-10-20T14:56:48.3060740Z [  9%] Built target AmethystAccountJNI
+2025-10-20T14:56:48.3528900Z [ 10%] Building C object CMakeFiles/awt_xawt.dir/awt_xawt/xawt_fake.m.o
+2025-10-20T14:56:48.4403010Z [ 11%] Linking C shared library libawt_xawt.dylib
+2025-10-20T14:56:48.8867300Z [ 11%] Built target awt_xawt
+2025-10-20T14:56:48.8968750Z [ 12%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/AFNetworking/AFURLSessionManager.m.o
+2025-10-20T14:56:48.9873580Z [ 13%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/AFNetworking/AFNetworkReachabilityManager.m.o
+2025-10-20T14:56:49.2911490Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/MinecraftSelectedUser.java
+2025-10-20T14:56:49.5061880Z [ 14%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/AFNetworking/AFURLResponseSerialization.m.o
+2025-10-20T14:56:49.8655700Z [ 15%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/UIKit+AFNetworking/AFNetworkActivityIndicatorManager.m.o
+2025-10-20T14:56:51.7692560Z [ 16%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/UIKit+AFNetworking/AFAutoPurgingImageCache.m.o
+2025-10-20T14:56:52.4566920Z [ 17%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/UIKit+AFNetworking/AFImageDownloader.m.o
+2025-10-20T14:56:53.2885490Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/AFNetworkActivityIndicatorManager.m:118:48: warning: 'setNetworkActivityIndicatorVisible:' is deprecated: first deprecated in iOS 13.0 - Provide a custom network activity UI in your app if desired. [-Wdeprecated-declarations]
+2025-10-20T14:56:53.2990460Z             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:networkActivityIndicatorVisible];
+2025-10-20T14:56:53.3091960Z                                                ^
+2025-10-20T14:56:53.3218980Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIApplication.h:113:68: note: property 'networkActivityIndicatorVisible' is declared deprecated here
+2025-10-20T14:56:53.3336360Z @property(nonatomic,getter=isNetworkActivityIndicatorVisible) BOOL networkActivityIndicatorVisible API_UNAVAILABLE(tvos) API_DEPRECATED("Provide a custom network activity UI in your app if desired.", ios(2.0, 13.0)) API_UNAVAILABLE(visionos);
+2025-10-20T14:56:53.3412290Z                                                                    ^
+2025-10-20T14:56:53.3514250Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIApplication.h:113:68: note: 'setNetworkActivityIndicatorVisible:' has been explicitly marked deprecated here
+2025-10-20T14:56:53.4433610Z 1 warning generated.
+2025-10-20T14:56:53.4787860Z [ 18%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/UIKit+AFNetworking/UIButton+AFNetworking.m.o
+2025-10-20T14:56:54.7790240Z [ 19%] Building C object CMakeFiles/AFNetworking.dir/external/AFNetworking/UIKit+AFNetworking/UIImageView+AFNetworking.m.o
+2025-10-20T14:56:57.9868130Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/MinecraftResolution.java
+2025-10-20T14:56:58.1922850Z [ 20%] Linking C shared library libAFNetworking.dylib
+2025-10-20T14:56:58.5803970Z [ 20%] Built target AFNetworking
+2025-10-20T14:56:58.6570640Z [ 21%] Building C object CMakeFiles/AngelAuraAmethyst.dir/dyld_bypass_validation.m.o
+2025-10-20T14:56:58.6688850Z [ 22%] Building C object CMakeFiles/AngelAuraAmethyst.dir/main.m.o
+2025-10-20T14:56:58.6790920Z [ 23%] Building C object CMakeFiles/AngelAuraAmethyst.dir/dyld_patch_platform.m.o
+2025-10-20T14:56:58.6893950Z <?xml version="1.0" encoding="UTF-8"?>
+2025-10-20T14:56:58.7002760Z <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+2025-10-20T14:56:58.7108680Z <plist version="1.0">
+2025-10-20T14:56:58.7210570Z <dict>
+2025-10-20T14:56:58.7312110Z 	<key>com.apple.actool.compilation-results</key>
+2025-10-20T14:56:58.7415180Z 	<dict>
+2025-10-20T14:56:58.7549620Z 		<key>output-files</key>
+2025-10-20T14:56:58.7653420Z 		<array>
+2025-10-20T14:56:58.7761510Z 			<string>/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/resources/AppIcon-Light60x60@2x.png</string>
+2025-10-20T14:56:58.7864330Z 			<string>/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/resources/AppIcon-Light76x76@2x~ipad.png</string>
+2025-10-20T14:56:58.7966250Z 			<string>/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/resources/Assets.car</string>
+2025-10-20T14:56:58.8068450Z 			<string>/dev/null</string>
+2025-10-20T14:56:58.8180230Z 		</array>
+2025-10-20T14:56:58.8282200Z 	</dict>
+2025-10-20T14:56:58.8383370Z </dict>
+2025-10-20T14:56:58.8485090Z </plist>
+2025-10-20T14:56:58.8587110Z [Amethyst v1.0] assets - end
+2025-10-20T14:56:59.3129670Z [ 24%] Building C object CMakeFiles/AngelAuraAmethyst.dir/main_hook.m.o
+2025-10-20T14:57:00.7352230Z [ 25%] Building C object CMakeFiles/AngelAuraAmethyst.dir/JavaLauncher.m.o
+2025-10-20T14:57:01.5561980Z [ 26%] Building C object CMakeFiles/AngelAuraAmethyst.dir/external/fishhook/fishhook.c.o
+2025-10-20T14:57:01.6679630Z [ 27%] Building C object CMakeFiles/AngelAuraAmethyst.dir/UIKit+hook.m.o
+2025-10-20T14:57:02.3074530Z [ 28%] Building C object CMakeFiles/AngelAuraAmethyst.dir/authenticator/BaseAuthenticator.m.o
+2025-10-20T14:57:02.4332420Z [ 29%] Building C object CMakeFiles/AngelAuraAmethyst.dir/authenticator/LocalAuthenticator.m.o
+2025-10-20T14:57:02.8525410Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/MinecraftProfile.java
+2025-10-20T14:57:02.9531430Z [ 30%] Building C object CMakeFiles/AngelAuraAmethyst.dir/authenticator/MicrosoftAuthenticator.m.o
+2025-10-20T14:57:03.2908940Z [ 31%] Building C object CMakeFiles/AngelAuraAmethyst.dir/authenticator/ThirdPartyAuthenticator.m.o
+2025-10-20T14:57:03.5920690Z [ 32%] Building C object CMakeFiles/AngelAuraAmethyst.dir/ctxbridges/gl_bridge.m.o
+2025-10-20T14:57:04.2749450Z [ 33%] Building C object CMakeFiles/AngelAuraAmethyst.dir/ctxbridges/osm_bridge.m.o
+2025-10-20T14:57:04.9007100Z [ 34%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/ControlButton.m.o
+2025-10-20T14:57:06.2692770Z [ 35%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/ControlDrawer.m.o
+2025-10-20T14:57:06.5605940Z [ 36%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/ControlJoystick.m.o
+2025-10-20T14:57:06.9637630Z [ 37%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/ControlLayout.m.o
+2025-10-20T14:57:07.0163180Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/MinecraftLauncherProfiles.java
+2025-10-20T14:57:07.4671790Z [ 38%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/ControlSubButton.m.o
+2025-10-20T14:57:08.1747040Z [ 39%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/CustomControlsUtils.m.o
+2025-10-20T14:57:08.2086670Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:57:08.2186980Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:57:08.2294990Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:57:08.2390900Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:57:08.2968070Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/LauncherProfiles.java
+2025-10-20T14:57:08.3377140Z [ 40%] Building C object CMakeFiles/AngelAuraAmethyst.dir/customcontrols/NSPredicateUtilitiesExternal.m.o
+2025-10-20T14:57:08.7123100Z [ 41%] Building C object CMakeFiles/AngelAuraAmethyst.dir/external/DBNumberedSlider/Classes/DBNumberedSlider.m.o
+2025-10-20T14:57:09.7521880Z [ 42%] Building C object CMakeFiles/AngelAuraAmethyst.dir/external/NRFileManager/NSFileManager+NRFileManager.m.o
+2025-10-20T14:57:09.8527350Z [ 43%] Building C object CMakeFiles/AngelAuraAmethyst.dir/external/ballpa1n/HostManager.c.o
+2025-10-20T14:57:10.2871310Z [ 44%] Building C object CMakeFiles/AngelAuraAmethyst.dir/external/ballpa1n/wrapped/HostManagerBridge.m.o
+2025-10-20T14:57:10.3478220Z [ 45%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/FabricInstallViewController.m.o
+2025-10-20T14:57:10.5318310Z [ 46%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/ForgeInstallViewController.m.o
+2025-10-20T14:57:11.2333080Z [ 47%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/ModpackInstallViewController.m.o
+2025-10-20T14:57:13.4298630Z [ 48%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/FabricUtils.m.o
+2025-10-20T14:57:13.6574180Z [ 49%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/modpack/ModpackUtils.m.o
+2025-10-20T14:57:15.0442360Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/installer/ModpackInstallViewController.m:4:
+2025-10-20T14:57:15.0553890Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/UIKit+AFNetworking.h:40:
+2025-10-20T14:57:15.0656120Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/WKWebView+AFNetworking.h:29:
+2025-10-20T14:57:15.0759570Z In file included from /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WebKit.h:34:
+2025-10-20T14:57:15.0863810Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:59:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.0966940Z - (void)download:(WKDownload *)download decideDestinationUsingResponse:(NSURLResponse *)response suggestedFilename:(NSString *)suggestedFilename completionHandler:(void (^)(NSURL * _Nullable destination))completionHandler;
+2025-10-20T14:57:15.1069080Z                   ^
+2025-10-20T14:57:15.1149250Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.1255990Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:15.1359790Z            ^
+2025-10-20T14:57:15.1467580Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:59:1: note: annotate 'download:decideDestinationUsingResponse:suggestedFilename:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.1618510Z - (void)download:(WKDownload *)download decideDestinationUsingResponse:(NSURLResponse *)response suggestedFilename:(NSString *)suggestedFilename completionHandler:(void (^)(NSURL * _Nullable destination))completionHandler;
+2025-10-20T14:57:15.1730270Z ^
+2025-10-20T14:57:15.1832390Z                                                                                                                                                                                                                               API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:15.1935450Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.2038130Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:15.2141860Z                   ^
+2025-10-20T14:57:15.2247250Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.2350520Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:15.2451480Z            ^
+2025-10-20T14:57:15.2556420Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:1: note: annotate 'download:willPerformHTTPRedirection:newRequest:decisionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.2662210Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:15.2763360Z ^
+2025-10-20T14:57:15.2864600Z                                                                                                                                                                                                                                                                                                        API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:15.2966850Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:159: warning: 'WKDownloadRedirectPolicy' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.3070840Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:15.3171170Z                                                                                                                                                               ^
+2025-10-20T14:57:15.3273280Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:36:28: note: 'WKDownloadRedirectPolicy' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.3375420Z typedef NS_ENUM(NSInteger, WKDownloadRedirectPolicy) {
+2025-10-20T14:57:15.3475870Z                            ^
+2025-10-20T14:57:15.3577730Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:1: note: annotate 'download:willPerformHTTPRedirection:newRequest:decisionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.3680010Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:15.3780080Z ^
+2025-10-20T14:57:15.3881130Z                                                                                                                                                                                                                                                                                                        API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:15.3983690Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:83:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.4092610Z - (void)download:(WKDownload *)download didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler WK_SWIFT_ASYNC_NAME(download(_:respondTo:));
+2025-10-20T14:57:15.4233100Z                   ^
+2025-10-20T14:57:15.4335450Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.4338080Z [ 50%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/modpack/ModpackAPI.m.o
+2025-10-20T14:57:15.4443750Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:15.4546690Z            ^
+2025-10-20T14:57:15.4661520Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:83:1: note: annotate 'download:didReceiveAuthenticationChallenge:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.4768720Z - (void)download:(WKDownload *)download didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler WK_SWIFT_ASYNC_NAME(download(_:respondTo:));
+2025-10-20T14:57:15.4880080Z ^
+2025-10-20T14:57:15.4983880Z                                                                                                                                                                                                                                                                                  API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:15.5087820Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:88:28: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.5191810Z - (void)downloadDidFinish:(WKDownload *)download;
+2025-10-20T14:57:15.5293560Z                            ^
+2025-10-20T14:57:15.5403140Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.5506070Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:15.5607980Z            ^
+2025-10-20T14:57:15.5711670Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:88:1: note: annotate 'downloadDidFinish:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.5714970Z [ 51%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/modpack/CurseForgeAPI.m.o
+2025-10-20T14:57:15.5816920Z - (void)downloadDidFinish:(WKDownload *)download;
+2025-10-20T14:57:15.5918040Z ^
+2025-10-20T14:57:15.6019220Z                                                  API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:15.6123170Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:95:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.6225330Z - (void)download:(WKDownload *)download didFailWithError:(NSError *)error resumeData:(nullable NSData *)resumeData;
+2025-10-20T14:57:15.6325520Z                   ^
+2025-10-20T14:57:15.6426690Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.6529100Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:15.6629660Z            ^
+2025-10-20T14:57:15.6731190Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:95:1: note: annotate 'download:didFailWithError:resumeData:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.6855560Z - (void)download:(WKDownload *)download didFailWithError:(NSError *)error resumeData:(nullable NSData *)resumeData;
+2025-10-20T14:57:15.6957470Z ^
+2025-10-20T14:57:15.7059830Z                                                                                                                    API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:15.7163630Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/installer/ModpackInstallViewController.m:4:
+2025-10-20T14:57:15.7277940Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/UIKit+AFNetworking.h:40:
+2025-10-20T14:57:15.7381920Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/WKWebView+AFNetworking.h:29:
+2025-10-20T14:57:15.7486990Z In file included from /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WebKit.h:57:
+2025-10-20T14:57:15.7610380Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:256:118: warning: 'WKDialogResult' is only available on iOS 16.0 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:15.7743890Z - (void)webView:(WKWebView *)webView showLockdownModeFirstUseMessage:(NSString *)message completionHandler:(void (^)(WKDialogResult))completionHandler API_AVAILABLE(ios(13.0));
+2025-10-20T14:57:15.7939280Z                                                                                                                      ^
+2025-10-20T14:57:15.8048750Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:67:28: note: 'WKDialogResult' has been marked as being introduced in iOS 16.0 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:15.8153870Z typedef NS_ENUM(NSInteger, WKDialogResult) {
+2025-10-20T14:57:15.8268210Z                            ^
+2025-10-20T14:57:15.8371500Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:256:1: note: annotate 'webView:showLockdownModeFirstUseMessage:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:15.8475120Z - (void)webView:(WKWebView *)webView showLockdownModeFirstUseMessage:(NSString *)message completionHandler:(void (^)(WKDialogResult))completionHandler API_AVAILABLE(ios(13.0));
+2025-10-20T14:57:15.8578440Z ^
+2025-10-20T14:57:15.8843620Z 7 warnings generated.
+2025-10-20T14:57:15.9047760Z [ 52%] Building C object CMakeFiles/AngelAuraAmethyst.dir/installer/modpack/ModrinthAPI.m.o
+2025-10-20T14:57:16.8282390Z [ 53%] Building C object CMakeFiles/AngelAuraAmethyst.dir/input/ControllerInput.m.o
+2025-10-20T14:57:17.9076290Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:57:17.9177500Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:57:17.9280770Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:57:17.9382420Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:57:17.9800770Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/MinecraftAuthenticationDatabase.java
+2025-10-20T14:57:18.3393030Z [ 54%] Building C object CMakeFiles/AngelAuraAmethyst.dir/input/GyroInput.m.o
+2025-10-20T14:57:19.1742340Z [ 55%] Building C object CMakeFiles/AngelAuraAmethyst.dir/input/KeyboardInput.m.o
+2025-10-20T14:57:21.0125600Z [ 56%] Building C object CMakeFiles/AngelAuraAmethyst.dir/AccountListViewController.m.o
+2025-10-20T14:57:21.6382980Z [ 57%] Building C object CMakeFiles/AngelAuraAmethyst.dir/AppDelegate.m.o
+2025-10-20T14:57:22.4306220Z [ 57%] Building C object CMakeFiles/AngelAuraAmethyst.dir/CustomControlsViewController.m.o
+2025-10-20T14:57:23.6098050Z [ 58%] Building C object CMakeFiles/AngelAuraAmethyst.dir/CustomControlsViewController+UndoManager.m.o
+2025-10-20T14:57:24.4213930Z [ 59%] Building C object CMakeFiles/AngelAuraAmethyst.dir/DownloadProgressViewController.m.o
+2025-10-20T14:57:25.4751340Z Compiling src/launcher/net/kdt/pojavlaunch/value/launcherprofiles/MinecraftLauncherSettings.java
+2025-10-20T14:57:25.7442500Z [ 60%] Building C object CMakeFiles/AngelAuraAmethyst.dir/FileListViewController.m.o
+2025-10-20T14:57:25.9495640Z [ 61%] Building C object CMakeFiles/AngelAuraAmethyst.dir/GameSurfaceView.m.o
+2025-10-20T14:57:26.9259570Z [ 62%] Building C object CMakeFiles/AngelAuraAmethyst.dir/JavaGUIViewController.m.o
+2025-10-20T14:57:27.7921790Z [ 63%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherMenuViewController.m.o
+2025-10-20T14:57:28.8339270Z [ 64%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherNavigationController.m.o
+2025-10-20T14:57:29.2602410Z [ 65%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherNewsViewController.m.o
+2025-10-20T14:57:29.6123020Z [ 66%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherPreferences.m.o
+2025-10-20T14:57:29.8260240Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherNewsViewController.m:1:
+2025-10-20T14:57:29.8361880Z In file included from /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WebKit.h:34:
+2025-10-20T14:57:29.8468420Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:59:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:29.8566900Z - (void)download:(WKDownload *)download decideDestinationUsingResponse:(NSURLResponse *)response suggestedFilename:(NSString *)suggestedFilename completionHandler:(void (^)(NSURL * _Nullable destination))completionHandler;
+2025-10-20T14:57:29.8669950Z                   ^
+2025-10-20T14:57:29.8771980Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:29.8871720Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:29.8972830Z            ^
+2025-10-20T14:57:29.9075010Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:59:1: note: annotate 'download:decideDestinationUsingResponse:suggestedFilename:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:29.9175320Z - (void)download:(WKDownload *)download decideDestinationUsingResponse:(NSURLResponse *)response suggestedFilename:(NSString *)suggestedFilename completionHandler:(void (^)(NSURL * _Nullable destination))completionHandler;
+2025-10-20T14:57:29.9275140Z ^
+2025-10-20T14:57:29.9376180Z                                                                                                                                                                                                                               API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:29.9480590Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:29.9583480Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:29.9684600Z                   ^
+2025-10-20T14:57:29.9786560Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:29.9886320Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:29.9987500Z            ^
+2025-10-20T14:57:30.0092010Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:1: note: annotate 'download:willPerformHTTPRedirection:newRequest:decisionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.0195620Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.0295590Z ^
+2025-10-20T14:57:30.0397400Z                                                                                                                                                                                                                                                                                                        API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.0500550Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:159: warning: 'WKDownloadRedirectPolicy' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.0603210Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.0706360Z                                                                                                                                                               ^
+2025-10-20T14:57:30.0807610Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:36:28: note: 'WKDownloadRedirectPolicy' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.0908130Z typedef NS_ENUM(NSInteger, WKDownloadRedirectPolicy) {
+2025-10-20T14:57:30.1009890Z                            ^
+2025-10-20T14:57:30.1111950Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:1: note: annotate 'download:willPerformHTTPRedirection:newRequest:decisionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.1212070Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.1315020Z ^
+2025-10-20T14:57:30.1415120Z                                                                                                                                                                                                                                                                                                        API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.1517150Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:83:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.1617540Z - (void)download:(WKDownload *)download didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler WK_SWIFT_ASYNC_NAME(download(_:respondTo:));
+2025-10-20T14:57:30.1719600Z                   ^
+2025-10-20T14:57:30.1821590Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.1924290Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:30.2025400Z            ^
+2025-10-20T14:57:30.2127630Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:83:1: note: annotate 'download:didReceiveAuthenticationChallenge:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.2230600Z - (void)download:(WKDownload *)download didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler WK_SWIFT_ASYNC_NAME(download(_:respondTo:));
+2025-10-20T14:57:30.2333810Z ^
+2025-10-20T14:57:30.2435740Z                                                                                                                                                                                                                                                                                  API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.2540110Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:88:28: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.2643780Z - (void)downloadDidFinish:(WKDownload *)download;
+2025-10-20T14:57:30.2744920Z                            ^
+2025-10-20T14:57:30.2848900Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.2955430Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:30.3057480Z            ^
+2025-10-20T14:57:30.3159700Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:88:1: note: annotate 'downloadDidFinish:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.3264030Z - (void)downloadDidFinish:(WKDownload *)download;
+2025-10-20T14:57:30.3371880Z ^
+2025-10-20T14:57:30.3473890Z                                                  API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.3581610Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:95:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.3582990Z - (void)download:(WKDownload *)download didFailWithError:(NSError *)error resumeData:(nullable NSData *)resumeData;
+2025-10-20T14:57:30.3689450Z                   ^
+2025-10-20T14:57:30.3792950Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.3895960Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:30.3999000Z            ^
+2025-10-20T14:57:30.4131960Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:95:1: note: annotate 'download:didFailWithError:resumeData:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.4235930Z - (void)download:(WKDownload *)download didFailWithError:(NSError *)error resumeData:(nullable NSData *)resumeData;
+2025-10-20T14:57:30.4359420Z ^
+2025-10-20T14:57:30.4466550Z                                                                                                                    API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.6593460Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherNavigationController.m:16:
+2025-10-20T14:57:30.6713640Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/UIKit+AFNetworking.h:40:
+2025-10-20T14:57:30.6821220Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/WKWebView+AFNetworking.h:29:
+2025-10-20T14:57:30.6923150Z In file included from /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WebKit.h:34:
+2025-10-20T14:57:30.7031920Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:59:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.7058320Z - (void)download:(WKDownload *)download decideDestinationUsingResponse:(NSURLResponse *)response suggestedFilename:(NSString *)suggestedFilename completionHandler:(void (^)(NSURL * _Nullable destination))completionHandler;
+2025-10-20T14:57:30.7160080Z                   ^
+2025-10-20T14:57:30.7266370Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.7364460Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:30.7465500Z            ^
+2025-10-20T14:57:30.7569830Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:59:1: note: annotate 'download:decideDestinationUsingResponse:suggestedFilename:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.7670140Z - (void)download:(WKDownload *)download decideDestinationUsingResponse:(NSURLResponse *)response suggestedFilename:(NSString *)suggestedFilename completionHandler:(void (^)(NSURL * _Nullable destination))completionHandler;
+2025-10-20T14:57:30.7771900Z ^
+2025-10-20T14:57:30.7872970Z                                                                                                                                                                                                                               API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.7974840Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.8077900Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.8177090Z                   ^
+2025-10-20T14:57:30.8279080Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.8380930Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:30.8482210Z            ^
+2025-10-20T14:57:30.8585990Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:1: note: annotate 'download:willPerformHTTPRedirection:newRequest:decisionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.8687440Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.8791270Z ^
+2025-10-20T14:57:30.8892640Z                                                                                                                                                                                                                                                                                                        API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:30.8993540Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:159: warning: 'WKDownloadRedirectPolicy' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:30.9057030Z Compiling src/launcher/net/kdt/pojavlaunch/value/MinecraftLibraryArtifact.java
+2025-10-20T14:57:30.9096320Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.9204370Z                                                                                                                                                               ^
+2025-10-20T14:57:30.9339110Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:36:28: note: 'WKDownloadRedirectPolicy' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:30.9442470Z typedef NS_ENUM(NSInteger, WKDownloadRedirectPolicy) {
+2025-10-20T14:57:30.9545520Z                            ^
+2025-10-20T14:57:30.9650770Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:71:1: note: annotate 'download:willPerformHTTPRedirection:newRequest:decisionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:30.9750150Z - (void)download:(WKDownload *)download willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request decisionHandler:(void (^)(WKDownloadRedirectPolicy))decisionHandler WK_SWIFT_ASYNC_NAME(download(_:decidedPolicyForHTTPRedirection:newRequest:)) WK_SWIFT_ASYNC(4);
+2025-10-20T14:57:30.9854120Z ^
+2025-10-20T14:57:30.9957030Z                                                                                                                                                                                                                                                                                                        API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:31.0057920Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:83:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:31.0161830Z - (void)download:(WKDownload *)download didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler WK_SWIFT_ASYNC_NAME(download(_:respondTo:));
+2025-10-20T14:57:31.0261940Z                   ^
+2025-10-20T14:57:31.0363310Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:31.0466160Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:31.0567710Z            ^
+2025-10-20T14:57:31.0669040Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:83:1: note: annotate 'download:didReceiveAuthenticationChallenge:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:31.0771820Z - (void)download:(WKDownload *)download didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler WK_SWIFT_ASYNC_NAME(download(_:respondTo:));
+2025-10-20T14:57:31.0874210Z ^
+2025-10-20T14:57:31.0975560Z                                                                                                                                                                                                                                                                                  API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:31.1078520Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:88:28: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:31.1180960Z - (void)downloadDidFinish:(WKDownload *)download;
+2025-10-20T14:57:31.1282370Z                            ^
+2025-10-20T14:57:31.1283350Z [ 67%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherPreferencesViewController.m.o
+2025-10-20T14:57:31.1291080Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:31.1393510Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:31.1499210Z            ^
+2025-10-20T14:57:31.1652420Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:88:1: note: annotate 'downloadDidFinish:' with an availability attribute to silence this warning
+2025-10-20T14:57:31.1752810Z - (void)downloadDidFinish:(WKDownload *)download;
+2025-10-20T14:57:31.1854070Z ^
+2025-10-20T14:57:31.1955370Z                                                  API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:31.2061500Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:95:19: warning: 'WKDownload' is only available on iOS 14.5 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:31.2115890Z - (void)download:(WKDownload *)download didFailWithError:(NSError *)error resumeData:(nullable NSData *)resumeData;
+2025-10-20T14:57:31.2219830Z                   ^
+2025-10-20T14:57:31.2324960Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownload.h:37:12: note: 'WKDownload' has been marked as being introduced in iOS 14.5 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:31.2427550Z @interface WKDownload : NSObject<NSProgressReporting>
+2025-10-20T14:57:31.2531180Z            ^
+2025-10-20T14:57:31.2635910Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKDownloadDelegate.h:95:1: note: annotate 'download:didFailWithError:resumeData:' with an availability attribute to silence this warning
+2025-10-20T14:57:31.2742980Z - (void)download:(WKDownload *)download didFailWithError:(NSError *)error resumeData:(nullable NSData *)resumeData;
+2025-10-20T14:57:31.2850400Z ^
+2025-10-20T14:57:31.2958090Z                                                                                                                    API_AVAILABLE(ios(14.5))
+2025-10-20T14:57:31.3067110Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherNavigationController.m:16:
+2025-10-20T14:57:31.3168100Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/UIKit+AFNetworking.h:40:
+2025-10-20T14:57:31.3271250Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/external/AFNetworking/UIKit+AFNetworking/WKWebView+AFNetworking.h:29:
+2025-10-20T14:57:31.3373440Z In file included from /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WebKit.h:57:
+2025-10-20T14:57:31.3475900Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:256:118: warning: 'WKDialogResult' is only available on iOS 16.0 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:31.3577990Z - (void)webView:(WKWebView *)webView showLockdownModeFirstUseMessage:(NSString *)message completionHandler:(void (^)(WKDialogResult))completionHandler API_AVAILABLE(ios(13.0));
+2025-10-20T14:57:31.3680010Z                                                                                                                      ^
+2025-10-20T14:57:31.3781950Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:67:28: note: 'WKDialogResult' has been marked as being introduced in iOS 16.0 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:31.3884240Z typedef NS_ENUM(NSInteger, WKDialogResult) {
+2025-10-20T14:57:31.3985410Z                            ^
+2025-10-20T14:57:31.4087370Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:256:1: note: annotate 'webView:showLockdownModeFirstUseMessage:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:31.4189840Z - (void)webView:(WKWebView *)webView showLockdownModeFirstUseMessage:(NSString *)message completionHandler:(void (^)(WKDialogResult))completionHandler API_AVAILABLE(ios(13.0));
+2025-10-20T14:57:31.4291520Z ^
+2025-10-20T14:57:31.4396290Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherNavigationController.m:329:26: warning: 'dismissModalViewControllerAnimated:' is deprecated: first deprecated in iOS 6.0 [-Wdeprecated-declarations]
+2025-10-20T14:57:31.4498520Z         [self.progressVC dismissModalViewControllerAnimated:NO];
+2025-10-20T14:57:31.4600020Z                          ^
+2025-10-20T14:57:31.4701740Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIViewController.h:259:1: note: 'dismissModalViewControllerAnimated:' has been explicitly marked deprecated here
+2025-10-20T14:57:31.4702880Z [ 68%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherPrefContCfgViewController.m.o
+2025-10-20T14:57:31.4805230Z - (void)dismissModalViewControllerAnimated:(BOOL)animated API_DEPRECATED("", ios(2.0, 6.0)) API_UNAVAILABLE(visionos) API_UNAVAILABLE(tvos);
+2025-10-20T14:57:31.4907190Z ^
+2025-10-20T14:57:31.5008520Z 8 warnings generated.
+2025-10-20T14:57:31.5109880Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherNewsViewController.m:1:
+2025-10-20T14:57:31.5216560Z In file included from /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WebKit.h:57:
+2025-10-20T14:57:31.5326020Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:256:118: warning: 'WKDialogResult' is only available on iOS 16.0 or newer [-Wunguarded-availability-new]
+2025-10-20T14:57:31.5428710Z - (void)webView:(WKWebView *)webView showLockdownModeFirstUseMessage:(NSString *)message completionHandler:(void (^)(WKDialogResult))completionHandler API_AVAILABLE(ios(13.0));
+2025-10-20T14:57:31.5531100Z                                                                                                                      ^
+2025-10-20T14:57:31.5634950Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:67:28: note: 'WKDialogResult' has been marked as being introduced in iOS 16.0 here, but the deployment target is iOS 14.0.0
+2025-10-20T14:57:31.5742600Z typedef NS_ENUM(NSInteger, WKDialogResult) {
+2025-10-20T14:57:31.5844010Z                            ^
+2025-10-20T14:57:31.5946040Z /Applications/Xcode_15.4.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Cryptexes/OS/System/Library/Frameworks/WebKit.framework/Headers/WKUIDelegate.h:256:1: note: annotate 'webView:showLockdownModeFirstUseMessage:completionHandler:' with an availability attribute to silence this warning
+2025-10-20T14:57:31.6048860Z - (void)webView:(WKWebView *)webView showLockdownModeFirstUseMessage:(NSString *)message completionHandler:(void (^)(WKDialogResult))completionHandler API_AVAILABLE(ios(13.0));
+2025-10-20T14:57:31.6150890Z ^
+2025-10-20T14:57:31.6252950Z 7 warnings generated.
+2025-10-20T14:57:31.6928980Z [ 69%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherPrefGameDirViewController.m.o
+2025-10-20T14:57:33.0118260Z [ 70%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherPrefManageJREViewController.m.o
+2025-10-20T14:57:33.7238890Z [ 71%] Building C object CMakeFiles/AngelAuraAmethyst.dir/LauncherProfileEditorViewController.m.o
+2025-10-20T14:57:33.9777690Z In file included from /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherPreferencesViewController.m:21:
+2025-10-20T14:57:33.9906750Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:6:4: warning: pointer is missing a nullability type specifier (_Nonnull, _Nullable, or _Null_unspecified) [-Wnullability-completeness]
+2025-10-20T14:57:34.0009440Z + (instancetype)sharedManager;
+2025-10-20T14:57:34.0110690Z    ^
+2025-10-20T14:57:34.0212260Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:6:4: note: insert '_Nullable' if the pointer may be null
+2025-10-20T14:57:34.0315360Z + (instancetype)sharedManager;
+2025-10-20T14:57:34.0417980Z    ^
+2025-10-20T14:57:34.0519330Z                 _Nullable 
+2025-10-20T14:57:34.0623360Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:6:4: note: insert '_Nonnull' if the pointer should never be null
+2025-10-20T14:57:34.0725340Z + (instancetype)sharedManager;
+2025-10-20T14:57:34.0833520Z    ^
+2025-10-20T14:57:34.0935000Z                 _Nonnull 
+2025-10-20T14:57:34.1036820Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:7:63: warning: block pointer is missing a nullability type specifier (_Nonnull, _Nullable, or _Null_unspecified) [-Wnullability-completeness]
+2025-10-20T14:57:34.1139720Z - (void)saveCustomIcon:(UIImage *)image withCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
+2025-10-20T14:57:34.1243680Z                                                               ^
+2025-10-20T14:57:34.1345560Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:7:63: note: insert '_Nullable' if the block pointer may be null
+2025-10-20T14:57:34.1447930Z - (void)saveCustomIcon:(UIImage *)image withCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
+2025-10-20T14:57:34.1549750Z                                                               ^
+2025-10-20T14:57:34.1650810Z                                                                _Nullable
+2025-10-20T14:57:34.1753840Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:7:63: note: insert '_Nonnull' if the block pointer should never be null
+2025-10-20T14:57:34.1856450Z - (void)saveCustomIcon:(UIImage *)image withCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
+2025-10-20T14:57:34.1957820Z                                                               ^
+2025-10-20T14:57:34.2060460Z                                                                _Nonnull
+2025-10-20T14:57:34.2164970Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:8:44: warning: block pointer is missing a nullability type specifier (_Nonnull, _Nullable, or _Null_unspecified) [-Wnullability-completeness]
+2025-10-20T14:57:34.2194050Z - (void)setCustomIconWithCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
+2025-10-20T14:57:34.2303200Z                                            ^
+2025-10-20T14:57:34.2395400Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:8:44: note: insert '_Nullable' if the block pointer may be null
+2025-10-20T14:57:34.2497290Z - (void)setCustomIconWithCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
+2025-10-20T14:57:34.2595470Z                                            ^
+2025-10-20T14:57:34.2697050Z                                             _Nullable
+2025-10-20T14:57:34.2798710Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/./CustomIconManager.h:8:44: note: insert '_Nonnull' if the block pointer should never be null
+2025-10-20T14:57:34.2899390Z - (void)setCustomIconWithCompletion:(void (^)(BOOL success, NSError * _Nullable error))completion;
+2025-10-20T14:57:34.3000670Z                                            ^
+2025-10-20T14:57:34.3101160Z                                             _Nonnull
+2025-10-20T14:57:34.3202650Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherPreferencesViewController.m:338:6: error: expected ')'
+2025-10-20T14:57:34.3303640Z     }];
+2025-10-20T14:57:34.3404330Z      ^
+2025-10-20T14:57:34.3506870Z /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/LauncherPreferencesViewController.m:287:19: note: to match this '('
+2025-10-20T14:57:34.3605920Z     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+2025-10-20T14:57:34.3707100Z                   ^
+2025-10-20T14:57:34.3808100Z 3 warnings and 1 error generated.
+2025-10-20T14:57:34.3909910Z gmake[3]: *** [CMakeFiles/AngelAuraAmethyst.dir/build.make:761: CMakeFiles/AngelAuraAmethyst.dir/LauncherPreferencesViewController.m.o] Error 1
+2025-10-20T14:57:34.4009550Z gmake[3]: *** Waiting for unfinished jobs....
+2025-10-20T14:57:35.3190640Z gmake[2]: *** [CMakeFiles/Makefile2:262: CMakeFiles/AngelAuraAmethyst.dir/all] Error 2
+2025-10-20T14:57:35.3292500Z gmake[1]: *** [Makefile:91: all] Error 2
+2025-10-20T14:57:35.3293740Z gmake[1]: Leaving directory '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/Natives/build'
+2025-10-20T14:57:35.3395620Z gmake: *** [Makefile:257: native] Error 2
+2025-10-20T14:57:35.3496570Z gmake: *** Waiting for unfinished jobs....
+2025-10-20T14:57:35.6714580Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:57:35.6819190Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:57:35.6927390Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:57:35.7035020Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:57:35.7238820Z Compiling src/launcher/net/kdt/pojavlaunch/value/MinecraftClientInfo.java
+2025-10-20T14:57:35.7930790Z Compiling src/launcher/net/kdt/pojavlaunch/value/DependentLibrary.java
+2025-10-20T14:57:36.8078250Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:57:36.8179700Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:57:36.8280880Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:57:36.8382350Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:57:36.8785250Z Compiling src/launcher/net/kdt/pojavlaunch/value/MinecraftAccount.java
+2025-10-20T14:57:37.9778260Z Compiling src/launcher/net/kdt/pojavlaunch/value/ForgeInstallProfile.java
+2025-10-20T14:57:38.0335220Z Compiling src/launcher/net/kdt/pojavlaunch/utils/MCOptionUtils.java
+2025-10-20T14:57:41.0650590Z Compiling src/launcher/net/kdt/pojavlaunch/utils/JSONUtils.java
+2025-10-20T14:57:43.4865470Z Compiling src/launcher/net/kdt/pojavlaunch/JVersion.java
+2025-10-20T14:57:46.2759940Z Compiling src/launcher/net/kdt/pojavlaunch/JAssets.java
+2025-10-20T14:57:49.8954660Z Compiling src/launcher/net/kdt/pojavlaunch/JAssetInfo.java
+2025-10-20T14:57:49.9256340Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:57:49.9356530Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:57:49.9461180Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:57:49.9562300Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:57:50.0211460Z Compiling src/launcher/net/kdt/pojavlaunch/Tools.java
+2025-10-20T14:57:51.0663410Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:57:51.0764870Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:57:51.0876350Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:57:51.0978200Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:57:51.1284730Z Compiling src/launcher/net/kdt/pojavlaunch/JMinecraftVersionList.java
+2025-10-20T14:57:52.2479190Z Compiling src/launcher/android/util/Objects.java
+2025-10-20T14:57:54.0309110Z Compiling src/launcher/android/util/ArrayMap.java
+2025-10-20T14:57:55.7604630Z Compiling src/launcher/android/util/EmptyArray.java
+2025-10-20T14:57:58.0279100Z Compiling src/launcher/android/util/ContainerHelpers.java
+2025-10-20T14:58:00.5593680Z Compiling src/launcher/android/util/MapCollections.java
+2025-10-20T14:58:02.2886170Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:58:02.2988200Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:02.3590780Z Compiling src/launcher/com/mojang/text2speech/NarratorWindows.java
+2025-10-20T14:58:03.5755970Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:58:03.5860990Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:58:03.5962880Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:58:03.6064820Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:03.6202150Z Compiling src/launcher/com/mojang/text2speech/Narrator.java
+2025-10-20T14:58:06.2069760Z Compiling src/launcher/com/mojang/text2speech/NarratorOSX.java
+2025-10-20T14:58:07.3800690Z Compiling src/launcher/com/mojang/text2speech/NarratorLinux.java
+2025-10-20T14:58:08.6427770Z Note: src/launcher/android/util/MapCollections.java uses unchecked or unsafe operations.
+2025-10-20T14:58:08.6528180Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:08.6931350Z Compiling src/launcher/com/mojang/text2speech/Text2Speech.java
+2025-10-20T14:58:09.1504820Z Compiling src/lwjgl/org/lwjgl/input/InfdevMouse.java
+2025-10-20T14:58:10.0331630Z Compiling src/lwjgl/org/lwjgl/glfw/CallbackBridge.java
+2025-10-20T14:58:10.9935820Z Compiling src/lwjgl/org/lwjgl/glfw/GLFWNativeCocoa.java
+2025-10-20T14:58:11.7365310Z Compiling src/lwjgl/org/lwjgl/glfw/Callbacks.java
+2025-10-20T14:58:12.6790000Z Compiling src/lwjgl/org/lwjgl/glfw/GLFWVulkan.java
+2025-10-20T14:58:13.9369870Z Compiling src/lwjgl/org/lwjgl/glfw/GLFWNativeEGL.java
+2025-10-20T14:58:16.7396930Z Compiling src/lwjgl/org/lwjgl/glfw/GLFWWindowProperties.java
+2025-10-20T14:58:25.5230360Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:58:25.5332860Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:58:25.5434560Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:58:25.5535840Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:25.5738530Z Compiling src/lwjgl/org/lwjgl/glfw/GLFW.java
+2025-10-20T14:58:26.0778630Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:58:26.0880100Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:58:26.0981820Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:58:26.1083200Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:26.2295050Z Compiling src/patchjna_agent/net/kdt/patchjna/PatchJNAAgent.java
+2025-10-20T14:58:30.3298210Z Compiling src/patchjna_agent/com/sun/jna/Platform.java
+2025-10-20T14:58:33.7393680Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:58:33.7493340Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:58:33.7593890Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:58:33.7695980Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:35.1048850Z Note: src/patchjna_agent/com/sun/jna/Platform.java uses unchecked or unsafe operations.
+2025-10-20T14:58:35.1152160Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:41.6588250Z Note: src/launcher/net/kdt/pojavlaunch/PojavClassLoader.java uses or overrides a deprecated API.
+2025-10-20T14:58:41.6702710Z Note: Recompile with -Xlint:deprecation for details.
+2025-10-20T14:58:41.6828410Z Note: Some input files use unchecked or unsafe operations.
+2025-10-20T14:58:41.6960330Z Note: Recompile with -Xlint:unchecked for details.
+2025-10-20T14:58:41.7655150Z Creating build/launcher.jar
+2025-10-20T14:58:41.7991080Z Creating build/lwjgl.jar
+2025-10-20T14:58:41.8136290Z Creating build/patchjna_agent.jar
+2025-10-20T14:58:50.8363080Z gmake[1]: Leaving directory '/Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered/JavaApp'
+2025-10-20T14:58:50.8447040Z [Amethyst v1.0] java - end
+2025-10-20T14:58:50.8504170Z ##[error]Process completed with exit code 2.
+2025-10-20T14:58:50.8855300Z Post job cleanup.
+2025-10-20T14:58:51.3940580Z [command]/opt/homebrew/bin/git version
+2025-10-20T14:58:51.4359000Z git version 2.50.1
+2025-10-20T14:58:51.4415300Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/907b64df-0940-4e55-9a3c-3e5190c2924d/.gitconfig'
+2025-10-20T14:58:51.4427520Z Temporarily overriding HOME='/Users/runner/work/_temp/907b64df-0940-4e55-9a3c-3e5190c2924d' before making global git config changes
+2025-10-20T14:58:51.4429110Z Adding repository directory to the temporary git global config as a safe directory
+2025-10-20T14:58:51.4439620Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/Amethyst-iOS-MyRemastered/Amethyst-iOS-MyRemastered
+2025-10-20T14:58:51.4556380Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-10-20T14:58:51.4626700Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-10-20T14:58:51.5789690Z Entering 'Natives/external/AFNetworking'
+2025-10-20T14:58:51.6087770Z Entering 'Natives/external/DBNumberedSlider'
+2025-10-20T14:58:51.6309750Z Entering 'Natives/external/MobileGlues'
+2025-10-20T14:58:51.6553750Z Entering 'Natives/external/MobileGlues/src/main/cpp/3rdparty/glm'
+2025-10-20T14:58:51.6887460Z Entering 'Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto'
+2025-10-20T14:58:51.7312640Z Entering 'Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash'
+2025-10-20T14:58:51.7708570Z Entering 'Natives/external/fishhook'
+2025-10-20T14:58:51.8018300Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-10-20T14:58:51.8096500Z http.https://github.com/.extraheader
+2025-10-20T14:58:51.8105300Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-10-20T14:58:51.8176490Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-10-20T14:58:51.9020280Z Entering 'Natives/external/AFNetworking'
+2025-10-20T14:58:51.9203990Z Entering 'Natives/external/DBNumberedSlider'
+2025-10-20T14:58:51.9361960Z Entering 'Natives/external/MobileGlues'
+2025-10-20T14:58:51.9534350Z Entering 'Natives/external/MobileGlues/src/main/cpp/3rdparty/glm'
+2025-10-20T14:58:51.9730180Z Entering 'Natives/external/MobileGlues/src/main/cpp/3rdparty/perfetto'
+2025-10-20T14:58:52.0022430Z Entering 'Natives/external/MobileGlues/src/main/cpp/3rdparty/xxhash'
+2025-10-20T14:58:52.0280500Z Entering 'Natives/external/fishhook'
+2025-10-20T14:58:52.0675960Z Cleaning up orphan processes
+2025-10-20T14:58:53.1176700Z Terminate orphan process: pid (7891) (ibtoold)

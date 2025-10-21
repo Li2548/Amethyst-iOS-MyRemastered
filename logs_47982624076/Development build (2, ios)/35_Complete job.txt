@@ -1,2 +1,0 @@
-﻿2025-10-20T12:55:43.3068940Z Cleaning up orphan processes
-2025-10-20T12:55:44.0946380Z Terminate orphan process: pid (9459) (ibtoold)
