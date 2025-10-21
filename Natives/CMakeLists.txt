@@ -133,7 +133,6 @@ add_executable(AngelAuraAmethyst
   installer/FabricUtils.m
   installer/modpack/ModpackUtils.m
   installer/modpack/ModpackAPI.m
-  installer/modpack/CurseForgeAPI.m
   installer/modpack/ModrinthAPI.m
 
   input/ControllerInput.m
@@ -180,11 +179,15 @@ add_executable(AngelAuraAmethyst
   utils.m
 
   # Mod-related sources (ensure implementations are compiled and linked)
+  MarqueeLabel.m
   ModItem.m
   ModService.m
   ModTableViewCell.m
   ModTableViewController.m
   ModsManagerViewController.m
+  ModVersion.m
+  ModVersionViewController.m
+  ModVersionTableViewCell.m
 
   # Custom icon management sources
   CustomIconManager.m
@@ -261,12 +264,12 @@ target_link_libraries(AngelAuraAmethyst
   "-framework CoreMotion"
   "-framework GameController"
   "-framework IOKit"
-  "-framework Photos"
   "-framework QuartzCore"
   "-framework UIKit"
   "-framework UniformTypeIdentifiers"
   "-framework UnzipKit"
   "-framework WebKit"
+  "-lc++"
   "-weak_framework SafariServices"
 )
 set_target_properties(AngelAuraAmethyst PROPERTIES
