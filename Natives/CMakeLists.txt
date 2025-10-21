@@ -264,6 +264,7 @@ target_link_libraries(AngelAuraAmethyst
   "-framework CoreMotion"
   "-framework GameController"
   "-framework IOKit"
+  "-framework Photos"
   "-framework QuartzCore"
   "-framework UIKit"
   "-framework UniformTypeIdentifiers"
