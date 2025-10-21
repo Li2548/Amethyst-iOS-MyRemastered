@@ -335,7 +335,7 @@
         if ([[fileURL.path componentsSeparatedByString:@"/"] containsObject:@"mouse_pointer_temp_"]) {
             [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
         }
-    }];
+    });
 }
 
 - (void)resetMousePointerToDefault {
