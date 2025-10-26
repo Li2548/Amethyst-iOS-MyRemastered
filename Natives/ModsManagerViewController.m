@@ -13,6 +13,7 @@
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, strong) UILabel *emptyLabel;
 @property (nonatomic, strong) UIBarButtonItem *refreshButton;
+@property (nonatomic, strong) UIBarButtonItem *batchButton;
 @property (nonatomic, strong) NSMutableArray<ModItem *> *localMods;
 @property (nonatomic, strong) NSMutableArray<ModItem *> *filteredLocalMods;
 
@@ -27,9 +28,11 @@
     self.title = @"管理 Mod";
     self.view.backgroundColor = [UIColor systemBackgroundColor];
     self.currentMode = ModsManagerModeLocal;
+    self.isBatchMode = NO;
     self.localMods = [NSMutableArray array];
     self.filteredLocalMods = [NSMutableArray array];
     self.onlineSearchResults = [NSMutableArray array];
+    self.selectedModPaths = [NSMutableSet set];
     [self setupUI];
     [self refreshLocalModsList];
 }
@@ -67,6 +70,7 @@
     self.emptyLabel.hidden = YES;
     [self.view addSubview:self.emptyLabel];
     self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(handleRefresh:)];
+    self.batchButton = [[UIBarButtonItem alloc] initWithTitle:@"批量" style:UIBarButtonItemStylePlain target:self action:@selector(toggleBatchMode)];
     [self updateNavigationButtons];
     [NSLayoutConstraint activateConstraints:@[
         [self.modeSwitcher.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:8],
@@ -121,10 +125,48 @@
 
 - (void)updateNavigationButtons {
     if (self.currentMode == ModsManagerModeLocal) {
-        self.navigationItem.rightBarButtonItems = @[self.refreshButton];
+        if (self.isBatchMode) {
+            self.batchButton.title = @"取消";
+        } else {
+            self.batchButton.title = @"批量";
+        }
+        self.navigationItem.rightBarButtonItems = @[self.refreshButton, self.batchButton];
     } else {
+        // 在在线搜索模式下隐藏批量按钮
         self.navigationItem.rightBarButtonItems = nil;
     }
+}
+
+#pragma mark - Batch Operations
+
+- (void)toggleBatchMode {
+    self.isBatchMode = !self.isBatchMode;
+    
+    if (!self.isBatchMode) {
+        // 退出批量模式时清除所有选择
+        [self.selectedModPaths removeAllObjects];
+    }
+    
+    [self updateNavigationButtons];
+    [self.tableView reloadData];
+}
+
+- (void)toggleModSelection:(NSString *)modPath {
+    if ([self.selectedModPaths containsObject:modPath]) {
+        [self.selectedModPaths removeObject:modPath];
+    } else {
+        [self.selectedModPaths addObject:modPath];
+    }
+}
+
+- (BOOL)isModSelected:(NSString *)modPath {
+    return [self.selectedModPaths containsObject:modPath];
+}
+
+- (UIView *)createSelectedBackgroundView {
+    UIView *view = [[UIView alloc] init];
+    view.backgroundColor = [UIColor systemBlueColor]; // 蓝色背景表示选中
+    return view;
 }
 
 #pragma mark - Data Loading
@@ -288,6 +330,14 @@
         cell.openLinkButton.menu = nil;
         cell.openLinkButton.enabled = NO;
     }
+    
+    // 3. Configure batch selection state if in batch mode
+    if (self.currentMode == ModsManagerModeLocal && self.isBatchMode) {
+        BOOL isSelected = [self isModSelected:modItem.filePath];
+        cell.selectedBackgroundView = isSelected ? [self createSelectedBackgroundView] : nil;
+    } else {
+        cell.selectedBackgroundView = nil;
+    }
 
     return cell;
 }
@@ -424,7 +474,12 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.currentMode == ModsManagerModeOnline) {
+    if (self.currentMode == ModsManagerModeLocal && self.isBatchMode) {
+        // 在批量模式下，切换选择状态
+        ModItem *modItem = self.filteredLocalMods[indexPath.row];
+        [self toggleModSelection:modItem.filePath];
+        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    } else if (self.currentMode == ModsManagerModeOnline) {
         // Handle online search item selection if necessary (e.g., show details)
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
@@ -433,6 +488,14 @@
 - (void)modCellDidTapToggle:(UITableViewCell *)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     if (!indexPath || self.currentMode != ModsManagerModeLocal) return;
+
+    // 在批量模式下，切换选择状态而不是启用/禁用
+    if (self.isBatchMode) {
+        ModItem *modItem = self.filteredLocalMods[indexPath.row];
+        [self toggleModSelection:modItem.filePath];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+        return;
+    }
 
     ModItem *mod = self.filteredLocalMods[indexPath.row];
 

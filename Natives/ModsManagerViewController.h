@@ -17,6 +17,10 @@ typedef NS_ENUM(NSInteger, ModsManagerMode) {
 @property (nonatomic, assign) ModsManagerMode currentMode;
 @property (nonatomic, strong) NSMutableArray *onlineSearchResults;
 
+// Batch operation properties
+@property (nonatomic, assign) BOOL isBatchMode;
+@property (nonatomic, strong) NSMutableSet<NSString *> *selectedModPaths;
+
 @end
 
 NS_ASSUME_NONNULL_END
