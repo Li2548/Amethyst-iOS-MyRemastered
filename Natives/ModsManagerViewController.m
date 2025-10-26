@@ -54,7 +54,7 @@
     self.tableView.tableFooterView = [UIView new];
     [self.view addSubview:self.tableView];
     UIRefreshControl *rc = [UIRefreshControl new];
-    [rc addTarget:self action:@selector(refreshLocalModsList) forControlEvents:UIControlEventValueChanged];
+    [rc addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
     self.tableView.refreshControl = rc;
     self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
     self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -66,7 +66,7 @@
     self.emptyLabel.textColor = [UIColor secondaryLabelColor];
     self.emptyLabel.hidden = YES;
     [self.view addSubview:self.emptyLabel];
-    self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshLocalModsList)];
+    self.refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(handleRefresh:)];
     [self updateNavigationButtons];
     [NSLayoutConstraint activateConstraints:@[
         [self.modeSwitcher.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:8],
@@ -88,6 +88,13 @@
 
 - (void)modeChanged:(UISegmentedControl *)sender {
     self.currentMode = (ModsManagerMode)sender.selectedSegmentIndex;
+
+    // [BugFix] Clear image cache when switching to online mode.
+    // This prevents stale or corrupted cached images from being displayed.
+    if (self.currentMode == ModsManagerModeOnline) {
+        [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    }
+
     [self.searchBar resignFirstResponder];
     self.searchBar.text = @"";
     [self.onlineSearchResults removeAllObjects];
@@ -99,15 +106,15 @@
 - (void)updateUIForCurrentMode {
     if (self.currentMode == ModsManagerModeLocal) {
         self.searchBar.placeholder = @"搜索本地 Mod...";
-        self.tableView.refreshControl.enabled = YES;
         self.emptyLabel.text = @"未发现 Mod";
         self.emptyLabel.hidden = self.localMods.count > 0;
     } else {
         self.searchBar.placeholder = @"在线搜索 Modrinth...";
-        self.tableView.refreshControl.enabled = NO; // Disable pull-to-refresh for online mode
         self.emptyLabel.text = @"输入关键词进行在线搜索";
         self.emptyLabel.hidden = self.onlineSearchResults.count > 0;
     }
+    // Re-enable pull-to-refresh for all modes
+    self.tableView.refreshControl.enabled = YES;
     [self updateNavigationButtons];
     [self.tableView reloadData];
 }
@@ -121,6 +128,20 @@
 }
 
 #pragma mark - Data Loading
+
+- (void)handleRefresh:(id)sender {
+    if (self.currentMode == ModsManagerModeLocal) {
+        [self refreshLocalModsList];
+    } else {
+        // For online mode, only refresh if there's text, otherwise it's pointless.
+        if (self.searchBar.text.length > 0) {
+            [self performOnlineSearch];
+        } else {
+            // If no text, just end the refreshing indicator.
+            [self.tableView.refreshControl endRefreshing];
+        }
+    }
+}
 
 - (void)setLoading:(BOOL)loading {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -234,13 +255,38 @@
     ModTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ModCell" forIndexPath:indexPath];
     cell.delegate = self;
 
+    // 1. Get the single source of truth for the mod item
+    ModItem *modItem = nil;
     if (self.currentMode == ModsManagerModeLocal) {
-        ModItem *mod = self.filteredLocalMods[indexPath.row];
-        [cell configureWithMod:mod displayMode:ModTableViewCellDisplayModeLocal];
+        modItem = self.filteredLocalMods[indexPath.row];
+        [cell configureWithMod:modItem displayMode:ModTableViewCellDisplayModeLocal];
     } else {
         NSDictionary *modData = self.onlineSearchResults[indexPath.row];
-        ModItem *modItem = [[ModItem alloc] initWithOnlineData:modData];
+        modItem = [[ModItem alloc] initWithOnlineData:modData];
         [cell configureWithMod:modItem displayMode:ModTableViewCellDisplayModeOnline];
+    }
+
+    // 2. Configure the link button's action using a UIMenu for reliability
+    if (modItem.onlineID && modItem.onlineID.length > 0) {
+        NSString *urlString = [NSString stringWithFormat:@"https://modrinth.com/mod/%@", modItem.onlineID];
+        NSURL *url = [NSURL URLWithString:urlString];
+
+        if (url) {
+            UIAction *openAction = [UIAction actionWithTitle:@"在 Modrinth 上查看" image:[UIImage systemImageNamed:@"safari"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+                [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+            }];
+            cell.openLinkButton.menu = [UIMenu menuWithChildren:@[openAction]];
+            cell.openLinkButton.showsMenuAsPrimaryAction = YES;
+            cell.openLinkButton.enabled = YES;
+        } else {
+            // Handle case where URL creation fails (e.g., bad onlineID)
+            cell.openLinkButton.menu = nil;
+            cell.openLinkButton.enabled = NO;
+        }
+    } else {
+        // If there's no online ID, disable the button to provide clear feedback
+        cell.openLinkButton.menu = nil;
+        cell.openLinkButton.enabled = NO;
     }
 
     return cell;
@@ -404,30 +450,5 @@
     }
 }
 
-- (void)modCellDidTapOpenLink:(UITableViewCell *)cell {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    if (!indexPath) return;
-
-    ModItem *modItem = nil;
-    if (self.currentMode == ModsManagerModeLocal) {
-        modItem = self.filteredLocalMods[indexPath.row];
-    } else {
-        NSDictionary *modData = self.onlineSearchResults[indexPath.row];
-        modItem = [[ModItem alloc] initWithOnlineData:modData];
-    }
-
-    if (modItem.onlineID && modItem.onlineID.length > 0) {
-        NSString *urlString = [NSString stringWithFormat:@"https://modrinth.com/mod/%@", modItem.onlineID];
-        NSURL *url = [NSURL URLWithString:urlString];
-        if (url) {
-            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-        }
-    } else {
-        // Optionally, inform the user that there's no link available
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"链接不可用" message:@"该 Mod 没有可用的在线链接。" preferredStyle:UIAlertControllerStyleAlert];
-        [alert addAction:[UIAlertAction actionWithTitle:@"好" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alert animated:YES completion:nil];
-    }
-}
 
 @end
