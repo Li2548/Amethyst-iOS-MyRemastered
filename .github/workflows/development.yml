@@ -44,15 +44,15 @@ jobs:
           echo "Available simulator runtimes (for debugging):"
           xcrun simctl list runtimes || true
 
-      - name: Cache Homebrew dependencies
+      - name: Cache Homebrew packages
         id: brew-cache
         uses: actions/cache@v4
         with:
           path: |
             /opt/homebrew/bin/make
+            /opt/homebrew/bin/gmake
             /opt/homebrew/bin/ldid
-            /Library/Java/JavaVirtualMachines/temurin-8.jdk
-          key: brew-deps-${{ runner.os }}-${{ hashFiles('**/development.yml') }}
+          key: brew-tools-${{ runner.os }}-${{ hashFiles('**/development.yml') }}
 
       - name: Install GNU Make
         if: steps.brew-cache.outputs.cache-hit != 'true'
@@ -61,7 +61,6 @@ jobs:
           brew install make
 
       - name: Install Java 8 (Temurin) via Homebrew
-        if: steps.brew-cache.outputs.cache-hit != 'true'
         run: |
           brew install --cask temurin@8 || true
 
